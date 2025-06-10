@@ -48,10 +48,11 @@ public class FuncionarioController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFuncionario(@PathVariable Long id) {
-        if (funcionarioRepository.existsById(id)) {
-            funcionarioRepository.deleteById(id);
+        try {
+            funcionarioService.excluiFuncionario(id);
             return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
     }
 }
