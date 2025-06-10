@@ -42,12 +42,16 @@ public class FuncionarioController {
     @PutMapping("/{id}")
     public ResponseEntity<FuncionarioEntity> atualizaDadosFuncionario(@PathVariable Long id,
                                                                       @RequestBody NovoFuncionarioDTO funcionario) {
-
-        return funcionarioService.atualizaFuncionario(funcionario, id);
+        try {
+            funcionarioService.atualizaFuncionario(funcionario, id);
+            return ResponseEntity.ok(new FuncionarioEntity());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFuncionario(@PathVariable Long id) {
+    public ResponseEntity<Void> excluiFuncionario (@PathVariable Long id){
         try {
             funcionarioService.excluiFuncionario(id);
             return ResponseEntity.ok().build();
@@ -55,4 +59,5 @@ public class FuncionarioController {
             return ResponseEntity.notFound().build();
         }
     }
+
 }
