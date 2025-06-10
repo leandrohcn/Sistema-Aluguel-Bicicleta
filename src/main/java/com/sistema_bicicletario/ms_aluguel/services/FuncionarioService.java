@@ -46,5 +46,10 @@ public class FuncionarioService {
         ).orElse(ResponseEntity.notFound().build());
     }
 
+    public void excluiFuncionario(Long idFuncionario) {
+        if (funcionarioRepository.existsById(idFuncionario)) {
+            funcionarioRepository.deleteById(idFuncionario);
+        }
+    }
 
 }
