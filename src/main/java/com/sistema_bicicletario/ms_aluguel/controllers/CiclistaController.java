@@ -3,6 +3,7 @@ package com.sistema_bicicletario.ms_aluguel.controllers;
 import com.sistema_bicicletario.ms_aluguel.dtos.AtualizaCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.CiclistaResponseDTO;
+import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.services.CiclistaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -39,9 +40,15 @@ public class CiclistaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CiclistaResponseDTO> atualizaCiclista(@PathVariable Integer id,
-                                                                 @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
+                                                                @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
+        try {
+            CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
+            CiclistaResponseDTO dto = new CiclistaResponseDTO(c);
+            return ResponseEntity.ok().body(dto);
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
 
-        return ciclistaService.atualizarCiclista(id, ciclista);
     }
 
     @PostMapping("/{id}/ativar")
