@@ -3,8 +3,9 @@ package com.sistema_bicicletario.ms_aluguel.services;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
 import com.sistema_bicicletario.ms_aluguel.entitys.funcionario.FuncionarioEntity;
 import com.sistema_bicicletario.ms_aluguel.repositorys.FuncionarioRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FuncionarioService {
@@ -50,4 +51,14 @@ public class FuncionarioService {
         }
     }
 
+    public FuncionarioEntity buscaFuncionarioPorId(Long idFuncionario) {
+        return funcionarioRepository.findById(idFuncionario).orElse(null);
+    }
+
+    public List<FuncionarioEntity> buscaTodosFuncionario() {
+        if (funcionarioRepository.findAll().isEmpty()) {
+            return null;
+        }
+        return funcionarioRepository.findAll();
+    }
 }
