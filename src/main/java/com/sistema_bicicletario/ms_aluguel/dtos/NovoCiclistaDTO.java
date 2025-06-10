@@ -31,5 +31,5 @@ public class NovoCiclistaDTO {
 
     @Valid
     @NotNull
-    private NovoCartaoDTO meioDePagamento;
+    private NovoCartaoDeCreditoDTO meioDePagamento;
 }
