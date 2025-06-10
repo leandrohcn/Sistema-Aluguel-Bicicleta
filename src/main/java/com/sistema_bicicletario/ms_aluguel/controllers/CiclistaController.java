@@ -5,33 +5,35 @@ import com.sistema_bicicletario.ms_aluguel.dtos.NovoCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.CiclistaResponseDTO;
 import com.sistema_bicicletario.ms_aluguel.services.CiclistaService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.sistema_bicicletario.ms_aluguel.repositorys.CiclistaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/ciclista")
 
 public class CiclistaController {
-    @Autowired
-    private CiclistaRepository ciclistaRepository;
 
     private final CiclistaService ciclistaService;
 
+    public CiclistaController(CiclistaService ciclistaService) {
+        this.ciclistaService = ciclistaService;
+    }
+
     @PostMapping
-    public ResponseEntity<CiclistaResponseDTO> addCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
-        CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(ciclista);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<CiclistaResponseDTO> criaCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
+        try {
+            CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(ciclista);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CiclistaResponseDTO> getCiclista(@PathVariable Integer id) {
-        return ciclistaRepository.findById(id)
-                .map(ciclista -> ResponseEntity.ok(new CiclistaResponseDTO(ciclista)))
+    public ResponseEntity<CiclistaResponseDTO> buscaCiclista(@PathVariable Integer id) {
+        return ciclistaService.buscaCiclistaporId(id).map(ciclistaEntity ->
+                ResponseEntity.ok().body(new CiclistaResponseDTO(ciclistaEntity)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
