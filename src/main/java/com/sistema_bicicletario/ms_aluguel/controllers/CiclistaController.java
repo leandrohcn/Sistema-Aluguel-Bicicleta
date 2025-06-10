@@ -53,13 +53,21 @@ public class CiclistaController {
 
     @PostMapping("/{id}/ativar")
     public ResponseEntity<CiclistaResponseDTO> ativarCiclista(@PathVariable Integer id){
-        CiclistaResponseDTO ciclistaAtivado = ciclistaService.ativarCiclista(id).getBody();
-        return ResponseEntity.ok(ciclistaAtivado);
+        try {
+            CiclistaResponseDTO ciclistaAtivado = ciclistaService.ativarCiclista(id);
+            return ResponseEntity.ok(ciclistaAtivado);
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/existeEmail")
     public ResponseEntity<Boolean> existeEmail(@RequestParam String email) {
-        boolean existe = ciclistaService.existeEmail(email);
-        return ResponseEntity.ok(existe);
+        try {
+            boolean existe = ciclistaService.existeEmail(email);
+            return ResponseEntity.ok(existe);
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
     }
 }
