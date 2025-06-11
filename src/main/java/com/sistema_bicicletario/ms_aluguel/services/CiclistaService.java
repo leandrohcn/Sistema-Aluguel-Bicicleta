@@ -96,7 +96,7 @@ public class CiclistaService {
         return ciclistaRepository.existsByEmail(email);
     }
 
-    public Optional<CiclistaEntity> buscaCiclistaporId(Integer idCiclista) {
+    public Optional<CiclistaEntity> buscarCiclistaporId(Integer idCiclista) {
         return ciclistaRepository.findById(idCiclista);
     }
 
