@@ -1,9 +1,12 @@
 package com.sistema_bicicletario.ms_aluguel.services;
 
-import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDTO;
+import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDeCreditoDTO;
+import com.sistema_bicicletario.ms_aluguel.entitys.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.repositorys.CartaoRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class CartaoService {
@@ -13,16 +16,19 @@ public class CartaoService {
         this.cartaoRepository = cartaoRepository;
     }
 
-    public ResponseEntity<String> atualizaCartao(Integer id, NovoCartaoDTO novoCartao) {
-        return cartaoRepository.findById(id).map(cartaoDeCredito -> {
-            cartaoDeCredito.setNomeTitular(novoCartao.getNomeTitular() != null ? novoCartao.getNomeTitular() : cartaoDeCredito.getNomeTitular());
-            cartaoDeCredito.setNumero(novoCartao.getNumeroCartao() > 0 ? novoCartao.getNumeroCartao() : cartaoDeCredito.getNumero());
-            cartaoDeCredito.setCvv(novoCartao.getCvv() > 0 ? novoCartao.getCvv() : cartaoDeCredito.getCvv());
-            cartaoDeCredito.setValidade(novoCartao.getValidade() != null ? novoCartao.getValidade() : cartaoDeCredito.getValidade());
+    public void atualizaCartao(Integer id, NovoCartaoDeCreditoDTO novoCartao) {
+        CartaoDeCreditoEntity cartao = cartaoRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Cartão não encontrado"));
 
-            cartaoRepository.save(cartaoDeCredito);
-            return ResponseEntity.ok("Dados cadastrados com sucesso!");
+        cartao.setNomeTitular(novoCartao.getNomeTitular() != null ? novoCartao.getNomeTitular() : cartao.getNomeTitular());
+        cartao.setNumero(novoCartao.getNumeroCartao() > 0 ? novoCartao.getNumeroCartao() : cartao.getNumero());
+        cartao.setCvv(novoCartao.getCvv() > 0 ? novoCartao.getCvv() : cartao.getCvv());
+        cartao.setValidade(novoCartao.getValidade() != null ? novoCartao.getValidade() : cartao.getValidade());
 
-        }).orElse(ResponseEntity.notFound().build());
+        cartaoRepository.save(cartao);
+    }
+
+    public Optional<CartaoDeCreditoEntity> buscaCartao(Integer id) {
+        return cartaoRepository.findById(id);
     }
 }

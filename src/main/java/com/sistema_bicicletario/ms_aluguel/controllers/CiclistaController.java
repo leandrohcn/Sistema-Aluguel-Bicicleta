@@ -3,54 +3,71 @@ package com.sistema_bicicletario.ms_aluguel.controllers;
 import com.sistema_bicicletario.ms_aluguel.dtos.AtualizaCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.CiclistaResponseDTO;
+import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.services.CiclistaService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.sistema_bicicletario.ms_aluguel.repositorys.CiclistaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/ciclista")
 
 public class CiclistaController {
-    @Autowired
-    private CiclistaRepository ciclistaRepository;
 
     private final CiclistaService ciclistaService;
 
+    public CiclistaController(CiclistaService ciclistaService) {
+        this.ciclistaService = ciclistaService;
+    }
+
     @PostMapping
-    public ResponseEntity<CiclistaResponseDTO> addCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
-        CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(ciclista);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<CiclistaResponseDTO> criaCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
+        try {
+            CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(ciclista);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CiclistaResponseDTO> getCiclista(@PathVariable Integer id) {
-        return ciclistaRepository.findById(id)
-                .map(ciclista -> ResponseEntity.ok(new CiclistaResponseDTO(ciclista)))
+    public ResponseEntity<CiclistaResponseDTO> buscaCiclista(@PathVariable Integer id) {
+        return ciclistaService.buscaCiclistaporId(id).map(ciclistaEntity ->
+                ResponseEntity.ok().body(new CiclistaResponseDTO(ciclistaEntity)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CiclistaResponseDTO> atualizaCiclista(@PathVariable Integer id,
-                                                                 @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
+                                                                @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
+        try {
+            CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
+            CiclistaResponseDTO dto = new CiclistaResponseDTO(c);
+            return ResponseEntity.ok().body(dto);
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
 
-        return ciclistaService.atualizarCiclista(id, ciclista);
     }
 
     @PostMapping("/{id}/ativar")
     public ResponseEntity<CiclistaResponseDTO> ativarCiclista(@PathVariable Integer id){
-        CiclistaResponseDTO ciclistaAtivado = ciclistaService.ativarCiclista(id).getBody();
-        return ResponseEntity.ok(ciclistaAtivado);
+        try {
+            CiclistaResponseDTO ciclistaAtivado = ciclistaService.ativarCiclista(id);
+            return ResponseEntity.ok(ciclistaAtivado);
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/existeEmail")
     public ResponseEntity<Boolean> existeEmail(@RequestParam String email) {
-        boolean existe = ciclistaService.existeEmail(email);
-        return ResponseEntity.ok(existe);
+        try {
+            boolean existe = ciclistaService.existeEmail(email);
+            return ResponseEntity.ok(existe);
+        } catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
     }
 }

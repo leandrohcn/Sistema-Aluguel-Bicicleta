@@ -1,36 +1,42 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
-import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDTO;
+import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDeCreditoDTO;
 import com.sistema_bicicletario.ms_aluguel.entitys.cartao_de_credito.CartaoDeCreditoEntity;
-import com.sistema_bicicletario.ms_aluguel.repositorys.CartaoRepository;
 import com.sistema_bicicletario.ms_aluguel.services.CartaoService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
 
-@RequiredArgsConstructor
+
 @RestController
-@RequestMapping("cartao")
+@RequestMapping("cartaoDeCredito")
 public class CartaoController {
-    @Autowired
-    private CartaoRepository cartaoRepository;
-    @Autowired
-    private CartaoService cartaoService;
 
+    private final CartaoService cartaoService;
+
+    public CartaoController(CartaoService cartaoService) {
+        this.cartaoService = cartaoService;
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<CartaoDeCreditoEntity> buscarCartao(@PathVariable Integer id) {
-        return cartaoRepository.findById(id).map(cartaoDeCreditoEntity ->
-                ResponseEntity.ok().body(cartaoDeCreditoEntity)).orElseGet(() -> ResponseEntity.notFound().build());
+        return cartaoService.buscaCartao(id).map(cartaoDeCreditoEntity ->
+                ResponseEntity.ok().body(cartaoDeCreditoEntity))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> atualizarCartao(@PathVariable Integer id,
-                                                  @RequestBody NovoCartaoDTO cartao) {
+                                                  @RequestBody NovoCartaoDeCreditoDTO cartao) {
 
-        return cartaoService.atualizaCartao(id, cartao);
+        try {
+            cartaoService.atualizaCartao(id, cartao);
+            return ResponseEntity.ok("Dados atualizados com sucesso!");
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }
