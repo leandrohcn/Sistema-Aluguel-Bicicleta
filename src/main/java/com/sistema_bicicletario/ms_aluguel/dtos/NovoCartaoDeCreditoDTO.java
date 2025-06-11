@@ -10,7 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Getter @AllArgsConstructor @NoArgsConstructor
-public class NovoCartaoDTO {
+public class NovoCartaoDeCreditoDTO {
 
     @NotBlank
     private String nomeTitular;

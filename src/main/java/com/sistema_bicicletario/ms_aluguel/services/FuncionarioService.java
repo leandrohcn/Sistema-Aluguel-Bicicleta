@@ -3,8 +3,9 @@ package com.sistema_bicicletario.ms_aluguel.services;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
 import com.sistema_bicicletario.ms_aluguel.entitys.funcionario.FuncionarioEntity;
 import com.sistema_bicicletario.ms_aluguel.repositorys.FuncionarioRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FuncionarioService {
@@ -14,7 +15,7 @@ public class FuncionarioService {
         this.funcionarioRepository = funcionarioRepository;
     }
 
-    public FuncionarioEntity addFuncionario(NovoFuncionarioDTO funcionarioDTO) {
+    public FuncionarioEntity criaFuncionario(NovoFuncionarioDTO funcionarioDTO) {
         FuncionarioEntity funcionario = new FuncionarioEntity();
         funcionario.setNome(funcionarioDTO.getNome());
         funcionario.setCpf(funcionarioDTO.getCpf());
@@ -28,23 +29,36 @@ public class FuncionarioService {
         return new FuncionarioEntity(funcionarioNovo);
     }
 
-    public ResponseEntity<FuncionarioEntity> atualizaFuncionario(NovoFuncionarioDTO funcionarioDTO,
-                                                                 Long idFuncionario) {
+    public void atualizaFuncionario(NovoFuncionarioDTO funcionarioDTO,
+                                    Long idFuncionario) {
 
-        return funcionarioRepository.findById(idFuncionario).map(funcionarioEntity -> {
-                funcionarioEntity.setCpf(funcionarioDTO.getCpf() != null ? funcionarioDTO.getCpf() : funcionarioEntity.getCpf());
-                funcionarioEntity.setNome(funcionarioDTO.getNome() != null ? funcionarioDTO.getNome() : funcionarioEntity.getNome());
-                funcionarioEntity.setEmail(funcionarioDTO.getEmail() != null ? funcionarioDTO.getEmail() : funcionarioEntity.getEmail());
-                funcionarioEntity.setSenha(funcionarioDTO.getSenha() != null ? funcionarioDTO.getSenha() : funcionarioEntity.getSenha());
-                funcionarioEntity.setConfirmaSenha(funcionarioDTO.getConfirmaSenha() != null ? funcionarioDTO.getConfirmaSenha() : funcionarioEntity.getConfirmaSenha());
-                funcionarioEntity.setIdade(funcionarioDTO.getIdade() > 0 ? funcionarioDTO.getIdade() : funcionarioEntity.getIdade());
+        funcionarioRepository.findById(idFuncionario).map(funcionarioEntity -> {
+            funcionarioEntity.setCpf(funcionarioDTO.getCpf() != null ? funcionarioDTO.getCpf() : funcionarioEntity.getCpf());
+            funcionarioEntity.setNome(funcionarioDTO.getNome() != null ? funcionarioDTO.getNome() : funcionarioEntity.getNome());
+            funcionarioEntity.setEmail(funcionarioDTO.getEmail() != null ? funcionarioDTO.getEmail() : funcionarioEntity.getEmail());
+            funcionarioEntity.setSenha(funcionarioDTO.getSenha() != null ? funcionarioDTO.getSenha() : funcionarioEntity.getSenha());
+            funcionarioEntity.setConfirmaSenha(funcionarioDTO.getConfirmaSenha() != null ? funcionarioDTO.getConfirmaSenha() : funcionarioEntity.getConfirmaSenha());
+            funcionarioEntity.setIdade(funcionarioDTO.getIdade() > 0 ? funcionarioDTO.getIdade() : funcionarioEntity.getIdade());
 
-
-                funcionarioRepository.save(funcionarioEntity);
-                return ResponseEntity.ok(funcionarioEntity);
-        }
-        ).orElse(ResponseEntity.notFound().build());
+            funcionarioRepository.save(funcionarioEntity);
+            return funcionarioEntity;
+        });
     }
 
+    public void excluiFuncionario(Long idFuncionario) {
+        if (funcionarioRepository.existsById(idFuncionario)) {
+            funcionarioRepository.deleteById(idFuncionario);
+        }
+    }
 
+    public FuncionarioEntity buscaFuncionarioPorId(Long idFuncionario) {
+        return funcionarioRepository.findById(idFuncionario).orElse(null);
+    }
+
+    public List<FuncionarioEntity> buscaTodosFuncionario() {
+        if (funcionarioRepository.findAll().isEmpty()) {
+            return null;
+        }
+        return funcionarioRepository.findAll();
+    }
 }

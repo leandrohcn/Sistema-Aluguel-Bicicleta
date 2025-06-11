@@ -10,7 +10,6 @@ import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.PassaporteEntity;
 import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.Status;
 import com.sistema_bicicletario.ms_aluguel.repositorys.CiclistaRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,8 +23,8 @@ public class CiclistaService {
         this.ciclistaRepository = ciclistaRepository;
     }
 
-    public ResponseEntity<CiclistaResponseDTO> atualizarCiclista(Integer id, AtualizaCiclistaDTO ciclistaDTO) {
-        return ciclistaRepository.findById(id)
+    public CiclistaEntity atualizarCiclista(Integer id, AtualizaCiclistaDTO ciclistaDTO) {
+                ciclistaRepository.findById(id)
                 .map(ciclistaEntity -> {
                     ciclistaEntity.setNome(ciclistaDTO.getNome() != null ? ciclistaDTO.getNome() : ciclistaEntity.getNome());
                     ciclistaEntity.setCpf(ciclistaDTO.getCpf() != null ? ciclistaDTO.getCpf() : ciclistaEntity.getCpf());
@@ -46,14 +45,13 @@ public class CiclistaService {
                     }
 
                     ciclistaRepository.save(ciclistaEntity);
-                    return ResponseEntity.ok(new CiclistaResponseDTO(ciclistaEntity));
-                })
-                .orElse(ResponseEntity.notFound().build());
+                    return ciclistaEntity;
+                });
+                return null;
     }
 
     @Transactional
     public CiclistaResponseDTO cadastrarCiclista(NovoCiclistaDTO novoCiclistaDto) {
-        // Constrói entidade do ciclista
         CiclistaEntity ciclista = new CiclistaEntity();
         ciclista.setNome(novoCiclistaDto.getNome());
         ciclista.setDataNascimento(novoCiclistaDto.getNascimento());
@@ -63,41 +61,42 @@ public class CiclistaService {
         ciclista.setUrlFotoDocumento(novoCiclistaDto.getUrlFotoDocumento());
         ciclista.setSenha(novoCiclistaDto.getSenha());
 
-        // Cria entidade de passaporte
         PassaporteEntity passaporte = new PassaporteEntity();
         passaporte.setNumeroPassaporte(novoCiclistaDto.getPassaporte().getNumero());
         passaporte.setValidadePassaporte(novoCiclistaDto.getPassaporte().getValidade());
         passaporte.setPais(novoCiclistaDto.getPassaporte().getPais());
-        passaporte.setCiclista(ciclista); // RELAÇÃO BIDIRECIONAL
+        passaporte.setCiclista(ciclista);
         ciclista.setPassaporteEntity(passaporte);
 
-        // Cria entidade de cartão
         CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity();
         cartao.setNomeTitular(novoCiclistaDto.getNome());
         cartao.setNumero(novoCiclistaDto.getMeioDePagamento().getNumeroCartao());
         cartao.setCvv(novoCiclistaDto.getMeioDePagamento().getCvv());
         cartao.setValidade(novoCiclistaDto.getMeioDePagamento().getValidade());
-        cartao.setCiclista(ciclista); // RELAÇÃO BIDIRECIONAL
+        cartao.setCiclista(ciclista);
         ciclista.setCartao(cartao);
 
-        // Salva tudo em cascata
         CiclistaEntity salvo = ciclistaRepository.save(ciclista);
         return new CiclistaResponseDTO(salvo);
     }
 
-    public ResponseEntity<CiclistaResponseDTO> ativarCiclista(Integer idCiclista) {
+    public CiclistaResponseDTO ativarCiclista(Integer idCiclista) {
         Optional<CiclistaEntity> ciclistaEntity = ciclistaRepository.findById(idCiclista);
         if (ciclistaEntity.isPresent()) {
             CiclistaEntity ciclistaAtual = ciclistaEntity.get();
             ciclistaAtual.setStatus(Status.ATIVO);
             ciclistaRepository.save(ciclistaAtual);
-            return ResponseEntity.ok(new CiclistaResponseDTO(ciclistaAtual));
         }
-        return ResponseEntity.notFound().build();
+        return null;
     }
 
     public boolean existeEmail(String email) {
         return ciclistaRepository.existsByEmail(email);
     }
+
+    public Optional<CiclistaEntity> buscaCiclistaporId(Integer idCiclista) {
+        return ciclistaRepository.findById(idCiclista);
+    }
+
 }
 
