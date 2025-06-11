@@ -45,5 +45,15 @@ public class CiclistaEntity {
     @OneToOne(mappedBy = "ciclista", cascade = CascadeType.ALL, orphanRemoval = true)
     private CartaoDeCreditoEntity cartao;
 
+    public CiclistaEntity(String nome, Date dataNascimento, String cpf, String email,
+                          Nacionalidade nacionalidade, String urlFotoDocumento, String senha) {
+        this.nome = nome;
+        this.dataNascimento = dataNascimento;
+        this.cpf = cpf;
+        this.email = email;
+        this.nacionalidade = nacionalidade;
+        this.urlFotoDocumento = urlFotoDocumento;
+        this.senha = senha;
+    }
 
 }
