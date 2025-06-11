@@ -52,28 +52,30 @@ public class CiclistaService {
 
     @Transactional
     public CiclistaResponseDTO cadastrarCiclista(NovoCiclistaDTO novoCiclistaDto) {
-        CiclistaEntity ciclista = new CiclistaEntity();
-        ciclista.setNome(novoCiclistaDto.getNome());
-        ciclista.setDataNascimento(novoCiclistaDto.getNascimento());
-        ciclista.setCpf(novoCiclistaDto.getCpf());
-        ciclista.setEmail(novoCiclistaDto.getEmail());
-        ciclista.setNacionalidade(novoCiclistaDto.getNacionalidade());
-        ciclista.setUrlFotoDocumento(novoCiclistaDto.getUrlFotoDocumento());
-        ciclista.setSenha(novoCiclistaDto.getSenha());
+        CiclistaEntity ciclista = new CiclistaEntity(
+                novoCiclistaDto.getNome(),
+                novoCiclistaDto.getNascimento(),
+                novoCiclistaDto.getCpf(),
+                novoCiclistaDto.getEmail(),
+                novoCiclistaDto.getNacionalidade(),
+                novoCiclistaDto.getUrlFotoDocumento(),
+                novoCiclistaDto.getSenha()
+        );
 
-        PassaporteEntity passaporte = new PassaporteEntity();
-        passaporte.setNumeroPassaporte(novoCiclistaDto.getPassaporte().getNumero());
-        passaporte.setValidadePassaporte(novoCiclistaDto.getPassaporte().getValidade());
-        passaporte.setPais(novoCiclistaDto.getPassaporte().getPais());
-        passaporte.setCiclista(ciclista);
+        PassaporteEntity passaporte = new PassaporteEntity(
+                novoCiclistaDto.getPassaporte().getNumero(),
+                novoCiclistaDto.getPassaporte().getValidade(),
+                novoCiclistaDto.getPassaporte().getPais()
+        );
         ciclista.setPassaporteEntity(passaporte);
 
-        CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity();
-        cartao.setNomeTitular(novoCiclistaDto.getNome());
-        cartao.setNumero(novoCiclistaDto.getMeioDePagamento().getNumeroCartao());
-        cartao.setCvv(novoCiclistaDto.getMeioDePagamento().getCvv());
-        cartao.setValidade(novoCiclistaDto.getMeioDePagamento().getValidade());
-        cartao.setCiclista(ciclista);
+        CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity(
+                novoCiclistaDto.getNome(),
+                novoCiclistaDto.getMeioDePagamento().getNumeroCartao(),
+                novoCiclistaDto.getMeioDePagamento().getCvv(),
+                novoCiclistaDto.getMeioDePagamento().getValidade(),
+                ciclista
+        );
         ciclista.setCartao(cartao);
 
         CiclistaEntity salvo = ciclistaRepository.save(ciclista);
@@ -94,7 +96,7 @@ public class CiclistaService {
         return ciclistaRepository.existsByEmail(email);
     }
 
-    public Optional<CiclistaEntity> buscaCiclistaporId(Integer idCiclista) {
+    public Optional<CiclistaEntity> buscarCiclistaporId(Integer idCiclista) {
         return ciclistaRepository.findById(idCiclista);
     }
 

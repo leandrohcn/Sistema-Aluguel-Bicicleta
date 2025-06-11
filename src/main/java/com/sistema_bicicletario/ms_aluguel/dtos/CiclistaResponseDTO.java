@@ -22,7 +22,7 @@ public class CiclistaResponseDTO {
 
     public CiclistaResponseDTO(CiclistaEntity ciclista) {
         this.id = ciclista.getId();
-        this.status = (ciclista.getStatus() != null) ? ciclista.getStatus().name() : Status.AGUARDANDO_CONFIRMACAO.name();
+        this.status = (ciclista.getStatus() != null) ? ciclista.getStatus().name() : String.valueOf(Status.AGUARDANDO_CONFIRMACAO);
         this.nome = ciclista.getNome();
         this.nascimento = ciclista.getDataNascimento();
         this.cpf = ciclista.getCpf();

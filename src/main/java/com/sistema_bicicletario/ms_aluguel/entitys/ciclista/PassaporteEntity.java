@@ -12,6 +12,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class PassaporteEntity {
+
     private String numeroPassaporte;
     @DateTimeFormat(pattern = "MM/yyyy")
     private Date validadePassaporte;
@@ -19,14 +20,13 @@ public class PassaporteEntity {
     private String pais;
 
 
-    public PassaporteEntity(String numero, Date validade, String pais) {
-        this.numeroPassaporte = numero;
-        this.validadePassaporte = validade;
+    public PassaporteEntity(String numeroPassaporte, Date validadePassaporte,
+                            String pais) {
+        this.numeroPassaporte = numeroPassaporte;
+        this.validadePassaporte = validadePassaporte;
         this.pais = pais;
     }
 
    public PassaporteEntity() {}
 
-    public void setCiclista(CiclistaEntity ciclista) {
-    }
 }
