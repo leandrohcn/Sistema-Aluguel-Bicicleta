@@ -22,7 +22,7 @@ public class CiclistaController {
     }
 
     @PostMapping
-    public ResponseEntity<CiclistaResponseDTO> criaCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
+    public ResponseEntity<CiclistaResponseDTO> criarCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
         try {
             CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(ciclista);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -32,14 +32,14 @@ public class CiclistaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CiclistaResponseDTO> buscaCiclista(@PathVariable Integer id) {
-        return ciclistaService.buscaCiclistaporId(id).map(ciclistaEntity ->
+    public ResponseEntity<CiclistaResponseDTO> buscarCiclista(@PathVariable Integer id) {
+        return ciclistaService.buscarCiclistaporId(id).map(ciclistaEntity ->
                 ResponseEntity.ok().body(new CiclistaResponseDTO(ciclistaEntity)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CiclistaResponseDTO> atualizaCiclista(@PathVariable Integer id,
+    public ResponseEntity<CiclistaResponseDTO> atualizarCiclista(@PathVariable Integer id,
                                                                 @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
         try {
             CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
