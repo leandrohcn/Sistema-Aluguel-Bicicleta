@@ -12,19 +12,19 @@ import java.util.Date;
 @Getter
 public class PassaporteDTO {
 
-    private String numero;
+    private String numeroPassaporte;
     private String pais;
     @NotNull
     @DateTimeFormat(pattern = "MM/yyyy")
-    private Date validade;
+    private Date validadePassaporte;
 
     @JsonCreator
     public PassaporteDTO(@JsonProperty("numero") String numero,
                          @JsonProperty("pais") String pais,
                          @JsonProperty("validade") Date validade) {
-        this.numero = numero;
+        this.numeroPassaporte = numero;
         this.pais = pais;
-        this.validade = validade;
+        this.validadePassaporte = validade;
     }
 
     public PassaporteDTO() {

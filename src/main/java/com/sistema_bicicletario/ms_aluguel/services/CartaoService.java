@@ -23,7 +23,7 @@ public class CartaoService {
         cartao.setNomeTitular(novoCartao.getNomeTitular() != null ? novoCartao.getNomeTitular() : cartao.getNomeTitular());
         cartao.setNumero(novoCartao.getNumeroCartao() > 0 ? novoCartao.getNumeroCartao() : cartao.getNumero());
         cartao.setCvv(novoCartao.getCvv() > 0 ? novoCartao.getCvv() : cartao.getCvv());
-        cartao.setValidade(novoCartao.getValidade() != null ? novoCartao.getValidade() : cartao.getValidade());
+        cartao.setValidade(novoCartao.getValidadeCartao() != null ? novoCartao.getValidadeCartao() : cartao.getValidade());
 
         cartaoRepository.save(cartao);
     }

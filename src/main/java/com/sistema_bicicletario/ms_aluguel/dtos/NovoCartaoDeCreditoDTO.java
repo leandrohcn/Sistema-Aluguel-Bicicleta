@@ -20,7 +20,7 @@ public class NovoCartaoDeCreditoDTO {
 
     @NotNull
     @DateTimeFormat(pattern = "MM/yyyy")
-    private String validade;
+    private String validadeCartao;
 
     @NotNull
     private long numeroCartao;

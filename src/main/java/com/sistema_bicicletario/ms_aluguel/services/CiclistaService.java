@@ -28,7 +28,7 @@ public class CiclistaService {
                 .map(ciclistaEntity -> {
                     ciclistaEntity.setNome(ciclistaDTO.getNome() != null ? ciclistaDTO.getNome() : ciclistaEntity.getNome());
                     ciclistaEntity.setCpf(ciclistaDTO.getCpf() != null ? ciclistaDTO.getCpf() : ciclistaEntity.getCpf());
-                    ciclistaEntity.setDataNascimento(ciclistaDTO.getNascimento() != null ? ciclistaDTO.getNascimento() : ciclistaEntity.getDataNascimento());
+                    ciclistaEntity.setDataNascimento(ciclistaDTO.getDataNascimento() != null ? ciclistaDTO.getDataNascimento() : ciclistaEntity.getDataNascimento());
                     ciclistaEntity.setNacionalidade(ciclistaDTO.getNacionalidade() != null ? ciclistaDTO.getNacionalidade() : ciclistaEntity.getNacionalidade());
                     ciclistaEntity.setEmail(ciclistaDTO.getEmail() != null ? ciclistaDTO.getEmail() : ciclistaEntity.getEmail());
                     ciclistaEntity.setUrlFotoDocumento(ciclistaDTO.getUrlFotoDocumento() != null ? ciclistaDTO.getUrlFotoDocumento() : ciclistaEntity.getUrlFotoDocumento());
@@ -37,8 +37,8 @@ public class CiclistaService {
                         PassaporteEntity passaporteAtual = ciclistaEntity.getPassaporteEntity();
                         PassaporteDTO passaporteDto = ciclistaDTO.getPassaporte();
 
-                        passaporteAtual.setNumeroPassaporte(passaporteDto.getNumero() != null ? passaporteDto.getNumero() : passaporteAtual.getNumeroPassaporte());
-                        passaporteAtual.setValidadePassaporte(passaporteDto.getValidade() != null ? passaporteDto.getValidade() : passaporteAtual.getValidadePassaporte());
+                        passaporteAtual.setNumeroPassaporte(passaporteDto.getNumeroPassaporte() != null ? passaporteDto.getNumeroPassaporte() : passaporteAtual.getNumeroPassaporte());
+                        passaporteAtual.setValidadePassaporte(passaporteDto.getValidadePassaporte() != null ? passaporteDto.getValidadePassaporte() : passaporteAtual.getValidadePassaporte());
                         passaporteAtual.setPais(passaporteDto.getPais() != null ? passaporteDto.getPais() : passaporteAtual.getPais());
 
                         ciclistaEntity.setPassaporteEntity(passaporteAtual);
@@ -63,8 +63,8 @@ public class CiclistaService {
         );
 
         PassaporteEntity passaporte = new PassaporteEntity(
-                novoCiclistaDto.getPassaporte().getNumero(),
-                novoCiclistaDto.getPassaporte().getValidade(),
+                novoCiclistaDto.getPassaporte().getNumeroPassaporte(),
+                novoCiclistaDto.getPassaporte().getValidadePassaporte(),
                 novoCiclistaDto.getPassaporte().getPais()
         );
         ciclista.setPassaporteEntity(passaporte);
@@ -73,7 +73,7 @@ public class CiclistaService {
                 novoCiclistaDto.getNome(),
                 novoCiclistaDto.getMeioDePagamento().getNumeroCartao(),
                 novoCiclistaDto.getMeioDePagamento().getCvv(),
-                novoCiclistaDto.getMeioDePagamento().getValidade(),
+                novoCiclistaDto.getMeioDePagamento().getValidadeCartao(),
                 ciclista
         );
         ciclista.setCartao(cartao);

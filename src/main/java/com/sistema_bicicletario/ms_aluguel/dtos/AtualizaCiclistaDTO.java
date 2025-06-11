@@ -10,7 +10,7 @@ import java.util.Date;
 public class AtualizaCiclistaDTO {
 
     private final String nome;
-    private final Date nascimento;
+    private final Date dataNascimento;
     private final String cpf;
     private final Nacionalidade nacionalidade;
     private final String email;

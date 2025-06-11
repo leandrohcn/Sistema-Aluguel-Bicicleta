@@ -2,6 +2,7 @@ package com.sistema_bicicletario.ms_aluguel.dtos;
 
 import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.Nacionalidade;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -25,7 +26,11 @@ public class NovoCiclistaDTO {
     private PassaporteDTO passaporte;
 
     private Nacionalidade nacionalidade;
+
+    @Email
+    @NotBlank
     private String email;
+
     private String urlFotoDocumento;
     private String senha;
 
