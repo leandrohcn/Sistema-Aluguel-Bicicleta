@@ -61,13 +61,12 @@ public class CiclistaController {
         }
     }
 
-    @GetMapping("/existeEmail")
-    public ResponseEntity<Boolean> existeEmail(@RequestParam String email) {
-        try {
-            boolean existe = ciclistaService.existeEmail(email);
-            return ResponseEntity.ok(existe);
-        } catch (Exception e){
-            return ResponseEntity.notFound().build();
+    @GetMapping("/existeEmail/{email}")
+    public ResponseEntity<Boolean> existeEmail(@PathVariable String email) {
+        if (ciclistaService.existeEmail(email)) {
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }
