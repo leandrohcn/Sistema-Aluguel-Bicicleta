@@ -24,7 +24,7 @@ public class CiclistaService {
     }
 
     public CiclistaEntity atualizarCiclista(Integer id, AtualizaCiclistaDTO ciclistaDTO) {
-                ciclistaRepository.findById(id)
+        return ciclistaRepository.findById(id)
                 .map(ciclistaEntity -> {
                     ciclistaEntity.setNome(ciclistaDTO.getNome() != null ? ciclistaDTO.getNome() : ciclistaEntity.getNome());
                     ciclistaEntity.setCpf(ciclistaDTO.getCpf() != null ? ciclistaDTO.getCpf() : ciclistaEntity.getCpf());
@@ -44,10 +44,9 @@ public class CiclistaService {
                         ciclistaEntity.setPassaporteEntity(passaporteAtual);
                     }
 
-                    ciclistaRepository.save(ciclistaEntity);
-                    return ciclistaEntity;
-                });
-                return null;
+                    return ciclistaRepository.save(ciclistaEntity);
+                })
+                .orElseThrow(() -> new RuntimeException("Ciclista não encontrado com ID: " + id));
     }
 
     @Transactional
