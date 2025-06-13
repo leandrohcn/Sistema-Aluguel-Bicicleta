@@ -1,6 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.dtos;
 
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.Nacionalidade;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Nacionalidade;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,7 +1,7 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDeCreditoDTO;
-import com.sistema_bicicletario.ms_aluguel.entitys.cartao_de_credito.CartaoDeCreditoEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.services.CartaoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
