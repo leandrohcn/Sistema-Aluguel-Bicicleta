@@ -22,4 +22,14 @@ public class NovoFuncionarioDTO {
     private String cpf;
     @NotBlank
     private String funcao;
+
+    public boolean senhaValida() {
+        if (senha == null || confirmaSenha == null) {
+            return false;
+        }
+            return senha.equals(confirmaSenha);
+    }
+    public boolean idadeValida() {
+        return idade >= 16;
+    }
 }
