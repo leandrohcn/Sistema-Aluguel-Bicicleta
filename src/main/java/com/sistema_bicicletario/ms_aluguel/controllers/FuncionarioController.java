@@ -1,13 +1,16 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
+
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
-import com.sistema_bicicletario.ms_aluguel.entitys.funcionario.FuncionarioEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
 import com.sistema_bicicletario.ms_aluguel.services.FuncionarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 
 @RestController
@@ -22,7 +25,7 @@ public class FuncionarioController {
 
     @GetMapping
     public ResponseEntity<List<FuncionarioEntity>> buscaTodosFuncionarios() {
-        try{
+        try {
             List<FuncionarioEntity> funcionarios = funcionarioService.buscaTodosFuncionario();
             return new ResponseEntity<>(funcionarios, HttpStatus.OK);
         } catch (Exception e) {
@@ -32,43 +35,28 @@ public class FuncionarioController {
 
     @PostMapping
     public ResponseEntity<FuncionarioEntity> criaFuncionario(@RequestBody NovoFuncionarioDTO funcionario) {
-        try {
-            FuncionarioEntity response = funcionarioService.criaFuncionario(funcionario);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+            FuncionarioEntity funcionarioEntity = funcionarioService.criaFuncionario(funcionario);
+       return new ResponseEntity<>(funcionarioEntity, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FuncionarioEntity> buscaFuncionarioPorId(@PathVariable Long id) {
-        try {
-            FuncionarioEntity response = funcionarioService.buscaFuncionarioPorId(id);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<FuncionarioEntity> buscaFuncionarioPorId(@PathVariable Integer id) {
+        FuncionarioEntity funcionario = funcionarioService.buscaFuncionarioPorId(id);
+        return ResponseEntity.ok(funcionario);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FuncionarioEntity> atualizaDadosFuncionario(@PathVariable Long id,
-                                                                      @RequestBody NovoFuncionarioDTO funcionario) {
-        try {
-            funcionarioService.atualizaFuncionario(funcionario, id);
-            return ResponseEntity.ok(new FuncionarioEntity());
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<FuncionarioEntity> atualizaDadosFuncionario(@PathVariable Integer id, @RequestBody NovoFuncionarioDTO funcionario) {
+
+        FuncionarioEntity funcionarioAtualizado = funcionarioService.atualizaFuncionario(funcionario, id);
+        funcionarioAtualizado = new FuncionarioEntity(funcionarioAtualizado);
+        return ResponseEntity.ok().body(funcionarioAtualizado);
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluiFuncionario (@PathVariable Long id){
-        try {
+    public ResponseEntity<Void> excluiFuncionario(@PathVariable Integer id) {
             funcionarioService.excluiFuncionario(id);
             return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
     }
-
 }
