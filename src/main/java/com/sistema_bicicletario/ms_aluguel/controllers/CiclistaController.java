@@ -3,7 +3,7 @@ package com.sistema_bicicletario.ms_aluguel.controllers;
 import com.sistema_bicicletario.ms_aluguel.dtos.AtualizaCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.CiclistaResponseDTO;
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.CiclistaEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.services.CiclistaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

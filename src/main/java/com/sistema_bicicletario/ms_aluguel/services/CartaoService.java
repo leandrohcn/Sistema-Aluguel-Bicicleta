@@ -1,8 +1,8 @@
 package com.sistema_bicicletario.ms_aluguel.services;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDeCreditoDTO;
-import com.sistema_bicicletario.ms_aluguel.entitys.cartao_de_credito.CartaoDeCreditoEntity;
-import com.sistema_bicicletario.ms_aluguel.repositorys.CartaoRepository;
+import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
+import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;

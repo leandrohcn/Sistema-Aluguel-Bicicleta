@@ -4,11 +4,11 @@ import com.sistema_bicicletario.ms_aluguel.dtos.AtualizaCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.CiclistaResponseDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.PassaporteDTO;
-import com.sistema_bicicletario.ms_aluguel.entitys.cartao_de_credito.CartaoDeCreditoEntity;
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.CiclistaEntity;
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.PassaporteEntity;
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.Status;
-import com.sistema_bicicletario.ms_aluguel.repositorys.CiclistaRepository;
+import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.PassaporteEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Status;
+import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

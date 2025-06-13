@@ -1,9 +1,9 @@
 package com.sistema_bicicletario.ms_aluguel.dtos;
 
 
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.CiclistaEntity;
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.Nacionalidade;
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.Status;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Nacionalidade;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Status;
 import lombok.Getter;
 import java.util.Date;
 

@@ -1,6 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.dtos;
 
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.Nacionalidade;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Nacionalidade;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
