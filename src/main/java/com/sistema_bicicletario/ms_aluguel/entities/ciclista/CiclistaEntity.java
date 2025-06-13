@@ -1,7 +1,7 @@
-package com.sistema_bicicletario.ms_aluguel.entitys.ciclista;
+package com.sistema_bicicletario.ms_aluguel.entities.ciclista;
 
 
-import com.sistema_bicicletario.ms_aluguel.entitys.cartao_de_credito.CartaoDeCreditoEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;

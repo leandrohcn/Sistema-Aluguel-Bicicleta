@@ -1,4 +1,4 @@
-package com.sistema_bicicletario.ms_aluguel.entitys.ciclista;
+package com.sistema_bicicletario.ms_aluguel.entities.ciclista;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
