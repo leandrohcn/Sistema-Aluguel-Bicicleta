@@ -3,6 +3,7 @@ package com.sistema_bicicletario.ms_aluguel.entities.ciclista;
 
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
@@ -31,6 +32,7 @@ public class CiclistaEntity {
     private PassaporteEntity passaporteEntity;
 
     @Column(unique = true)
+    @Email
     private String email;
 
     @Enumerated(EnumType.STRING)
