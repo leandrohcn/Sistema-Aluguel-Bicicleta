@@ -5,20 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
 
 @Getter
 public class PassaporteDTO {
-    @NotBlank
-    private String numeroPassaporte;
-    @NotBlank
-    private String pais;
-    @NotNull
-    @DateTimeFormat(pattern = "MM/yyyy")
-    private Date validadePassaporte;
+    @NotBlank (message = "Preencha o número do Passaporte")
+    private final String numeroPassaporte;
+    @NotBlank (message = "Preencha o país")
+    private final String pais;
+    @NotNull (message = "Erro na validade")
+    private final Date validadePassaporte;
 
     @JsonCreator
     public PassaporteDTO(@JsonProperty("numero") String numero,
@@ -27,9 +25,6 @@ public class PassaporteDTO {
         this.numeroPassaporte = numero;
         this.pais = pais;
         this.validadePassaporte = validade;
-    }
-
-    public PassaporteDTO() {
     }
 
 

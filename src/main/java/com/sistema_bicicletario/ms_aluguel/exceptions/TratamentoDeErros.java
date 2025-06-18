@@ -1,18 +1,22 @@
 package com.sistema_bicicletario.ms_aluguel.exceptions;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.sistema_bicicletario.ms_aluguel.dtos.ErroDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class TratamentoDeErros {
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<ErroDTO>> handleValidacao(MethodArgumentNotValidException ex) {
@@ -22,20 +26,44 @@ public class TratamentoDeErros {
                 .map(erro -> new ErroDTO(erro.getField(), erro.getDefaultMessage()))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erros);
+        return ResponseEntity.status(422).body(erros);
     }
 
-    @ExceptionHandler({EntityNotFoundException.class, RuntimeException.class})
-    public ResponseEntity<ErroDTO> handleNotFound(RuntimeException ex) {
-        ErroDTO erro = new ErroDTO("erro", ex.getMessage());
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErroDTO> handleNotFound(EntityNotFoundException ex) {
+        ErroDTO erro = new ErroDTO("404", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erro);
     }
 
-    @ExceptionHandler(TrataUnprocessabeEntity.class)
-    public ResponseEntity<ErroDTO> handleRegraNegocio(TrataUnprocessabeEntity ex) {
-        ErroDTO erro = new ErroDTO("Requisição inválida", ex.getMessage());
-        return ResponseEntity.status(422).body(erro);
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErroDTO> handleJsonMalFormado(HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getCause();
+
+        if (cause instanceof InvalidFormatException invalidFormatException) {
+            Class<?> targetType = invalidFormatException.getTargetType();
+            if (targetType.isEnum()) {
+                String campo = invalidFormatException.getPath().get(0).getFieldName();
+                String valorInvalido = invalidFormatException.getValue().toString();
+                String valoresValidos = String.join(", ",
+                        Arrays.stream(targetType.getEnumConstants())
+                                .map(Object::toString)
+                                .toList());
+
+                String mensagem = String.format(
+                        "Valor inválido '%s' para o campo '%s'. Os valores aceitos são: %s.",
+                        valorInvalido, campo, valoresValidos
+                );
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErroDTO("400", mensagem));
+            }
+        }
+
+
+        ErroDTO erro = new ErroDTO("400", "Requisição malformada: " + ex.getMostSpecificCause().getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
+
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErroDTO> handleIllegalArgument(IllegalArgumentException ex) {
@@ -43,5 +71,11 @@ public class TratamentoDeErros {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
 
+
+    @ExceptionHandler(TrataUnprocessabeEntity.class)
+    public ResponseEntity<List<ErroDTO>> handleRegraNegocio(TrataUnprocessabeEntity ex) {
+        ErroDTO erro = new ErroDTO("422", ex.getMessage());
+        return ResponseEntity.status(422).body(List.of(erro));
+    }
 
 }

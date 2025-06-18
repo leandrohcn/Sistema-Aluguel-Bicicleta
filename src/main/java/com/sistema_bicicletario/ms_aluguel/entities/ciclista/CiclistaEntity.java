@@ -37,9 +37,11 @@ public class CiclistaEntity {
 
     @Enumerated(EnumType.STRING)
     private Nacionalidade nacionalidade;
-
     private String urlFotoDocumento;
+    @Transient
+    private String confirmaSenha;
     private String senha;
+
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -48,7 +50,7 @@ public class CiclistaEntity {
     private CartaoDeCreditoEntity cartao;
 
     public CiclistaEntity(String nome, Date dataNascimento, String cpf, String email,
-                          Nacionalidade nacionalidade, String urlFotoDocumento, String senha) {
+                          Nacionalidade nacionalidade, String urlFotoDocumento, String senha, String confirmaSenha) {
         this.nome = nome;
         this.dataNascimento = dataNascimento;
         this.cpf = cpf;
@@ -56,6 +58,7 @@ public class CiclistaEntity {
         this.nacionalidade = nacionalidade;
         this.urlFotoDocumento = urlFotoDocumento;
         this.senha = senha;
+        this.confirmaSenha = confirmaSenha;
     }
 
 }
