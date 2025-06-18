@@ -11,6 +11,7 @@ import com.sistema_bicicletario.ms_aluguel.entities.ciclista.PassaporteEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Status;
 import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessabeEntity;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -87,16 +88,24 @@ public class CiclistaService {
     }
 
     public CiclistaResponseDTO ativarCiclista(Integer idCiclista) {
+        if (idCiclista < 0){
+            throw new TrataUnprocessabeEntity("id invalido: "  + idCiclista);
+        }
+
         Optional<CiclistaEntity> ciclistaEntity = ciclistaRepository.findById(idCiclista);
-        if (ciclistaEntity.isPresent()) {
+        if (ciclistaEntity.isPresent() && confirmaEmail()) {
             CiclistaEntity ciclistaAtual = ciclistaEntity.get();
             ciclistaAtual.setStatus(Status.ATIVO);
             ciclistaRepository.save(ciclistaAtual);
         }
-        return null;
+        throw new EntityNotFoundException("Ciclista não encontrado com id: " + idCiclista);
     }
 
-    public void existeEmail(String email) {
+    public boolean confirmaEmail(){
+        return true;
+    }
+
+    public boolean existeEmail(String email) {
         if (!email.contains("@")) {
             throw new IllegalArgumentException("Email não enviado como parametro");
         }
@@ -106,6 +115,7 @@ public class CiclistaService {
         }
 
         ciclistaRepository.existsByEmail(email);
+        return true;
     }
 
     public Optional<CiclistaEntity> buscarCiclistaporId(Integer idCiclista) {
@@ -117,7 +127,7 @@ public class CiclistaService {
             throw new TrataUnprocessabeEntity("Senhas diferentes");
         }
 
-        if (ciclistaRepository.existsByEmail(novoCiclistaDto.getEmail())) {
+        if (existeEmail(novoCiclistaDto.getEmail())) {
             throw new TrataUnprocessabeEntity("Email ja existente");
         }
 
