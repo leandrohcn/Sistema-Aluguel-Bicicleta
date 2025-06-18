@@ -8,6 +8,7 @@ import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCr
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.PassaporteEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Status;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessabeEntity;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -91,8 +92,16 @@ public class CiclistaService {
         return null;
     }
 
-    public boolean existeEmail(String email) {
-        return ciclistaRepository.existsByEmail(email);
+    public void existeEmail(String email) {
+        if (!email.contains("@") || !email.contains(".") || !email.contains(".com")) {
+            throw new IllegalArgumentException("Email não enviado como parametro");
+        }
+
+        if (!ciclistaRepository.existsByEmail(email)) {
+            throw new TrataUnprocessabeEntity("Dados inválidos");
+        }
+
+        ciclistaRepository.existsByEmail(email);
     }
 
     public Optional<CiclistaEntity> buscarCiclistaporId(Integer idCiclista) {
