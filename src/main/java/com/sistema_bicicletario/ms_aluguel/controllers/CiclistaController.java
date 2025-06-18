@@ -30,29 +30,29 @@ public class CiclistaController {
     @GetMapping("/{id}")
     public ResponseEntity<CiclistaResponseDTO> buscarCiclista(@PathVariable Integer id) {
         return ciclistaService.buscarCiclistaporId(id).map(ciclistaEntity ->
-                ResponseEntity.ok().body(new CiclistaResponseDTO(ciclistaEntity)))
+                        ResponseEntity.ok().body(new CiclistaResponseDTO(ciclistaEntity)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CiclistaResponseDTO> atualizarCiclista(@PathVariable Integer id,
-                                                                @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
+                                                                 @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
         try {
             CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
             CiclistaResponseDTO dto = new CiclistaResponseDTO(c);
             return ResponseEntity.ok().body(dto);
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
 
     }
 
     @PostMapping("/{id}/ativar")
-    public ResponseEntity<CiclistaResponseDTO> ativarCiclista(@PathVariable Integer id){
+    public ResponseEntity<CiclistaResponseDTO> ativarCiclista(@PathVariable Integer id) {
         try {
             CiclistaResponseDTO ciclistaAtivado = ciclistaService.ativarCiclista(id);
             return ResponseEntity.ok(ciclistaAtivado);
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
