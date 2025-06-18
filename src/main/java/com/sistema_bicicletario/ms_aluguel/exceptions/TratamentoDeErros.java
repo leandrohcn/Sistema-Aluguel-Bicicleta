@@ -37,4 +37,11 @@ public class TratamentoDeErros {
         return ResponseEntity.status(422).body(erro);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErroDTO> handleIllegalArgument(IllegalArgumentException ex) {
+        ErroDTO erro = new ErroDTO("400", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
+    }
+
+
 }
