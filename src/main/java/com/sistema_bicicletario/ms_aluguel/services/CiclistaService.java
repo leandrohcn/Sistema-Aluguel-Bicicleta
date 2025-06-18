@@ -30,6 +30,7 @@ public class CiclistaService {
     public CiclistaResponseDTO cadastrarCiclista(NovoCiclistaDTO novoCiclistaDto) {
 
         regrasDeNegocioCadastro(novoCiclistaDto);
+
         CiclistaEntity ciclista = new CiclistaEntity(
                 novoCiclistaDto.getNome(),
                 novoCiclistaDto.getNascimento(),
@@ -41,12 +42,15 @@ public class CiclistaService {
                 novoCiclistaDto.getConfirmaSenha()
         );
 
-        PassaporteEntity passaporte = new PassaporteEntity(
-                novoCiclistaDto.getPassaporte().getNumeroPassaporte(),
-                novoCiclistaDto.getPassaporte().getValidadePassaporte(),
-                novoCiclistaDto.getPassaporte().getPais()
-        );
-        ciclista.setPassaporteEntity(passaporte);
+        if (novoCiclistaDto.getPassaporte() != null) {
+            PassaporteDTO dto = novoCiclistaDto.getPassaporte();
+            PassaporteEntity passaporte = new PassaporteEntity(
+                    dto.getNumeroPassaporte(),
+                    dto.getValidadePassaporte(),
+                    dto.getPais()
+            );
+            ciclista.setPassaporteEntity(passaporte);
+        }
 
         CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity(
                 novoCiclistaDto.getNome(),
@@ -56,7 +60,7 @@ public class CiclistaService {
                 ciclista
         );
         ciclista.setCartao(cartao);
-
+        ciclista.setStatus(Status.AGUARDANDO_CONFIRMACAO);
         CiclistaEntity salvo = ciclistaRepository.save(ciclista);
         return new CiclistaResponseDTO(salvo);
     }
@@ -87,25 +91,31 @@ public class CiclistaService {
                 .orElseThrow(() -> new RuntimeException("Ciclista não encontrado com ID: " + id));
     }
 
-    public CiclistaResponseDTO ativarCiclista(Integer idCiclista) {
-        if (idCiclista < 0){
-            throw new TrataUnprocessabeEntity("id invalido: "  + idCiclista);
+    public CiclistaEntity ativarCiclista(Integer idCiclista) {
+        if (idCiclista <= 0) {
+            throw new TrataUnprocessabeEntity("id invalido: " + idCiclista);
         }
 
         Optional<CiclistaEntity> ciclistaEntity = ciclistaRepository.findById(idCiclista);
-        if (ciclistaEntity.isPresent() && confirmaEmail()) {
+        if (!ciclistaEntity.isPresent()) {
+            throw new EntityNotFoundException("Ciclista não encontrado com id: " + idCiclista);
+        }
+        if (confirmaEmail()) {
             CiclistaEntity ciclistaAtual = ciclistaEntity.get();
+            if (!ciclistaAtual.getStatus().equals(Status.AGUARDANDO_CONFIRMACAO)) {
+                throw new TrataUnprocessabeEntity("Dados não correspondem a registro pendente");
+            }
             ciclistaAtual.setStatus(Status.ATIVO);
             ciclistaRepository.save(ciclistaAtual);
         }
-        throw new EntityNotFoundException("Ciclista não encontrado com id: " + idCiclista);
+        return ciclistaEntity.get();
     }
 
     public boolean confirmaEmail(){
         return true;
     }
 
-    public boolean existeEmail(String email) {
+    public void existeEmail(String email) {
         if (!email.contains("@")) {
             throw new IllegalArgumentException("Email não enviado como parametro");
         }
@@ -115,7 +125,6 @@ public class CiclistaService {
         }
 
         ciclistaRepository.existsByEmail(email);
-        return true;
     }
 
     public Optional<CiclistaEntity> buscarCiclistaporId(Integer idCiclista) {
@@ -127,7 +136,7 @@ public class CiclistaService {
             throw new TrataUnprocessabeEntity("Senhas diferentes");
         }
 
-        if (existeEmail(novoCiclistaDto.getEmail())) {
+        if (ciclistaRepository.existsByEmail(novoCiclistaDto.getEmail())) {
             throw new TrataUnprocessabeEntity("Email ja existente");
         }
 

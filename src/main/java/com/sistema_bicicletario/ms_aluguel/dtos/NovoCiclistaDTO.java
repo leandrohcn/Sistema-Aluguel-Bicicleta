@@ -1,5 +1,6 @@
     package com.sistema_bicicletario.ms_aluguel.dtos;
 
+    import com.fasterxml.jackson.annotation.JsonFormat;
     import com.fasterxml.jackson.annotation.JsonProperty;
     import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Nacionalidade;
     import jakarta.validation.Valid;
@@ -9,7 +10,8 @@
     import lombok.Getter;
     import lombok.Setter;
 
-    import java.util.Date;
+    import java.time.LocalDate;
+
 
 
     @Getter @Setter
@@ -20,8 +22,9 @@
         private String nome;
 
         @JsonProperty(required = true)
+        @JsonFormat(pattern = "dd/MM/yyyy")
         @NotNull (message = "Data com formato inválido")
-        private Date nascimento;
+        private LocalDate nascimento;
 
         private String cpf;
         private PassaporteDTO passaporte;

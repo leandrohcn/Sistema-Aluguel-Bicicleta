@@ -49,8 +49,8 @@ public class CiclistaController {
 
     @PostMapping("/{id}/ativar")
     public ResponseEntity<CiclistaResponseDTO> ativarCiclista(@PathVariable Integer id) {
-        CiclistaResponseDTO responseBody = ciclistaService.ativarCiclista(id);
-        return ResponseEntity.ok().body(responseBody);
+        CiclistaEntity ciclista = ciclistaService.ativarCiclista(id);
+        return ResponseEntity.ok().body(new CiclistaResponseDTO(ciclista));
     }
 
     @GetMapping("/existeEmail/{email}")
