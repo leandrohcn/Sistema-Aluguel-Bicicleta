@@ -22,13 +22,9 @@ public class CiclistaController {
     }
 
     @PostMapping
-    public ResponseEntity<CiclistaResponseDTO> criarCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
-        try {
-            CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(ciclista);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<CiclistaResponseDTO> cadastrarCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
+        CiclistaResponseDTO responseBody = ciclistaService.cadastrarCiclista(ciclista);
+        return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
