@@ -27,8 +27,8 @@ public class NovoCiclistaDTO {
 
     private Nacionalidade nacionalidade;
 
-    @Email
     @NotBlank
+    @Email
     private String email;
 
     private String urlFotoDocumento;
