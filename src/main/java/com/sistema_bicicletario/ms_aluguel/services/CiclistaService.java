@@ -25,7 +25,7 @@ public class CiclistaService {
     }
 
     @Transactional
-    public CiclistaResponseDTO cadastrarCiclista(NovoCiclistaDTO novoCiclistaDto) {
+    public CiclistaEntity cadastrarCiclista(NovoCiclistaDTO novoCiclistaDto) {
 
         regrasDeNegocioCadastra(novoCiclistaDto);
 
@@ -59,8 +59,7 @@ public class CiclistaService {
         );
         ciclista.setCartao(cartao);
         ciclista.setStatus(Status.AGUARDANDO_CONFIRMACAO);
-        CiclistaEntity salvo = ciclistaRepository.save(ciclista);
-        return new CiclistaResponseDTO(salvo);
+        return ciclistaRepository.save(ciclista);
     }
 
     @Transactional

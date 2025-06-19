@@ -22,7 +22,8 @@ public class CiclistaController {
 
     @PostMapping
     public ResponseEntity<CiclistaResponseDTO> cadastrarCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
-        CiclistaResponseDTO responseBody = ciclistaService.cadastrarCiclista(ciclista);
+        CiclistaEntity c = ciclistaService.cadastrarCiclista(ciclista);
+        CiclistaResponseDTO responseBody = new CiclistaResponseDTO(c);
         return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
 
