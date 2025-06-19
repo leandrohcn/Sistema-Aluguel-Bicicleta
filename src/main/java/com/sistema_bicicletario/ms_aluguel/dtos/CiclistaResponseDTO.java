@@ -1,6 +1,7 @@
 package com.sistema_bicicletario.ms_aluguel.dtos;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Nacionalidade;
 import lombok.Getter;
@@ -13,6 +14,7 @@ public class CiclistaResponseDTO {
     private final int id;
     private final String status;
     private final String nome;
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private final LocalDate nascimento;
     private final String cpf;
     private final Nacionalidade nacionalidade;

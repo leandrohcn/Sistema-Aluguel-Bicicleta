@@ -1,5 +1,7 @@
 package com.sistema_bicicletario.ms_aluguel.entities.ciclista;
 
+
+import com.sistema_bicicletario.ms_aluguel.dtos.ConfirmaEmailDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -50,6 +52,9 @@ public class CiclistaEntity {
 
     @OneToOne(mappedBy = "ciclista", cascade = CascadeType.ALL, orphanRemoval = true)
     private CartaoDeCreditoEntity cartao;
+
+    @Transient
+    public ConfirmaEmailDTO confirmaEmail;
 
     public CiclistaEntity(String nome, LocalDate dataNascimento, String cpf, String email,
                           Nacionalidade nacionalidade, String urlFotoDocumento, String senha, String confirmaSenha) {

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/ciclista")
-
 public class CiclistaController {
 
     private final CiclistaService ciclistaService;
@@ -29,22 +28,18 @@ public class CiclistaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CiclistaResponseDTO> buscarCiclista(@PathVariable Integer id) {
-        return ciclistaService.buscarCiclistaporId(id).map(ciclistaEntity ->
-                        ResponseEntity.ok().body(new CiclistaResponseDTO(ciclistaEntity)))
-                .orElse(ResponseEntity.notFound().build());
+        CiclistaEntity c = ciclistaService.buscarCiclistaporId(id);
+        CiclistaResponseDTO responseBody = new CiclistaResponseDTO(c);
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CiclistaResponseDTO> atualizarCiclista(@PathVariable Integer id,
                                                                  @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
-        try {
+
             CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
             CiclistaResponseDTO dto = new CiclistaResponseDTO(c);
             return ResponseEntity.ok().body(dto);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-
     }
 
     @PostMapping("/{id}/ativar")

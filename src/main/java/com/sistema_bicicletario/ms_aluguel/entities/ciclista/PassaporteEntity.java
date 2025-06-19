@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
 
 @Embeddable
 @Getter
@@ -15,12 +14,12 @@ public class PassaporteEntity {
 
     private String numeroPassaporte;
     @DateTimeFormat(pattern = "MM/yyyy")
-    private Date validadePassaporte;
+    private String validadePassaporte;
     @Column(length = 2)
     private String pais;
 
 
-    public PassaporteEntity(String numeroPassaporte, Date validadePassaporte,
+    public PassaporteEntity(String numeroPassaporte, String validadePassaporte,
                             String pais) {
         this.numeroPassaporte = numeroPassaporte;
         this.validadePassaporte = validadePassaporte;

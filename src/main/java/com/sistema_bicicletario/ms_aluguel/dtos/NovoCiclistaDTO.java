@@ -24,7 +24,7 @@
         @JsonProperty(required = true)
         @JsonFormat(pattern = "dd/MM/yyyy")
         @NotNull (message = "Data com formato inválido")
-        private LocalDate nascimento;
+        private LocalDate dataNascimento;
 
         private String cpf;
         private PassaporteDTO passaporte;
