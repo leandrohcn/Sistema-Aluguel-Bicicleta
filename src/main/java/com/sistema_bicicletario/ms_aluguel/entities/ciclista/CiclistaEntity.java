@@ -1,6 +1,7 @@
 package com.sistema_bicicletario.ms_aluguel.entities.ciclista;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sistema_bicicletario.ms_aluguel.dtos.ConfirmaEmailDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import jakarta.persistence.*;
@@ -51,6 +52,7 @@ public class CiclistaEntity {
     private Status status;
 
     @OneToOne(mappedBy = "ciclista", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private CartaoDeCreditoEntity cartao;
 
     @Transient
