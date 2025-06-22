@@ -1,5 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ public class CartaoDeCreditoEntity {
     @OneToOne
     @MapsId
     @JoinColumn(name = "id")
+    @JsonBackReference
     private CiclistaEntity ciclista;
 
     private String nomeTitular;
