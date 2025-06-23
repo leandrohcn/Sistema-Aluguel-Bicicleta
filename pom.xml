@@ -32,7 +32,7 @@
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.projectKey>aluguel_aluguel</sonar.projectKey>
 		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
-		<jacoco.version>0.8.6</jacoco.version>
+		<jacoco.version>0.8.11</jacoco.version>
 
 	</properties>
 	<dependencies>
