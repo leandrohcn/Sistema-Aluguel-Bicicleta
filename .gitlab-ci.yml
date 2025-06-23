@@ -52,9 +52,7 @@ sonarcloud-check:
     paths:
       - .sonar/cache
   script:
-    - mvn verify sonar:sonar -Dsonar.projectKey=aluguel_aluguel -Dsonar.organization=aluguel
-        -Dsonar.host.url=${SONAR_HOST_URL} 
-        -Dsonar.token=${SONAR_TOKEN2}
+    - mvn verify sonar:sonar -Dsonar.token=${SONAR_TOKEN2}
   only:
     - merge_requests
     - master
