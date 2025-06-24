@@ -65,12 +65,11 @@ public class CiclistaService {
     @Transactional
     public CiclistaEntity atualizarCiclista(Integer id, AtualizaCiclistaDTO ciclistaDTO) {
         return ciclistaRepository.findById(id).map(ciclista -> {
-
-            if (ciclistaDTO.getNome() != null && !ciclistaDTO.getNome().isBlank()) {
-                ciclista.setNome(ciclistaDTO.getNome());
-            } else if (ciclistaDTO.getNome() != null && ciclistaDTO.getNome().isBlank()) {
-                ciclista.setNome(ciclista.getNome());
-            }
+            ciclista.setNome(!ciclistaDTO.getNome().isBlank() ? ciclistaDTO.getNome() : ciclista.getNome());
+            ciclista.setDataNascimento(ciclistaDTO.getDataNascimento() != null ? ciclistaDTO.getDataNascimento() : ciclista.getDataNascimento());
+            ciclista.setNacionalidade(ciclistaDTO.getNacionalidade() != null ? ciclistaDTO.getNacionalidade() : ciclista.getNacionalidade());
+            ciclista.setUrlFotoDocumento(!ciclistaDTO.getUrlFotoDocumento().isBlank() ? ciclistaDTO.getUrlFotoDocumento() : ciclista.getUrlFotoDocumento());
+            ciclista.setCpf(!ciclistaDTO.getCpf().isBlank() ? ciclistaDTO.getCpf() : ciclista.getCpf());
 
             if (ciclistaDTO.getSenha() != null && !ciclistaDTO.getSenha().isBlank()) {
                 if (!ciclistaDTO.senhaValida()) {
@@ -80,12 +79,6 @@ public class CiclistaService {
                 ciclista.setConfirmaSenha(ciclistaDTO.getConfirmaSenha());
             }
 
-            if (ciclistaDTO.getDataNascimento() != null) {
-                ciclista.setDataNascimento(ciclistaDTO.getDataNascimento());
-            } else {
-                ciclista.setDataNascimento(ciclista.getDataNascimento());
-            }
-
             if (ciclistaDTO.getEmail() != null && !ciclistaDTO.getEmail().isBlank()) {
                 if (!ciclistaDTO.getEmail().equals(ciclista.getEmail()) && ciclistaRepository.existsByEmail(ciclistaDTO.getEmail())) {
                     throw new TrataUnprocessabeEntity("Email já existente");
@@ -93,24 +86,6 @@ public class CiclistaService {
                 ciclista.setEmail(ciclistaDTO.getEmail());
             } else {
                 ciclista.setEmail(ciclista.getEmail());
-            }
-
-            if (ciclistaDTO.getNacionalidade() != null) {
-                ciclista.setNacionalidade(ciclistaDTO.getNacionalidade());
-            } else {
-                ciclista.setNacionalidade(ciclista.getNacionalidade());
-            }
-
-            if (ciclistaDTO.getUrlFotoDocumento() != null && !ciclistaDTO.getUrlFotoDocumento().isBlank()) {
-                ciclista.setUrlFotoDocumento(ciclistaDTO.getUrlFotoDocumento());
-            } else {
-                ciclista.setUrlFotoDocumento(ciclista.getUrlFotoDocumento());
-            }
-
-            if (ciclistaDTO.getCpf() != null && !ciclistaDTO.getCpf().isBlank()) {
-                ciclista.setCpf(ciclistaDTO.getCpf());
-            } else {
-                ciclista.setCpf(ciclista.getCpf());
             }
 
             if (ciclistaDTO.getPassaporte() != null) {
