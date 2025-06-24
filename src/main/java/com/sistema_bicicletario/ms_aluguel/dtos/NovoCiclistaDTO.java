@@ -1,35 +1,61 @@
-package com.sistema_bicicletario.ms_aluguel.dtos;
+    package com.sistema_bicicletario.ms_aluguel.dtos;
 
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.Nacionalidade;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+    import com.fasterxml.jackson.annotation.JsonFormat;
+    import com.fasterxml.jackson.annotation.JsonProperty;
+    import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Nacionalidade;
+    import jakarta.validation.Valid;
+    import jakarta.validation.constraints.Email;
+    import jakarta.validation.constraints.NotBlank;
+    import jakarta.validation.constraints.NotNull;
+    import lombok.Getter;
+    import lombok.Setter;
 
-import java.util.Date;
+    import java.time.LocalDate;
 
 
-@Getter @Setter
-public class NovoCiclistaDTO {
 
-    @NotBlank
-    private String nome;
-    @NotNull
-    private Date nascimento;
-    @NotBlank
-    private String cpf;
+    @Getter @Setter
+    public class NovoCiclistaDTO {
 
-    @Valid
-    @NotNull
-    private PassaporteDTO passaporte;
+        @JsonProperty(required = true)
+        @NotBlank (message = "Nome é obrigatório")
+        private String nome;
 
-    private Nacionalidade nacionalidade;
-    private String email;
-    private String urlFotoDocumento;
-    private String senha;
+        @JsonProperty(required = true)
+        @JsonFormat(pattern = "dd/MM/yyyy")
+        @NotNull (message = "Data com formato inválido")
+        private LocalDate dataNascimento;
 
-    @Valid
-    @NotNull
-    private NovoCartaoDeCreditoDTO meioDePagamento;
-}
+        private String cpf;
+        private PassaporteDTO passaporte;
+        private Nacionalidade nacionalidade;
+
+        @NotBlank
+        @Email
+        private String email;
+
+        @JsonProperty(required = true)
+        @NotBlank (message = "Falta url do documento")
+        private String urlFotoDocumento;
+
+        @JsonProperty(required = true)
+        @NotNull(message = "Necessita de uma senha")
+        private String senha;
+
+        @JsonProperty(required = true)
+        @NotNull(message = "Necessita da confirmação de senha")
+        private String confirmaSenha;
+
+        @JsonProperty(required = true)
+        @Valid
+        @NotNull
+        private NovoCartaoDeCreditoDTO meioDePagamento;
+
+        public boolean senhaValida() {
+            if (senha == null || confirmaSenha == null) {
+                return false;
+            }
+            return senha.equals(confirmaSenha);
+        }
+
+    }

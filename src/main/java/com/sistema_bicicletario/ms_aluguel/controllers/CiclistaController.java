@@ -3,7 +3,7 @@ package com.sistema_bicicletario.ms_aluguel.controllers;
 import com.sistema_bicicletario.ms_aluguel.dtos.AtualizaCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.CiclistaResponseDTO;
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.CiclistaEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.services.CiclistaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/ciclista")
-
 public class CiclistaController {
 
     private final CiclistaService ciclistaService;
@@ -22,52 +21,37 @@ public class CiclistaController {
     }
 
     @PostMapping
-    public ResponseEntity<CiclistaResponseDTO> criarCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
-        try {
-            CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(ciclista);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<CiclistaResponseDTO> cadastrarCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
+        CiclistaEntity c = ciclistaService.cadastrarCiclista(ciclista);
+        CiclistaResponseDTO responseBody = new CiclistaResponseDTO(c);
+        return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CiclistaResponseDTO> buscarCiclista(@PathVariable Integer id) {
-        return ciclistaService.buscarCiclistaporId(id).map(ciclistaEntity ->
-                ResponseEntity.ok().body(new CiclistaResponseDTO(ciclistaEntity)))
-                .orElse(ResponseEntity.notFound().build());
+        CiclistaEntity c = ciclistaService.buscarCiclistaporId(id);
+        CiclistaResponseDTO responseBody = new CiclistaResponseDTO(c);
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CiclistaResponseDTO> atualizarCiclista(@PathVariable Integer id,
-                                                                @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
-        try {
-            CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
-            CiclistaResponseDTO dto = new CiclistaResponseDTO(c);
-            return ResponseEntity.ok().body(dto);
-        } catch (Exception e){
-            return ResponseEntity.notFound().build();
-        }
+                                                                 @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
 
+        CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
+        CiclistaResponseDTO dto = new CiclistaResponseDTO(c);
+        return ResponseEntity.ok().body(dto);
     }
 
     @PostMapping("/{id}/ativar")
-    public ResponseEntity<CiclistaResponseDTO> ativarCiclista(@PathVariable Integer id){
-        try {
-            CiclistaResponseDTO ciclistaAtivado = ciclistaService.ativarCiclista(id);
-            return ResponseEntity.ok(ciclistaAtivado);
-        } catch (Exception e){
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<CiclistaResponseDTO> ativarCiclista(@PathVariable Integer id) {
+        CiclistaEntity ciclista = ciclistaService.ativarCiclista(id);
+        return ResponseEntity.ok().body(new CiclistaResponseDTO(ciclista));
     }
 
-    @GetMapping("/existeEmail")
-    public ResponseEntity<Boolean> existeEmail(@RequestParam String email) {
-        try {
-            boolean existe = ciclistaService.existeEmail(email);
-            return ResponseEntity.ok(existe);
-        } catch (Exception e){
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/existeEmail/{email}")
+    public ResponseEntity<Boolean> existeEmail(@PathVariable @Valid String email) {
+        ciclistaService.existeEmail(email);
+        return ResponseEntity.ok(true);
     }
 }

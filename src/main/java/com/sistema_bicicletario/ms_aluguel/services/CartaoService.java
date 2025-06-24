@@ -1,8 +1,8 @@
 package com.sistema_bicicletario.ms_aluguel.services;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDeCreditoDTO;
-import com.sistema_bicicletario.ms_aluguel.entitys.cartao_de_credito.CartaoDeCreditoEntity;
-import com.sistema_bicicletario.ms_aluguel.repositorys.CartaoRepository;
+import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
+import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
@@ -23,7 +23,7 @@ public class CartaoService {
         cartao.setNomeTitular(novoCartao.getNomeTitular() != null ? novoCartao.getNomeTitular() : cartao.getNomeTitular());
         cartao.setNumero(novoCartao.getNumeroCartao() > 0 ? novoCartao.getNumeroCartao() : cartao.getNumero());
         cartao.setCvv(novoCartao.getCvv() > 0 ? novoCartao.getCvv() : cartao.getCvv());
-        cartao.setValidade(novoCartao.getValidade() != null ? novoCartao.getValidade() : cartao.getValidade());
+        cartao.setValidade(novoCartao.getValidadeCartao() != null ? novoCartao.getValidadeCartao() : cartao.getValidade());
 
         cartaoRepository.save(cartao);
     }

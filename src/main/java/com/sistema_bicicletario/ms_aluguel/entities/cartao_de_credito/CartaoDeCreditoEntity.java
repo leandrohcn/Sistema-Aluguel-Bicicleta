@@ -1,6 +1,6 @@
-package com.sistema_bicicletario.ms_aluguel.entitys.cartao_de_credito;
+package com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito;
 
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.CiclistaEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

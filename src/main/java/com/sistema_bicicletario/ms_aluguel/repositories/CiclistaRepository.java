@@ -1,6 +1,6 @@
-package com.sistema_bicicletario.ms_aluguel.repositorys;
+package com.sistema_bicicletario.ms_aluguel.repositories;
 
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.CiclistaEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CiclistaRepository extends JpaRepository<CiclistaEntity, Integer> {
