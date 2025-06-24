@@ -38,9 +38,9 @@ public class CiclistaController {
     public ResponseEntity<CiclistaResponseDTO> atualizarCiclista(@PathVariable Integer id,
                                                                  @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
 
-            CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
-            CiclistaResponseDTO dto = new CiclistaResponseDTO(c);
-            return ResponseEntity.ok().body(dto);
+        CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
+        CiclistaResponseDTO dto = new CiclistaResponseDTO(c);
+        return ResponseEntity.ok().body(dto);
     }
 
     @PostMapping("/{id}/ativar")
