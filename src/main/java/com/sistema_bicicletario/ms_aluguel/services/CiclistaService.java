@@ -164,7 +164,26 @@ public class CiclistaService {
         }
 
         return ciclistaRepository.findById(idCiclista)
-                .orElseThrow((()-> new EntityNotFoundException("Funcionário não encontrado com ID: " + idCiclista)));
+                .orElseThrow((()-> new EntityNotFoundException("Ciclista não encontrado com ID: " + idCiclista)));
+    }
+
+    public boolean permiteAluguel(Integer idCiclista) {
+        if (!ciclistaRepository.existsById(idCiclista)) {
+            throw new EntityNotFoundException("Ciclista não encontrado com ID: " + idCiclista);
+        }
+        return true;
+    }
+
+    public Optional<BicicletaDTO> bicicletaAlugada(Integer idCiclista) {
+        if (!ciclistaRepository.existsById(idCiclista)) {
+            throw new EntityNotFoundException("Ciclista não encontrado com ID: " + idCiclista);
+        }
+
+        if (permiteAluguel(idCiclista)) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(null);
     }
 
     private void regrasDeNegocioCadastra(NovoCiclistaDTO novoCiclistaDto) {
