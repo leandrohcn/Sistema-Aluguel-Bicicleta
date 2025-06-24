@@ -3,10 +3,10 @@ package com.sistema_bicicletario.ms_aluguel.services;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDeCreditoDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.NoSuchElementException;
-import java.util.Optional;
+
 
 @Service
 public class CartaoService {
@@ -18,17 +18,23 @@ public class CartaoService {
 
     public void atualizaCartao(Integer id, NovoCartaoDeCreditoDTO novoCartao) {
         CartaoDeCreditoEntity cartao = cartaoRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Cartão não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Cartão não encontrado"));
 
-        cartao.setNomeTitular(novoCartao.getNomeTitular() != null ? novoCartao.getNomeTitular() : cartao.getNomeTitular());
-        cartao.setNumero(novoCartao.getNumeroCartao() > 0 ? novoCartao.getNumeroCartao() : cartao.getNumero());
-        cartao.setCvv(novoCartao.getCvv() > 0 ? novoCartao.getCvv() : cartao.getCvv());
-        cartao.setValidade(novoCartao.getValidadeCartao() != null ? novoCartao.getValidadeCartao() : cartao.getValidade());
+        cartao.setNomeTitular(novoCartao.getNomeTitular());
+        cartao.setNumero(novoCartao.getNumeroCartao());
+        cartao.setCvv(novoCartao.getCvv());
+        cartao.setValidade(novoCartao.getValidadeCartao());
 
         cartaoRepository.save(cartao);
     }
 
-    public Optional<CartaoDeCreditoEntity> buscaCartao(Integer id) {
-        return cartaoRepository.findById(id);
+    public CartaoDeCreditoEntity buscaCartao(Integer id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("ID inválido");
+        }
+
+        return cartaoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cartão não encontrado"));
     }
+
 }

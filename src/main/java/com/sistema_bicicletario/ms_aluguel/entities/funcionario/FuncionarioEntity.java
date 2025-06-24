@@ -22,7 +22,8 @@ public class FuncionarioEntity {
     private Integer idade;
     @Column(unique = true)
     private String cpf;
-    private String funcao;
+    @Enumerated(EnumType.STRING)
+    private Funcao funcao;
 
     public FuncionarioEntity(FuncionarioEntity funcionario){
         this.matricula = funcionario.getMatricula();
@@ -37,7 +38,7 @@ public class FuncionarioEntity {
 
     public FuncionarioEntity(String nome, String senha,
                              String confirmaSenha, String email,
-                             Integer idade, String cpf, String funcao) {
+                             Integer idade, String cpf, Funcao funcao) {
         this.nome = nome;
         this.senha = senha;
         this.confirmaSenha = confirmaSenha;
