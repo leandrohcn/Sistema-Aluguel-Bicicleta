@@ -65,11 +65,11 @@ public class CiclistaService {
     @Transactional
     public CiclistaEntity atualizarCiclista(Integer id, AtualizaCiclistaDTO ciclistaDTO) {
         return ciclistaRepository.findById(id).map(ciclista -> {
-            ciclista.setNome(!ciclistaDTO.getNome().isBlank() ? ciclistaDTO.getNome() : ciclista.getNome());
+            ciclista.setNome(ciclistaDTO.getNome() != null ? ciclistaDTO.getNome() : ciclista.getNome());
             ciclista.setDataNascimento(ciclistaDTO.getDataNascimento() != null ? ciclistaDTO.getDataNascimento() : ciclista.getDataNascimento());
             ciclista.setNacionalidade(ciclistaDTO.getNacionalidade() != null ? ciclistaDTO.getNacionalidade() : ciclista.getNacionalidade());
-            ciclista.setUrlFotoDocumento(!ciclistaDTO.getUrlFotoDocumento().isBlank() ? ciclistaDTO.getUrlFotoDocumento() : ciclista.getUrlFotoDocumento());
-            ciclista.setCpf(!ciclistaDTO.getCpf().isBlank() ? ciclistaDTO.getCpf() : ciclista.getCpf());
+            ciclista.setUrlFotoDocumento(ciclistaDTO.getUrlFotoDocumento() != null ? ciclistaDTO.getUrlFotoDocumento() : ciclista.getUrlFotoDocumento());
+            ciclista.setCpf(ciclistaDTO.getCpf() != null ? ciclistaDTO.getCpf() : ciclista.getCpf());
 
             if (ciclistaDTO.getSenha() != null && !ciclistaDTO.getSenha().isBlank()) {
                 if (!ciclistaDTO.senhaValida()) {
