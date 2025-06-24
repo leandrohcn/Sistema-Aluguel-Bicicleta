@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Entity
@@ -26,7 +25,6 @@ public class CartaoDeCreditoEntity {
     @Column(unique = true)
     private @NotNull long numero;
 
-    @DateTimeFormat(pattern = "MM/yyyy")
     private String validade;
 
     @Column(length = 4)
