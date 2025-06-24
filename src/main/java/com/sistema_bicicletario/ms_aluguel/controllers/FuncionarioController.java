@@ -35,7 +35,7 @@ public class FuncionarioController {
 
     @PostMapping
     public ResponseEntity<FuncionarioEntity> criaFuncionario(@RequestBody NovoFuncionarioDTO funcionario) {
-            FuncionarioEntity funcionarioEntity = funcionarioService.criaFuncionario(funcionario);
+       FuncionarioEntity funcionarioEntity = funcionarioService.criaFuncionario(funcionario);
        return new ResponseEntity<>(funcionarioEntity, HttpStatus.CREATED);
     }
 
@@ -56,7 +56,7 @@ public class FuncionarioController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluiFuncionario(@PathVariable Integer id) {
-            funcionarioService.excluiFuncionario(id);
-            return ResponseEntity.ok().build();
+        funcionarioService.excluiFuncionario(id);
+        return ResponseEntity.ok().build();
     }
 }

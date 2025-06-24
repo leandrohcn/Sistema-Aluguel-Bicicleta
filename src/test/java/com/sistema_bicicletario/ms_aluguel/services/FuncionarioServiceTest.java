@@ -1,6 +1,7 @@
 package com.sistema_bicicletario.ms_aluguel.services;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
+import com.sistema_bicicletario.ms_aluguel.entities.funcionario.Funcao;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
 import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessabeEntity;
 import com.sistema_bicicletario.ms_aluguel.repositories.FuncionarioRepository;
@@ -29,7 +30,7 @@ public class FuncionarioServiceTest {
     @Test
     public void deveCriarFuncionarioComDadosValidos() {
         NovoFuncionarioDTO dto = new NovoFuncionarioDTO("João", "123", "123",
-                                                        "joao@email.com", 25, "12345678900", "Atendente");
+                                                        "joao@email.com", 25, "12345678900", Funcao.REPARADOR);
 
         FuncionarioEntity funcionario = new FuncionarioEntity(dto.getNome(), dto.getSenha(), dto.getConfirmaSenha(),
                                                          dto.getEmail(), dto.getIdade(), dto.getCpf(), dto.getFuncao());
@@ -46,7 +47,7 @@ public class FuncionarioServiceTest {
     @Test
     public void deveLancarErroQuandoDadosInvalidosAoCriar() {
         NovoFuncionarioDTO dto = new NovoFuncionarioDTO("João", "123", "456", "joao@email.com",
-                                                        -1, "12345678900", "Atendente");
+                                                        -1, "12345678900", Funcao.REPARADOR);
 
         assertThrows(TrataUnprocessabeEntity.class, () -> funcionarioService.criaFuncionario(dto));
         verify(funcionarioRepository, never()).save(any());
@@ -55,8 +56,8 @@ public class FuncionarioServiceTest {
     @Test
     public void deveAtualizarFuncionario() {
         Integer id = 1;
-        NovoFuncionarioDTO dto = new NovoFuncionarioDTO("Maria", "senha", "senha", "maria@email.com", 30, "11111111111", "Gerente");
-        FuncionarioEntity existente = new FuncionarioEntity("Antigo", "x", "x", "antigo@email.com", 50, "222", "Antigo");
+        NovoFuncionarioDTO dto = new NovoFuncionarioDTO("Maria", "senha", "senha", "maria@email.com", 30, "11111111111", Funcao.ADMINISTRATIVO);
+        FuncionarioEntity existente = new FuncionarioEntity("Antigo", "x", "x", "antigo@email.com", 50, "222", Funcao.REPARADOR);
 
         when(funcionarioRepository.findById(id)).thenReturn(Optional.of(existente));
         when(funcionarioRepository.save(any())).thenReturn(existente);
@@ -80,7 +81,7 @@ public class FuncionarioServiceTest {
     @Test
     public void deveBuscarFuncionarioPorId() {
         Integer id = 1;
-        FuncionarioEntity funcionario = new FuncionarioEntity("Carlos", "123", "123", "carlos@email.com", 28, "000", "Analista");
+        FuncionarioEntity funcionario = new FuncionarioEntity("Carlos", "123", "123", "carlos@email.com", 28, "000", Funcao.ADMINISTRATIVO);
 
         when(funcionarioRepository.findById(id)).thenReturn(Optional.of(funcionario));
         when(funcionarioRepository.findAll()).thenReturn(List.of(funcionario));
@@ -93,7 +94,7 @@ public class FuncionarioServiceTest {
     @Test
     public void deveRetornarTodosFuncionarios() {
         List<FuncionarioEntity> lista = List.of(
-                new FuncionarioEntity("A", "1", "1", "a@a.com", 20, "123", "Funcao")
+                new FuncionarioEntity("A", "1", "1", "a@a.com", 20, "123", Funcao.REPARADOR)
         );
         when(funcionarioRepository.findAll()).thenReturn(lista);
 
