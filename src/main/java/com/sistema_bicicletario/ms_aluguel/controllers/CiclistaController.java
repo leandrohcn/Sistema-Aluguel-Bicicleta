@@ -1,14 +1,19 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.AtualizaCiclistaDTO;
+import com.sistema_bicicletario.ms_aluguel.dtos.BicicletaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.CiclistaResponseDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.services.CiclistaService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/ciclista")
@@ -54,4 +59,26 @@ public class CiclistaController {
         ciclistaService.existeEmail(email);
         return ResponseEntity.ok(true);
     }
+
+    @GetMapping("/{id}/permiteAluguel")
+    public ResponseEntity<Boolean> permiteAluguel(@PathVariable Integer id) {
+        if (ciclistaService.permiteAluguel(id)) {
+            return ResponseEntity.ok(true);
+        }
+            return ResponseEntity.ok(false);
+    }
+
+    @GetMapping("{id}/bicicletaAlugada")
+    public ResponseEntity<?> bicicletaAlugada(@PathVariable Integer id) {
+        try {
+            Optional<BicicletaDTO> bicicleta = ciclistaService.bicicletaAlugada(id);
+            return bicicleta.map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.noContent().build());
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("codigo", "404", "mensagem", e.getMessage()));
+        }
+    }
+
 }
