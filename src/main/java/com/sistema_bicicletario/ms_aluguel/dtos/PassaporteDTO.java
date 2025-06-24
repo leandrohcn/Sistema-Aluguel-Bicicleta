@@ -1,35 +1,34 @@
 package com.sistema_bicicletario.ms_aluguel.dtos;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.util.Date;
+import lombok.Setter;
 
 
-@Getter
+@Getter @Setter
 public class PassaporteDTO {
-
-    private String numero;
+    @NotBlank (message = "Preencha o número do Passaporte")
+    private String numeroPassaporte;
+    @NotBlank (message = "Preencha o país")
     private String pais;
-    @NotNull
-    @DateTimeFormat(pattern = "MM/yyyy")
-    private Date validade;
+    @NotNull (message = "Erro na validade")
+    @JsonFormat(pattern = ("MM/yyyy"))
+    private String validadePassaporte;
 
     @JsonCreator
     public PassaporteDTO(@JsonProperty("numero") String numero,
                          @JsonProperty("pais") String pais,
-                         @JsonProperty("validade") Date validade) {
-        this.numero = numero;
+                         @JsonProperty("validade") String validade) {
+        this.numeroPassaporte = numero;
         this.pais = pais;
-        this.validade = validade;
+        this.validadePassaporte = validade;
     }
 
-    public PassaporteDTO() {
-    }
-
+    public PassaporteDTO(){}
 
 }
 

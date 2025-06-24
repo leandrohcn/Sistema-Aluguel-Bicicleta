@@ -1,18 +1,21 @@
 package com.sistema_bicicletario.ms_aluguel.dtos;
 
 
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.CiclistaEntity;
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.Nacionalidade;
-import com.sistema_bicicletario.ms_aluguel.entitys.ciclista.Status;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Nacionalidade;
 import lombok.Getter;
-import java.util.Date;
+
+import java.time.LocalDate;
+
 
 @Getter
 public class CiclistaResponseDTO {
     private final int id;
     private final String status;
     private final String nome;
-    private final Date nascimento;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private final LocalDate nascimento;
     private final String cpf;
     private final Nacionalidade nacionalidade;
     private final String email;
@@ -22,7 +25,7 @@ public class CiclistaResponseDTO {
 
     public CiclistaResponseDTO(CiclistaEntity ciclista) {
         this.id = ciclista.getId();
-        this.status = (ciclista.getStatus() != null) ? ciclista.getStatus().name() : String.valueOf(Status.AGUARDANDO_CONFIRMACAO);
+        this.status = String.valueOf(ciclista.getStatus());
         this.nome = ciclista.getNome();
         this.nascimento = ciclista.getDataNascimento();
         this.cpf = ciclista.getCpf();

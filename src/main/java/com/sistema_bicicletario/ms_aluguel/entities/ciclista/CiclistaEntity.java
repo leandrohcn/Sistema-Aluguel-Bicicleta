@@ -1,11 +1,14 @@
-package com.sistema_bicicletario.ms_aluguel.entitys.ciclista;
+package com.sistema_bicicletario.ms_aluguel.entities.ciclista;
 
 
-import com.sistema_bicicletario.ms_aluguel.entitys.cartao_de_credito.CartaoDeCreditoEntity;
+import com.sistema_bicicletario.ms_aluguel.dtos.ConfirmaEmailDTO;
+import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
-import java.util.Date;
+
+import java.time.LocalDate;
 
 
 @Data
@@ -25,18 +28,23 @@ public class CiclistaEntity {
     private String cpf;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date dataNascimento;
+    private LocalDate dataNascimento;
 
     @Embedded
     private PassaporteEntity passaporteEntity;
 
     @Column(unique = true)
+    @Email
     private String email;
 
     @Enumerated(EnumType.STRING)
     private Nacionalidade nacionalidade;
 
     private String urlFotoDocumento;
+
+    @Transient
+    private String confirmaSenha;
+
     private String senha;
 
     @Enumerated(EnumType.STRING)
@@ -45,8 +53,11 @@ public class CiclistaEntity {
     @OneToOne(mappedBy = "ciclista", cascade = CascadeType.ALL, orphanRemoval = true)
     private CartaoDeCreditoEntity cartao;
 
-    public CiclistaEntity(String nome, Date dataNascimento, String cpf, String email,
-                          Nacionalidade nacionalidade, String urlFotoDocumento, String senha) {
+    @Transient
+    public ConfirmaEmailDTO confirmaEmail;
+
+    public CiclistaEntity(String nome, LocalDate dataNascimento, String cpf, String email,
+                          Nacionalidade nacionalidade, String urlFotoDocumento, String senha, String confirmaSenha) {
         this.nome = nome;
         this.dataNascimento = dataNascimento;
         this.cpf = cpf;
@@ -54,6 +65,7 @@ public class CiclistaEntity {
         this.nacionalidade = nacionalidade;
         this.urlFotoDocumento = urlFotoDocumento;
         this.senha = senha;
+        this.confirmaSenha = confirmaSenha;
     }
 
 }
