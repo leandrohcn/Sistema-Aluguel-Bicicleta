@@ -141,6 +141,7 @@ public class CiclistaServiceTest {
         Integer id = 1;
         CiclistaEntity ciclista = new CiclistaEntity();
         ciclista.setId(id);
+        ciclista.setNome("Carlos");
         ciclista.setEmail("velho@email.com");
         ciclista.setNacionalidade(Nacionalidade.BRASILEIRO);
         ciclista.setCpf("12345678900");
