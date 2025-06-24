@@ -7,10 +7,7 @@ import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.*;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -294,4 +291,36 @@ public class CiclistaServiceTest {
         when(ciclistaRepository.existsByEmail("naoexiste@email.com")).thenReturn(false);
         assertThrows(TrataUnprocessabeEntity.class, () -> ciclistaService.existeEmail("naoexiste@email.com"));
     }
+
+    @Test
+    void deveRetornarBicicletaQuandoCiclistaTemBicicletaAlugada() {
+        Integer idCiclista = 10;
+
+        when(ciclistaRepository.existsById(idCiclista)).thenReturn(true);
+        doReturn(false).when(ciclistaService).permiteAluguel(idCiclista);
+
+        BicicletaDTO bicicleta = new BicicletaDTO(1, "Caloi", "Elite", "2024", 123, "ALUGADA");
+        doReturn(Optional.of(bicicleta)).when(ciclistaService).bicicletaAlugada(idCiclista);
+        Optional<BicicletaDTO> resultado = ciclistaService.bicicletaAlugada(idCiclista);
+
+        assertTrue(resultado.isPresent());
+        assertEquals("Caloi", resultado.get().getMarca());
+    }
+
+    @Test
+    void deveRetornarVazioQuandoCiclistaPodeAlugar() {
+        Integer idCiclista = 11;
+
+        when(ciclistaRepository.existsById(idCiclista)).thenReturn(true);
+        Optional<BicicletaDTO> resultado = ciclistaService.bicicletaAlugada(idCiclista);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoCiclistaNaoExiste() {
+        Integer idInvalido = 999;
+        when(ciclistaRepository.existsById(idInvalido)).thenReturn(false);
+        assertThrows(EntityNotFoundException.class, () -> ciclistaService.bicicletaAlugada(idInvalido));
+    }
+
 }
