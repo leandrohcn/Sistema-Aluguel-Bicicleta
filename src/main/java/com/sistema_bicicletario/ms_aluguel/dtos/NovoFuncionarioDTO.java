@@ -1,5 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.dtos;
 
+import com.sistema_bicicletario.ms_aluguel.entities.funcionario.Funcao;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,8 +23,8 @@ public class NovoFuncionarioDTO {
     private int idade;
     @NotBlank
     private String cpf;
-    @NotBlank
-    private String funcao;
+    @NotNull
+    private Funcao funcao;
 
     public boolean senhaValida() {
         if (senha == null || confirmaSenha == null) {
@@ -36,7 +37,7 @@ public class NovoFuncionarioDTO {
     }
 
     public NovoFuncionarioDTO(String nome, String senha, String confirmaSenha,
-                              String email, int idade, String cpf, String funcao) {
+                              String email, int idade, String cpf, Funcao funcao) {
         this.nome = nome;
         this.senha = senha;
         this.confirmaSenha = confirmaSenha;
