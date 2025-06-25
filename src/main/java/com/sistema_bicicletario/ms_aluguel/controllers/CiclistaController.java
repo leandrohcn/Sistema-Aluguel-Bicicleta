@@ -6,13 +6,11 @@ import com.sistema_bicicletario.ms_aluguel.dtos.NovoCiclistaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.CiclistaResponseDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.services.CiclistaService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -69,16 +67,9 @@ public class CiclistaController {
     }
 
     @GetMapping("{id}/bicicletaAlugada")
-    public ResponseEntity<?> bicicletaAlugada(@PathVariable Integer id) {
-        try {
+    public ResponseEntity<BicicletaDTO> bicicletaAlugada(@PathVariable Integer id) {
             Optional<BicicletaDTO> bicicleta = ciclistaService.bicicletaAlugada(id);
             return bicicleta.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.noContent().build());
-
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("codigo", "404", "mensagem", e.getMessage()));
-        }
     }
-
 }
