@@ -72,8 +72,8 @@ public class TratamentoDeErros {
     }
 
 
-    @ExceptionHandler(TrataUnprocessabeEntity.class)
-    public ResponseEntity<List<ErroDTO>> handleRegraNegocio(TrataUnprocessabeEntity ex) {
+    @ExceptionHandler(TrataUnprocessableEntity.class)
+    public ResponseEntity<List<ErroDTO>> handleRegraNegocio(TrataUnprocessableEntity ex) {
         ErroDTO erro = new ErroDTO("422", ex.getMessage());
         return ResponseEntity.status(422).body(List.of(erro));
     }

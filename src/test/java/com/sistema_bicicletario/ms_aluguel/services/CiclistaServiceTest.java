@@ -2,7 +2,7 @@ package com.sistema_bicicletario.ms_aluguel.services;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.*;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.*;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessabeEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntity;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -103,7 +103,7 @@ public class CiclistaServiceTest {
         dto.setMeioDePagamento(cartao);
 
         when(ciclistaRepository.existsByEmail(dto.getEmail())).thenReturn(false);
-        assertThrows(TrataUnprocessabeEntity.class, () -> ciclistaService.cadastrarCiclista(dto));
+        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.cadastrarCiclista(dto));
     }
 
     @Test
@@ -130,7 +130,7 @@ public class CiclistaServiceTest {
         dto.setPassaporte(passaporte);
 
         when(ciclistaRepository.existsByEmail(dto.getEmail())).thenReturn(false);
-        assertThrows(TrataUnprocessabeEntity.class, () -> ciclistaService.cadastrarCiclista(dto));
+        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.cadastrarCiclista(dto));
     }
 
     @Test
@@ -165,7 +165,7 @@ public class CiclistaServiceTest {
         when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclista));
         when(ciclistaRepository.existsByEmail("duplicado@email.com")).thenReturn(true);
 
-        assertThrows(TrataUnprocessabeEntity.class, () -> ciclistaService.atualizarCiclista(id, dto));
+        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.atualizarCiclista(id, dto));
     }
 
     @Test
@@ -197,7 +197,7 @@ public class CiclistaServiceTest {
 
         when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclista));
 
-        assertThrows(TrataUnprocessabeEntity.class, () -> ciclistaService.atualizarCiclista(id, dto));
+        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.atualizarCiclista(id, dto));
     }
 
     @Test
@@ -232,7 +232,7 @@ public class CiclistaServiceTest {
 
     @Test
     void deveLancarErroAoAtivarCiclistaComIdInvalido() {
-        assertThrows(TrataUnprocessabeEntity.class, () -> ciclistaService.ativarCiclista(-1));
+        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.ativarCiclista(-1));
     }
 
     @Test
@@ -250,7 +250,7 @@ public class CiclistaServiceTest {
         when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclista));
         doReturn(true).when(ciclistaService).confirmaEmail();
 
-        assertThrows(TrataUnprocessabeEntity.class, () -> ciclistaService.ativarCiclista(id));
+        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.ativarCiclista(id));
     }
 
     @Test
@@ -266,7 +266,7 @@ public class CiclistaServiceTest {
 
     @Test
     void deveLancarErroSeBuscarCiclistaComIdInvalido() {
-        assertThrows(TrataUnprocessabeEntity.class, () -> ciclistaService.buscarCiclistaporId(0));
+        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.buscarCiclistaporId(0));
     }
 
     @Test
@@ -289,7 +289,7 @@ public class CiclistaServiceTest {
     @Test
     void deveLancarErroEmailInexistente() {
         when(ciclistaRepository.existsByEmail("naoexiste@email.com")).thenReturn(false);
-        assertThrows(TrataUnprocessabeEntity.class, () -> ciclistaService.existeEmail("naoexiste@email.com"));
+        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.existeEmail("naoexiste@email.com"));
     }
 
     @Test

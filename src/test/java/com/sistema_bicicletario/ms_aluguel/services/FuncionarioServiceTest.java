@@ -3,7 +3,7 @@ package com.sistema_bicicletario.ms_aluguel.services;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.Funcao;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessabeEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntity;
 import com.sistema_bicicletario.ms_aluguel.repositories.FuncionarioRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +49,7 @@ public class FuncionarioServiceTest {
         NovoFuncionarioDTO dto = new NovoFuncionarioDTO("João", "123", "456", "joao@email.com",
                                                         -1, "12345678900", Funcao.REPARADOR);
 
-        assertThrows(TrataUnprocessabeEntity.class, () -> funcionarioService.criaFuncionario(dto));
+        assertThrows(TrataUnprocessableEntity.class, () -> funcionarioService.criaFuncionario(dto));
         verify(funcionarioRepository, never()).save(any());
     }
 

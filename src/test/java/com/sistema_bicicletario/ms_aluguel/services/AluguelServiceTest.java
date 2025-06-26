@@ -4,7 +4,7 @@ import com.sistema_bicicletario.ms_aluguel.dtos.AluguelDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoAluguelDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Status;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessabeEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntity;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,8 +85,8 @@ public class AluguelServiceTest {
 
         when(ciclistaService.buscarCiclistaporId(idCiclista)).thenReturn(ciclista);
 
-        TrataUnprocessabeEntity exception = assertThrows(
-                TrataUnprocessabeEntity.class,
+        TrataUnprocessableEntity exception = assertThrows(
+                TrataUnprocessableEntity.class,
                 () -> aluguelService.realizaAluguel(novoAluguelDTO)
         );
 

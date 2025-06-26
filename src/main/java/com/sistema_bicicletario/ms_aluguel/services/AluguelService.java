@@ -4,7 +4,7 @@ import com.sistema_bicicletario.ms_aluguel.dtos.AluguelDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoAluguelDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Status;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessabeEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,11 +22,11 @@ public class AluguelService {
         CiclistaEntity c = ciclistaService.buscarCiclistaporId(idCiclista);
 
         if (!Status.ATIVO.equals(c.getStatus())) {
-            throw new TrataUnprocessabeEntity("Ciclista não está ativo.");
+            throw new TrataUnprocessableEntity("Ciclista não está ativo.");
         }
 
         if (!ciclistaService.permiteAluguel(idCiclista)){
-            throw new TrataUnprocessabeEntity("Ciclista já possui uma bicicleta alugada.");
+            throw new TrataUnprocessableEntity("Ciclista já possui uma bicicleta alugada.");
         }
 
 

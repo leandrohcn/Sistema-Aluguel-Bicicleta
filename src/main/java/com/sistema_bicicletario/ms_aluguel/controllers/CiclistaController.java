@@ -54,7 +54,9 @@ public class CiclistaController {
 
     @GetMapping("/existeEmail/{email}")
     public ResponseEntity<Boolean> existeEmail(@PathVariable @Valid String email) {
+        // quando nao tiver email, era pra dar erro 400, nao erro 404
         ciclistaService.existeEmail(email);
+        //muda esse retorno, esse endpoint deveria retornar true or false
         return ResponseEntity.ok(true);
     }
 
