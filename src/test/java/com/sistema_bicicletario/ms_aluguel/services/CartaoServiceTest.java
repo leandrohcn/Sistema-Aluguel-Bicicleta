@@ -31,7 +31,7 @@ public class CartaoServiceTest {
         Integer id = 1;
         CartaoDeCreditoEntity cartaoExistente = new CartaoDeCreditoEntity();
         NovoCartaoDeCreditoDTO novoCartao = new NovoCartaoDeCreditoDTO(
-                "João Silva", 2334, "12/30", 234523456
+                "João Silva", "2334", "12/30", "234523456"
         );
 
         when(cartaoRepository.findById(id)).thenReturn(Optional.of(cartaoExistente));
@@ -39,8 +39,8 @@ public class CartaoServiceTest {
         cartaoService.atualizaCartao(id, novoCartao);
 
         assertEquals("João Silva", cartaoExistente.getNomeTitular());
-        assertEquals(234523456, cartaoExistente.getNumero());
-        assertEquals(2334, cartaoExistente.getCvv());
+        assertEquals("234523456", cartaoExistente.getNumero());
+        assertEquals("2334", cartaoExistente.getCvv());
         assertEquals("12/30", cartaoExistente.getValidade());
 
         verify(cartaoRepository).save(cartaoExistente);
@@ -50,7 +50,7 @@ public class CartaoServiceTest {
     void deveLancarExcecaoQuandoCartaoNaoExisteNaAtualizacao() {
         Integer id = 99;
         NovoCartaoDeCreditoDTO novoCartao = new NovoCartaoDeCreditoDTO(
-                "João Silva", 1256, "12/30", 1245323245
+                "João Silva", "1256", "12/30", "1245323245"
         );
 
         when(cartaoRepository.findById(id)).thenReturn(Optional.empty());

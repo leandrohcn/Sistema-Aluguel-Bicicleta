@@ -42,8 +42,8 @@ public class CiclistaServiceTest {
         dto.setConfirmaSenha("123");
 
         NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
-        cartao.setNumeroCartao(Long.parseLong("1234123412341234"));
-        cartao.setCvv(Integer.parseInt("123"));
+        cartao.setNumeroCartao("1234123412341234");
+        cartao.setCvv("123");
         cartao.setValidadeCartao(String.valueOf(LocalDate.of(2030, 1, 1)));
         dto.setMeioDePagamento(cartao);
 
@@ -71,8 +71,8 @@ public class CiclistaServiceTest {
         dto.setConfirmaSenha("senha123");
 
         NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
-        cartao.setNumeroCartao(Long.parseLong("1111222233334444"));
-        cartao.setCvv(Integer.parseInt("321"));
+        cartao.setNumeroCartao("1111222233334444");
+        cartao.setCvv("321");
         cartao.setValidadeCartao(String.valueOf(LocalDate.of(2031, 6, 1)));
         dto.setMeioDePagamento(cartao);
         dto.setPassaporte(passaporte);
@@ -97,8 +97,8 @@ public class CiclistaServiceTest {
         dto.setConfirmaSenha("abc");
 
         NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
-        cartao.setNumeroCartao(Long.parseLong("1234567890123456"));
-        cartao.setCvv(Integer.parseInt("999"));
+        cartao.setNumeroCartao("1234567890123456");
+        cartao.setCvv("999");
         cartao.setValidadeCartao(String.valueOf(LocalDate.of(2028, 12, 1)));
         dto.setMeioDePagamento(cartao);
 
@@ -123,8 +123,8 @@ public class CiclistaServiceTest {
         dto.setConfirmaSenha("senha");
 
         NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
-        cartao.setNumeroCartao(Long.parseLong("0000111122223333"));
-        cartao.setCvv(Integer.parseInt("111"));
+        cartao.setNumeroCartao("0000111122223333");
+        cartao.setCvv("111");
         cartao.setValidadeCartao(String.valueOf(LocalDate.of(2027, 7, 1)));
         dto.setMeioDePagamento(cartao);
         dto.setPassaporte(passaporte);

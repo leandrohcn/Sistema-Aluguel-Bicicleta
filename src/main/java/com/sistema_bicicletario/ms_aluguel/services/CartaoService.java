@@ -18,7 +18,7 @@ public class CartaoService {
 
     public void atualizaCartao(Integer id, NovoCartaoDeCreditoDTO novoCartao) {
         CartaoDeCreditoEntity cartao = cartaoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cartão não encontrado"));
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 
         cartao.setNomeTitular(novoCartao.getNomeTitular());
         cartao.setNumero(novoCartao.getNumeroCartao());

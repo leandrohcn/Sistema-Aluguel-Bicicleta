@@ -32,9 +32,9 @@ public class CartaoControllerTest {
     void setUp() {
         cartao = new CartaoDeCreditoEntity();
         cartao.setId(1);
-        cartao.setCvv(1234);
+        cartao.setCvv("1234");
         cartao.setNomeTitular("João da Silva");
-        cartao.setNumero(1232341234);
+        cartao.setNumero("1232341234");
         cartao.setValidade("12/30");
     }
 
@@ -55,7 +55,7 @@ public class CartaoControllerTest {
     @Test
     void deveAtualizarCartaoComSucesso() {
         NovoCartaoDeCreditoDTO novoCartao = new NovoCartaoDeCreditoDTO(
-                "João da Silva", 1264, "12/29", 1457445522
+                "João da Silva", "1264", "12/29", "1457445522"
         );
 
         doNothing().when(cartaoService).atualizaCartao(eq(1), any());
@@ -71,7 +71,7 @@ public class CartaoControllerTest {
     @Test
     void deveRetornarNotFoundAoAtualizarCartaoInexistente() {
         NovoCartaoDeCreditoDTO novoCartao = new NovoCartaoDeCreditoDTO(
-                "Maria", 434, "11/28", 223435363
+                "Maria", "434", "11/28", "223435363"
         );
 
         doThrow(EntityNotFoundException.class)

@@ -17,7 +17,7 @@ public class NovoCartaoDeCreditoDTO {
     private String nomeTitular;
 
     @NotNull
-    private int cvv;
+    private String cvv;
 
     @NotBlank
     @Pattern(regexp = "^(0[1-9]|1[0-2])/\\d{2}$", message = "Formato de validade deve ser MM/yy")
@@ -25,6 +25,6 @@ public class NovoCartaoDeCreditoDTO {
 
     @NotNull
     @Positive(message = "Deve ser um número positivo")
-    private long numeroCartao;
+    private String numeroCartao;
 
 }

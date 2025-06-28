@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 public class TratamentoDeErros {
 
 
+    //precisa dar uma refinada nessas mensagens de erro pra nao vazar pro cliente
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<ErroDTO>> handleValidacao(MethodArgumentNotValidException ex) {
         List<ErroDTO> erros = ex.getBindingResult()

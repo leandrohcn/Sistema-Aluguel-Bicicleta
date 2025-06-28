@@ -23,15 +23,18 @@ public class CartaoDeCreditoEntity {
 
     private String nomeTitular;
     @Column(unique = true)
-    private @NotNull long numero;
+    //validar formato de cartao de credito com @pattern
+    // numero do cartao e cvv sao string, se nao é usado pra fazer conta é string
+    private @NotNull String numero;
 
     private String validade;
 
     @Column(length = 4)
-    private @NotNull int cvv;
+    //pattern aqui tambem
+    private @NotNull String cvv;
 
 
-    public CartaoDeCreditoEntity(String nomeTitular, long numero, int cvv,
+    public CartaoDeCreditoEntity(String nomeTitular, String numero, String cvv,
                                  String validade, CiclistaEntity ciclista) {
         this.nomeTitular = nomeTitular;
         this.numero = numero;
