@@ -23,6 +23,11 @@ public class CiclistaResponseDTO {
 
     private final PassaporteDTO passaporte;
 
+    //esse dto deveria ter um construtor (ou criar outro dto) que nao tenha passaporte
+    // se nao toda vez q o usuario inserir um ciclista nacional ele vai receber erro 500 pq ele vai procurar o passapporte na entity e nao vai encontrar
+    // impossibilitando de criar esse dto
+
+
     public CiclistaResponseDTO(CiclistaEntity ciclista) {
         this.id = ciclista.getId();
         this.status = String.valueOf(ciclista.getStatus());

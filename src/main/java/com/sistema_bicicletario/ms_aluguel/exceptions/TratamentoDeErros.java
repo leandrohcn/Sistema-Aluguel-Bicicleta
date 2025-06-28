@@ -78,4 +78,6 @@ public class TratamentoDeErros {
         return ResponseEntity.status(422).body(List.of(erro));
     }
 
+    //ACHO Q CABE BOTAR UM EXCEPTIONHANDLER GENERICO PRA TRATAR QUALUQER COISA
+
 }

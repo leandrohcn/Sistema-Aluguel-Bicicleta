@@ -17,6 +17,8 @@ import java.time.LocalDate;
 @Table(name = "ciclista")
 @Getter
 @Setter
+// nao acho uma boa ideia usar o allargsconstructor aqui, pq um ciclista nacional nunca vai ter passaporte e um ciclista estrangeiro nunca vai ter cpf
+// criar dois construtores, um pra cada
 @AllArgsConstructor
 @NoArgsConstructor
 public class CiclistaEntity {
@@ -26,6 +28,8 @@ public class CiclistaEntity {
 
     private String nome;
     @Column(unique = true)
+    // criar um regex pra validar numero do cpf e usar o @pattern
+    // validar que o ciclista estrangeiro NAO TEM CPF ( acho q oq eu falei do construtor garante isso)
     private String cpf;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
