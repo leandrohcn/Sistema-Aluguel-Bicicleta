@@ -27,6 +27,10 @@ public class AluguelController {
     // o cartão usado para cobrança e o ciclista que a pegou
     // + as informações que estao no swagger
 
+
+    // cade o caso de uso de devolver bicicleta?
+
+
     @PostMapping
     public ResponseEntity<AluguelDTO> realizarAluguel(@RequestBody @Valid NovoAluguelDTO dto) {
 
