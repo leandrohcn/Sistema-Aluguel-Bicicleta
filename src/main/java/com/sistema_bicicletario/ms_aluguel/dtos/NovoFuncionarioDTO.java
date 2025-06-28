@@ -36,6 +36,8 @@ public class NovoFuncionarioDTO {
         return idade >= 16;
     }
 
+    // as funções de validação deveriam estar dentro do construtor.
+    // se eu nao posso criar um usuario < 16, nao tem pq deixar construir esse objeto
     public NovoFuncionarioDTO(String nome, String senha, String confirmaSenha,
                               String email, int idade, String cpf, Funcao funcao) {
         this.nome = nome;

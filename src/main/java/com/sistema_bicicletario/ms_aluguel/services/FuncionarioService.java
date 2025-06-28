@@ -32,6 +32,7 @@ public class FuncionarioService {
         if (funcionarioDTO.senhaValida() && funcionarioDTO.idadeValida()) {
             return funcionarioRepository.save(funcionario);
         }
+        //qual dado é invalido?
         throw new TrataUnprocessableEntity("Dados inválidos");
     }
 
@@ -67,19 +68,21 @@ public class FuncionarioService {
         if (idFuncionario <= 0) {
             throw new TrataUnprocessableEntity("O ID deve ser um número positivo.");
         }
-
-        if (buscaTodosFuncionario() == null){
-            throw new TrataUnprocessableEntity("Lista de Funcionários vazia");
-        }
+        // nao precisa disso
+//        if (buscaTodosFuncionario() == null){
+//            throw new TrataUnprocessableEntity("Lista de Funcionários vazia");
+//        }
 
         return funcionarioRepository.findById(idFuncionario)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com ID: " + idFuncionario));
     }
 
     public List<FuncionarioEntity> buscaTodosFuncionario() {
-        if (funcionarioRepository.findAll().isEmpty()) {
-            return null;
-        }
+
+        // nao retorna null, retorna lista vazia
+//        if (funcionarioRepository.findAll().isEmpty()) {
+//            return null;
+//        }
         return funcionarioRepository.findAll();
     }
 }

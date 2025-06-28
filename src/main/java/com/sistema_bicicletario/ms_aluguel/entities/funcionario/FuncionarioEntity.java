@@ -9,6 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "funcionario")
+
+//funcionario e ciclista sao parecidos, poderiam ser uma classe abstrata? nao sei
 public class FuncionarioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,11 +18,14 @@ public class FuncionarioEntity {
 
     private String nome;
     private String senha;
+    @Transient
     private String confirmaSenha;
     @Column(unique = true)
+    //regex pro email
     private String email;
     private Integer idade;
     @Column(unique = true)
+    //regex pro cpf
     private String cpf;
     @Enumerated(EnumType.STRING)
     private Funcao funcao;

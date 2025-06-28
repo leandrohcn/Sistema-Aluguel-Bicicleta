@@ -14,7 +14,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/funcionarios")
+@RequestMapping("/funcionario")
 public class FuncionarioController {
 
     private final FuncionarioService funcionarioService;
@@ -53,7 +53,7 @@ public class FuncionarioController {
         return ResponseEntity.ok().body(funcionarioAtualizado);
 
     }
-
+    // nao retorna void, retorna mensagem de sucesso
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluiFuncionario(@PathVariable Integer id) {
         funcionarioService.excluiFuncionario(id);
