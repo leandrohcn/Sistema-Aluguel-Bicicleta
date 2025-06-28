@@ -43,7 +43,9 @@ public class CiclistaController {
 
         CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
         CiclistaResponseDTO dto = new CiclistaResponseDTO(c);
+        //faltou enviar o email falso
         return ResponseEntity.ok().body(dto);
+
     }
 
     @PostMapping("/{id}/ativar")

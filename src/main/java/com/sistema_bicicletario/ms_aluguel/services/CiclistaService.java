@@ -67,6 +67,9 @@ public class CiclistaService {
 
     @Transactional
     public CiclistaEntity atualizarCiclista(Integer id, AtualizaCiclistaDTO ciclistaDTO) {
+
+        // mas que isso é o maior return do mundo
+        // acho mais legal tirar desse map, atribuir a uma entidade e depois salvar ela de novo
         return ciclistaRepository.findById(id).map(ciclista -> {
             ciclista.setNome(ciclistaDTO.getNome() != null ? ciclistaDTO.getNome() : ciclista.getNome());
             ciclista.setDataNascimento(ciclistaDTO.getDataNascimento() != null ? ciclistaDTO.getDataNascimento() : ciclista.getDataNascimento());
@@ -90,7 +93,7 @@ public class CiclistaService {
             } else {
                 ciclista.setEmail(ciclista.getEmail());
             }
-
+            //isso aq vai ser resolvido com a atualizacao do UC01
             if (ciclistaDTO.getPassaporte() != null) {
                 PassaporteEntity passaporte = ciclista.getPassaporteEntity() != null ? ciclista.getPassaporteEntity() : new PassaporteEntity();
 
