@@ -41,6 +41,7 @@ public class CiclistaService {
                 novoCiclistaDto.getConfirmaSenha()
         );
 
+        // isso aqui nao po, eu posso criar um ciclista nacional q tenha passaporte != null
         if (novoCiclistaDto.getPassaporte() != null) {
             PassaporteDTO dto = novoCiclistaDto.getPassaporte();
             PassaporteEntity passaporte = new PassaporteEntity(
