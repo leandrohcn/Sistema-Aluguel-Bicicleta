@@ -177,9 +177,12 @@ public class CiclistaService {
     }
 
     public boolean permiteAluguel(Integer idCiclista) {
-        if (!ciclistaRepository.existsById(idCiclista)) {
-            throw new EntityNotFoundException("Ciclista não encontrado com ID: " + idCiclista);
-        }
+        //nao precisa disso
+
+//        if (!ciclistaRepository.existsById(idCiclista)) {
+//            throw new EntityNotFoundException("Ciclista não encontrado com ID: " + idCiclista);
+//        }
+
         return true;
     }
 

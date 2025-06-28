@@ -25,6 +25,8 @@ public class AluguelService {
             throw new TrataUnprocessableEntity("Ciclista não está ativo.");
         }
 
+        //essa função tem q ser escrita aqui!
+        // a gente vai saber se ele pode alugar uma bicilceta verificarndo se ele tem algum aluguel ativo
         if (!ciclistaService.permiteAluguel(idCiclista)){
             throw new TrataUnprocessableEntity("Ciclista já possui uma bicicleta alugada.");
         }
@@ -32,6 +34,9 @@ public class AluguelService {
 
         Integer cobranca = 10;
         LocalDateTime agora = LocalDateTime.now();
+
+        // chamar a função fake de cobrança
+
 
         AluguelDTO aluguel = new AluguelDTO();
         aluguel.setBicicleta(aluguel.getBicicleta());
@@ -41,6 +46,9 @@ public class AluguelService {
         aluguel.setTrancaFim(0);
         aluguel.setCiclista(c.getId());
         aluguel.setCobranca(cobranca);
+
+        //chamar a função fake de altterar status da bicicleta
+
         return aluguel;
     }
 }

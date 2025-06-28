@@ -22,10 +22,20 @@ public class AluguelController {
         this.aluguelService = aluguelService;
     }
 
+    //cara ta faltando a entidade aluguel aqui
+    //Devem ser registrados: a data/hora da retirada, o número da tranca,  o número da bicicleta,
+    // o cartão usado para cobrança e o ciclista que a pegou
+    // + as informações que estao no swagger
+
     @PostMapping
     public ResponseEntity<AluguelDTO> realizarAluguel(@RequestBody @Valid NovoAluguelDTO dto) {
+
+        // faltou a chamada fake pro serviço de tranca
+
         try {
             AluguelDTO aluguel = aluguelService.realizaAluguel(dto);
+            //chamada fake pra enviar email
+
             return ResponseEntity.ok().body(aluguel);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
