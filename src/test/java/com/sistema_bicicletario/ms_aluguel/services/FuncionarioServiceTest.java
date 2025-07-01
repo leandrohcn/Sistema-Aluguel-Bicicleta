@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FuncionarioServiceTest {
+class FuncionarioServiceTest {
 
     @Mock
     private FuncionarioRepository funcionarioRepository;
@@ -29,7 +29,7 @@ public class FuncionarioServiceTest {
     private FuncionarioService funcionarioService;
 
     @Test
-    public void deveCriarFuncionarioComDadosValidos() {
+    void deveCriarFuncionarioComDadosValidos() {
         NovoFuncionarioDTO dto = new NovoFuncionarioDTO("João", "123", "123",
                                                         "joao@email.com", 25, "12345678900", Funcao.REPARADOR);
 
@@ -46,7 +46,7 @@ public class FuncionarioServiceTest {
     }
 
     @Test
-    public void deveLancarErroQuandoDadosInvalidosAoCriar() {
+    void deveLancarErroQuandoDadosInvalidosAoCriar() {
         NovoFuncionarioDTO dto = new NovoFuncionarioDTO("João", "123", "456", "joao@email.com",
                                                         -1, "12345678900", Funcao.REPARADOR);
 
@@ -55,7 +55,7 @@ public class FuncionarioServiceTest {
     }
 
     @Test
-    public void deveAtualizarFuncionario() {
+    void deveAtualizarFuncionario() {
         Integer id = 1;
         NovoFuncionarioDTO dto = new NovoFuncionarioDTO("Maria", "senha", "senha", "maria@email.com", 30, "11111111111", Funcao.ADMINISTRATIVO);
         FuncionarioEntity existente = new FuncionarioEntity("Antigo", "x", "x", "antigo@email.com", 50, "222", Funcao.REPARADOR);
@@ -70,7 +70,7 @@ public class FuncionarioServiceTest {
     }
 
     @Test
-    public void deveExcluirFuncionarioComIdValido() {
+    void deveExcluirFuncionarioComIdValido() {
         Integer id = 1;
         when(funcionarioRepository.existsById(id)).thenReturn(true);
 
@@ -80,7 +80,7 @@ public class FuncionarioServiceTest {
     }
 
     @Test
-    public void deveBuscarFuncionarioPorId() {
+    void deveBuscarFuncionarioPorId() {
         Integer id = 1;
         FuncionarioEntity funcionario = new FuncionarioEntity("Carlos", "123", "123", "carlos@email.com", 28, "000", Funcao.ADMINISTRATIVO);
         when(funcionarioRepository.findById(id)).thenReturn(Optional.of(funcionario));
@@ -92,7 +92,7 @@ public class FuncionarioServiceTest {
     }
 
     @Test
-    public void deveRetornarTodosFuncionarios() {
+    void deveRetornarTodosFuncionarios() {
         List<FuncionarioEntity> lista = List.of(
                 new FuncionarioEntity("A", "1", "1", "a@a.com", 20, "123", Funcao.REPARADOR)
         );
