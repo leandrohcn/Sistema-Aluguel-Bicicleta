@@ -189,28 +189,28 @@ public class CiclistaControllerTest {
         verify(ciclistaService, times(1)).permiteAluguel(1);
     }
 
-    @Test
-    void deveRetornarBicicletaAlugadaQuandoExistir() {
-        when(ciclistaService.bicicletaAlugada(1)).thenReturn(Optional.of(bicicletaDTO));
-
-        ResponseEntity<?> response = ciclistaController.bicicletaAlugada(1);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertInstanceOf(BicicletaDTO.class, response.getBody());
-        assertEquals(bicicletaDTO.getIdBicicleta(), ((BicicletaDTO) response.getBody()).getIdBicicleta());
-
-        verify(ciclistaService, times(1)).bicicletaAlugada(1);
-    }
-
-    @Test
-    void deveRetornarNoContentQuandoNaoHouverBicicletaAlugada() {
-        when(ciclistaService.bicicletaAlugada(1)).thenReturn(Optional.empty());
-
-        ResponseEntity<?> response = ciclistaController.bicicletaAlugada(1);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-        assertNull(response.getBody());
-
-        verify(ciclistaService, times(1)).bicicletaAlugada(1);
-    }
+//    @Test
+//    void deveRetornarBicicletaAlugadaQuandoExistir() {
+//        when(ciclistaService.bicicletaAlugada(1)).thenReturn(Optional.of(bicicletaDTO));
+//
+//        ResponseEntity<?> response = ciclistaController.bicicletaAlugada(1);
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertNotNull(response.getBody());
+//        assertInstanceOf(BicicletaDTO.class, response.getBody());
+//        assertEquals(bicicletaDTO.getIdBicicleta(), ((BicicletaDTO) response.getBody()).getIdBicicleta());
+//
+//        verify(ciclistaService, times(1)).bicicletaAlugada(1);
+//    }
+//
+//    @Test
+//    void deveRetornarNoContentQuandoNaoHouverBicicletaAlugada() {
+//        when(ciclistaService.bicicletaAlugada(1)).thenReturn(Optional.empty());
+//
+//        ResponseEntity<?> response = ciclistaController.bicicletaAlugada(1);
+//        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+//        assertNull(response.getBody());
+//
+//        verify(ciclistaService, times(1)).bicicletaAlugada(1);
+//    }
 
 }

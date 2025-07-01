@@ -65,11 +65,11 @@ public class CiclistaController {
             return ResponseEntity.ok(false);
     }
 
-    @GetMapping("{id:\\d+}/bicicletaAlugada")
-    public ResponseEntity<BicicletaDTO> bicicletaAlugada(@PathVariable Integer id) {
-            Optional<BicicletaDTO> bicicleta = ciclistaService.bicicletaAlugada(id);
-            return bicicleta.map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.noContent().build());
-    }
+//    @GetMapping("{id:\\d+}/bicicletaAlugada")
+//    public ResponseEntity<BicicletaDTO> bicicletaAlugada(@PathVariable Integer id) {
+//            Optional<BicicletaDTO> bicicleta = ciclistaService.bicicletaAlugada(id);
+//            return bicicleta.map(ResponseEntity::ok)
+//                    .orElseGet(() -> ResponseEntity.noContent().build());
+//    }
 
 }

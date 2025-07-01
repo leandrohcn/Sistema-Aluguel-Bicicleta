@@ -29,7 +29,7 @@ public class TratamentoDeErros {
                 .getFieldErrors()
                 .stream()
                 .map(erro -> new ErroDTO(erro.getField(), erro.getDefaultMessage()))
-                .collect(Collectors.toList());
+                .toList();
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(erros);
     }

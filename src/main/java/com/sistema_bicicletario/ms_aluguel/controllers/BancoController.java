@@ -13,14 +13,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class BancoController {
 
-    @Autowired
+
     AluguelRepository aluguelRepository;
-    @Autowired
     CartaoRepository cartaoRepository;
-    @Autowired
     CiclistaRepository ciclistaRepository;
-    @Autowired
     FuncionarioRepository funcionarioRepository;
+
+    public BancoController(AluguelRepository aluguelRepository, CartaoRepository cartaoRepository, CiclistaRepository ciclistaRepository, FuncionarioRepository funcionarioRepository) {
+        this.aluguelRepository = aluguelRepository;
+        this.cartaoRepository = cartaoRepository;
+        this.ciclistaRepository = ciclistaRepository;
+        this.funcionarioRepository = funcionarioRepository;
+    }
 
     @GetMapping("/restaurarBanco")
     public ResponseEntity<String> restaurarBanco(){

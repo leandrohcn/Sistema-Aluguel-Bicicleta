@@ -223,17 +223,17 @@ public class CiclistaService {
         return ciclista.getStatus().equals(Status.ATIVO) && !ciclista.isAluguelAtivo();
     }
 
-    public Optional<BicicletaDTO> bicicletaAlugada(Integer idCiclista) {
-        if (!ciclistaRepository.existsById(idCiclista)) {
-            throw new EntityNotFoundException("Ciclista não encontrado com ID: " + idCiclista);
-        }
-
-        if (permiteAluguel(idCiclista)) {
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(null);
-    }
+//    public Optional<BicicletaDTO> bicicletaAlugada(Integer idCiclista) {
+//        if (!ciclistaRepository.existsById(idCiclista)) {
+//            throw new EntityNotFoundException("Ciclista não encontrado com ID: " + idCiclista);
+//        }
+//
+//        if (permiteAluguel(idCiclista)) {
+//            return Optional.empty();
+//        }
+//
+//        return Optional.ofNullable(null);
+//    }
 
     private void verificarRegrasDeNegocioDeCadastro(NovoCiclistaDTO novoCiclistaDto) {
         validarSenhaCadastro(novoCiclistaDto);
