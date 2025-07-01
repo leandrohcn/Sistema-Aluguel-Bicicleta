@@ -1,9 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
-import com.sistema_bicicletario.ms_aluguel.dtos.AtualizaCiclistaDTO;
-import com.sistema_bicicletario.ms_aluguel.dtos.BicicletaDTO;
-import com.sistema_bicicletario.ms_aluguel.dtos.NovoCiclistaDTO;
-import com.sistema_bicicletario.ms_aluguel.dtos.CiclistaResponseDTO;
+import com.sistema_bicicletario.ms_aluguel.dtos.*;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.services.CiclistaService;
 import jakarta.validation.Valid;
@@ -18,15 +15,13 @@ import java.util.Optional;
 public class CiclistaController {
 
     private final CiclistaService ciclistaService;
-
     public CiclistaController(CiclistaService ciclistaService) {
         this.ciclistaService = ciclistaService;
     }
 
     @PostMapping
     public ResponseEntity<CiclistaResponseDTO> cadastrarCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
-        CiclistaEntity c = ciclistaService.cadastrarCiclista(ciclista);
-        CiclistaResponseDTO responseBody = new CiclistaResponseDTO(c);
+        CiclistaResponseDTO responseBody = ciclistaService.cadastrarCiclista(ciclista);
         return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
 
@@ -41,11 +36,8 @@ public class CiclistaController {
     public ResponseEntity<CiclistaResponseDTO> atualizarCiclista(@PathVariable Integer id,
                                                                  @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
 
-        CiclistaEntity c = ciclistaService.atualizarCiclista(id, ciclista);
-        CiclistaResponseDTO dto = new CiclistaResponseDTO(c);
-        //faltou enviar o email falso
-        return ResponseEntity.ok().body(dto);
-
+        CiclistaResponseDTO responseBody = ciclistaService.atualizarCiclista(id, ciclista);
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
     @PostMapping("/{id}/ativar")
@@ -56,10 +48,8 @@ public class CiclistaController {
 
     @GetMapping("/existeEmail/{email}")
     public ResponseEntity<Boolean> existeEmail(@PathVariable @Valid String email) {
-        // quando nao tiver email, era pra dar erro 400, nao erro 404
-        ciclistaService.existeEmail(email);
-        //muda esse retorno, esse endpoint deveria retornar true or false
-        return ResponseEntity.ok(true);
+        Boolean existe = ciclistaService.existeEmail(email);
+        return new ResponseEntity<>(existe, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/permiteAluguel")
