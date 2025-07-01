@@ -2,6 +2,8 @@ package com.sistema_bicicletario.ms_aluguel.entities.funcionario;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Entity
@@ -10,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @Table(name = "funcionario")
 
-//funcionario e ciclista sao parecidos, poderiam ser uma classe abstrata? nao sei
+//funcionario e ciclista sao parecidos, poderiam ser uma classe abstrata? nao sei (Tambem nao sei)
 public class FuncionarioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +23,14 @@ public class FuncionarioEntity {
     @Transient
     private String confirmaSenha;
     @Column(unique = true)
-    //regex pro email
+    @Email
     private String email;
     private Integer idade;
     @Column(unique = true)
-    //regex pro cpf
+    @Pattern(
+            regexp = "(^\\d{11}$)|(^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$)",
+            message = "CPF deve estar no formato 12345678901 ou 123.456.789-01"
+    )
     private String cpf;
     @Enumerated(EnumType.STRING)
     private Funcao funcao;
