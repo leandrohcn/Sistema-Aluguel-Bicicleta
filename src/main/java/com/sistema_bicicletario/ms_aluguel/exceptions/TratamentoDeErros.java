@@ -82,7 +82,7 @@ public class TratamentoDeErros {
     //NoResourceFoundException
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErroDTO> handleResourceNotFound(NoResourceFoundException ex) {
-        log.error("ResourceNotFound", ex.getMessage(), ex);
+        log.error("ResourceNotFound : {}", ex.getMessage(), ex);
         ErroDTO erro = new ErroDTO("Argumento inexistente", "Não foram passados parâmetros");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }

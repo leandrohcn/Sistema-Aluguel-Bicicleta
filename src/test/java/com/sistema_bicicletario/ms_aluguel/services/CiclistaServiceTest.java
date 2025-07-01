@@ -314,7 +314,7 @@ public class CiclistaServiceTest {
         when(ciclistaRepository.existsByEmail("joao@email.com")).thenReturn(true);
 
         var exception = assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.cadastrarCiclista(novoCiclistaDTO));
-        assertEquals("Email ja existente", exception.getMessage());
+        assertEquals("Email já existente", exception.getMessage());
         verify(ciclistaRepository, never()).save(any());
     }
 

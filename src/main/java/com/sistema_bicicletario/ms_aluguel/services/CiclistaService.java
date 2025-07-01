@@ -79,8 +79,8 @@ public class CiclistaService {
                     dto.getNome(),
                     numeroCartao,
                     dto.getMeioDePagamento().getCvv(),
-                    dto.getMeioDePagamento().getValidadeCartao(),
-                    ciclista
+                    dto.getMeioDePagamento().getValidadeCartao()
+
             );
             ciclista.setCartao(cartao);
         } else {
@@ -124,42 +124,56 @@ public class CiclistaService {
     }
 
     private void regrasDeNegocioAtualiza(AtualizaCiclistaDTO ciclistaDto, CiclistaEntity ciclistaExistente) {
+        validarEmail(ciclistaDto, ciclistaExistente);
+        validarSenha(ciclistaDto);
+        validarNacionalidade(ciclistaDto, ciclistaExistente);
+        validarDocumentoPorNacionalidade(ciclistaDto, ciclistaExistente);
+    }
+
+    private void validarEmail(AtualizaCiclistaDTO ciclistaDto, CiclistaEntity ciclistaExistente) {
         String novoEmail = ciclistaDto.getEmail();
         if (novoEmail != null && !novoEmail.equalsIgnoreCase(ciclistaExistente.getEmail()) && existeEmail(novoEmail)) {
-
-                throw new TrataUnprocessableEntityException("Email ja existente");
-
+            throw new TrataUnprocessableEntityException("Email já existente");
         }
+    }
 
-        if (ciclistaDto.getSenha() != null) {
-            if (!ciclistaDto.senhaValida()) {
-                throw new TrataUnprocessableEntityException("Senhas diferentes");
-            }
+    private void validarSenha(AtualizaCiclistaDTO ciclistaDto) {
+        if (ciclistaDto.getSenha() != null && !ciclistaDto.senhaValida()) {
+            throw new TrataUnprocessableEntityException("Senhas diferentes");
         }
+    }
 
+    private void validarNacionalidade(AtualizaCiclistaDTO ciclistaDto, CiclistaEntity ciclistaExistente) {
         Nacionalidade nacionalidadeFinal = ciclistaDto.getNacionalidade() != null ? ciclistaDto.getNacionalidade() : ciclistaExistente.getNacionalidade();
         if (nacionalidadeFinal == null) {
             throw new IllegalArgumentException("Nacionalidade é um campo obrigatório e não pode ser removida.");
         }
+    }
 
-        if (nacionalidadeFinal.equals(Nacionalidade.BRASILEIRO)) {
+    private void validarDocumentoPorNacionalidade(AtualizaCiclistaDTO ciclistaDto, CiclistaEntity ciclistaExistente) {
+        Nacionalidade nacionalidadeFinal = ciclistaDto.getNacionalidade() != null ? ciclistaDto.getNacionalidade() : ciclistaExistente.getNacionalidade();
+
+        if (Nacionalidade.BRASILEIRO.equals(nacionalidadeFinal)) {
             String cpfFinal = ciclistaDto.getCpf() != null ? ciclistaDto.getCpf() : ciclistaExistente.getCpf();
             if (cpfFinal == null || cpfFinal.isBlank()) {
                 throw new IllegalArgumentException("CPF é obrigatório para brasileiros");
             }
-        } else if (nacionalidadeFinal.equals(Nacionalidade.ESTRANGEIRO)) {
-            PassaporteDTO passaporteDto = ciclistaDto.getPassaporte();
-            PassaporteEntity passaporteExistente = ciclistaExistente.getPassaporteEntity();
+        } else if (Nacionalidade.ESTRANGEIRO.equals(nacionalidadeFinal)) {
+            validarPassaporteEstrangeiro(ciclistaDto.getPassaporte(), ciclistaExistente.getPassaporteEntity());
+        }
+    }
 
-            if (passaporteDto != null) {
-                if (passaporteDto.getNumeroPassaporte() == null || passaporteDto.getNumeroPassaporte().isBlank() ||
-                        passaporteDto.getPais() == null || passaporteDto.getPais().isBlank() ||
-                        passaporteDto.getValidadePassaporte() == null) {
-                    throw new IllegalArgumentException("Ao atualizar, o passaporte completo é obrigatório para estrangeiros");
-                }
-            } else if (passaporteExistente == null) {
-                throw new IllegalArgumentException("Passaporte completo é obrigatório para estrangeiros");
+    private void validarPassaporteEstrangeiro(PassaporteDTO passaporteDto, PassaporteEntity passaporteExistente) {
+        if (passaporteDto != null) {
+            if (passaporteDto.getNumeroPassaporte() == null || passaporteDto.getNumeroPassaporte().isBlank() ||
+                    passaporteDto.getPais() == null || passaporteDto.getPais().isBlank() ||
+                    passaporteDto.getValidadePassaporte() == null) {
+                throw new IllegalArgumentException("Ao atualizar, o passaporte completo é obrigatório para estrangeiros");
             }
+        } else if (passaporteExistente == null) {
+            // Se não foi enviado passaporte no DTO e não existe no entity, é um erro.
+            // Se o passaporteExiste != null, significa que ele já tinha passaporte e não está tentando remover.
+            throw new IllegalArgumentException("Passaporte completo é obrigatório para estrangeiros");
         }
     }
 
@@ -221,38 +235,52 @@ public class CiclistaService {
     }
 
     private void verificarRegrasDeNegocioDeCadastro(NovoCiclistaDTO novoCiclistaDto) {
+        validarSenhaCadastro(novoCiclistaDto);
+        validarEmailCadastro(novoCiclistaDto);
+        validarNacionalidadeCadastro(novoCiclistaDto);
+        validarDocumentoPorNacionalidadeCadastro(novoCiclistaDto);
+    }
+
+    private void validarSenhaCadastro(NovoCiclistaDTO novoCiclistaDto) {
         if (!novoCiclistaDto.senhaValida()) {
             throw new TrataUnprocessableEntityException("Senhas diferentes");
         }
+    }
 
+    private void validarEmailCadastro(NovoCiclistaDTO novoCiclistaDto) {
         if (existeEmail(novoCiclistaDto.getEmail())) {
-            throw new TrataUnprocessableEntityException("Email ja existente");
+            throw new TrataUnprocessableEntityException("Email já existente");
         }
+    }
 
+    private void validarNacionalidadeCadastro(NovoCiclistaDTO novoCiclistaDto) {
         if (novoCiclistaDto.getNacionalidade() == null) {
             throw new IllegalArgumentException("Nacionalidade é obrigatória");
         }
+    }
 
-        if (novoCiclistaDto.getNacionalidade().equals(Nacionalidade.BRASILEIRO)) {
+    private void validarDocumentoPorNacionalidadeCadastro(NovoCiclistaDTO novoCiclistaDto) {
+        if (Nacionalidade.BRASILEIRO.equals(novoCiclistaDto.getNacionalidade())) {
             if (novoCiclistaDto.getCpf() == null || novoCiclistaDto.getCpf().isBlank()) {
                 throw new IllegalArgumentException("CPF é obrigatório para brasileiros");
             }
-        }else if (novoCiclistaDto.getNacionalidade().equals(Nacionalidade.ESTRANGEIRO)) {
-            if (novoCiclistaDto.getPassaporte() == null) {
-                throw new IllegalArgumentException("Passaporte é obrigatório para estrangeiros");
-            }
+        } else if (Nacionalidade.ESTRANGEIRO.equals(novoCiclistaDto.getNacionalidade())) {
+            validarPassaporteCadastro(novoCiclistaDto.getPassaporte());
+        }
+    }
 
-            if (novoCiclistaDto.getPassaporte().getPais() == null || novoCiclistaDto.getPassaporte().getPais().isBlank()) {
-                throw new IllegalArgumentException("País do passaporte é obrigatório para estrangeiros");
-            }
-
-            if (novoCiclistaDto.getPassaporte().getValidadePassaporte() == null) {
-                throw new IllegalArgumentException("Validade do passaporte é obrigatório para estrangeiros");
-            }
-
-            if (novoCiclistaDto.getPassaporte().getNumeroPassaporte() == null || novoCiclistaDto.getPassaporte().getNumeroPassaporte().isBlank()) {
-                throw new IllegalArgumentException("Numero do passaporte é obrigatório para estrangeiros");
-            }
+    private void validarPassaporteCadastro(PassaporteDTO passaporteDto) {
+        if (passaporteDto == null) {
+            throw new IllegalArgumentException("Passaporte é obrigatório para estrangeiros");
+        }
+        if (passaporteDto.getPais() == null || passaporteDto.getPais().isBlank()) {
+            throw new IllegalArgumentException("País do passaporte é obrigatório para estrangeiros");
+        }
+        if (passaporteDto.getValidadePassaporte() == null) {
+            throw new IllegalArgumentException("Validade do passaporte é obrigatório para estrangeiros");
+        }
+        if (passaporteDto.getNumeroPassaporte() == null || passaporteDto.getNumeroPassaporte().isBlank()) {
+            throw new IllegalArgumentException("Número do passaporte é obrigatório para estrangeiros");
         }
     }
     public boolean validarCartao(NovoCartaoDeCreditoDTO cartao) {
