@@ -29,11 +29,10 @@ public class FuncionarioService {
                 funcionarioDTO.getCpf(),
                 funcionarioDTO.getFuncao()
         );
-        if (funcionarioDTO.senhaValida() && funcionarioDTO.idadeValida()) {
+        if (funcionarioDTO.senhaValida()) {
             return funcionarioRepository.save(funcionario);
         }
-        //qual dado é invalido?
-        throw new TrataUnprocessableEntity("Dados inválidos");
+        throw new TrataUnprocessableEntity("Senha Invalida");
     }
 
     public FuncionarioEntity atualizaFuncionario(NovoFuncionarioDTO funcionarioDTO, Integer idFuncionario) {
@@ -47,10 +46,10 @@ public class FuncionarioService {
             funcionarioAtualizado.setCpf(funcionarioAtualizado.getCpf());
             funcionarioAtualizado.setFuncao(funcionarioDTO.getFuncao());
 
-            if (funcionarioDTO.senhaValida() && funcionarioDTO.idadeValida()) {
+            if (funcionarioDTO.senhaValida()) {
                 return funcionarioRepository.save(funcionarioAtualizado);
             }
-                throw new TrataUnprocessableEntity("Dados invalidos");
+                throw new TrataUnprocessableEntity("Senha Invalida");
         }).orElseThrow(() -> new EntityNotFoundException("Funcionario não encontrado com id: " + idFuncionario));
     }
 
@@ -68,21 +67,12 @@ public class FuncionarioService {
         if (idFuncionario <= 0) {
             throw new TrataUnprocessableEntity("O ID deve ser um número positivo.");
         }
-        // nao precisa disso
-//        if (buscaTodosFuncionario() == null){
-//            throw new TrataUnprocessableEntity("Lista de Funcionários vazia");
-//        }
 
         return funcionarioRepository.findById(idFuncionario)
                 .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com ID: " + idFuncionario));
     }
 
     public List<FuncionarioEntity> buscaTodosFuncionario() {
-
-        // nao retorna null, retorna lista vazia
-//        if (funcionarioRepository.findAll().isEmpty()) {
-//            return null;
-//        }
         return funcionarioRepository.findAll();
     }
 }
