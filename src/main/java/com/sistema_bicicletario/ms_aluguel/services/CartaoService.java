@@ -36,5 +36,4 @@ public class CartaoService {
         return cartaoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cartão não encontrado"));
     }
-
 }
