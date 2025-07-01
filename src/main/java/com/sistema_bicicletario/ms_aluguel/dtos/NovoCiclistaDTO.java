@@ -28,10 +28,13 @@
 
         private String cpf;
         private PassaporteDTO passaporte;
+
+        @JsonProperty(required = true)
         private Nacionalidade nacionalidade;
 
         @NotBlank
         @Email
+        @JsonProperty(required = true)
         private String email;
 
         @JsonProperty(required = true)

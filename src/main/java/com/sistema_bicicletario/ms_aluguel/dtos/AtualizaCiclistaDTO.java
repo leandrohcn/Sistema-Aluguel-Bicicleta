@@ -13,7 +13,6 @@ import java.time.LocalDate;
 
 @Getter @AllArgsConstructor @Setter @NoArgsConstructor
 public class AtualizaCiclistaDTO {
-
     private String nome;
     private String senha;
     private String confirmaSenha;
