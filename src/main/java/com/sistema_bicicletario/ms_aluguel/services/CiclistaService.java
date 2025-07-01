@@ -25,99 +25,147 @@ public class CiclistaService {
     }
 
     @Transactional
-    public CiclistaEntity cadastrarCiclista(NovoCiclistaDTO novoCiclistaDto) {
-        // nao sei qual minha opiniao sobre isso mas ok
+    public CiclistaResponseDTO cadastrarCiclista(NovoCiclistaDTO novoCiclistaDto) {
         verificarRegrasDeNegocioDeCadastro(novoCiclistaDto);
+        CiclistaEntity ciclistaCriado;
 
-        CiclistaEntity ciclista = new CiclistaEntity(
+        if (novoCiclistaDto.getNacionalidade().equals(Nacionalidade.BRASILEIRO)) {
+            ciclistaCriado = cadastraCiclistaBrasileiro(novoCiclistaDto);
+        }
+        else if (novoCiclistaDto.getNacionalidade().equals(Nacionalidade.ESTRANGEIRO)) {
+            ciclistaCriado = cadastraCiclistaEstrangeiro(novoCiclistaDto);
+        } else {
+            throw new EntityNotFoundException("Requisição mal formada");
+        }
+
+        return new CiclistaResponseDTO(ciclistaCriado);
+    }
+
+    private CiclistaEntity cadastraCiclistaBrasileiro(NovoCiclistaDTO novoCiclistaDto) {
+        CiclistaEntity ciclistaBrasileiro = new CiclistaEntity(
                 novoCiclistaDto.getNome(),
                 novoCiclistaDto.getDataNascimento(),
                 novoCiclistaDto.getCpf(),
                 novoCiclistaDto.getEmail(),
                 novoCiclistaDto.getNacionalidade(),
                 novoCiclistaDto.getUrlFotoDocumento(),
-                //tem q criptografar a senha
                 novoCiclistaDto.getSenha(),
                 novoCiclistaDto.getConfirmaSenha()
         );
-
-        // isso aqui nao po, eu posso criar um ciclista nacional q tenha passaporte != null
-        if (novoCiclistaDto.getPassaporte() != null) {
-            PassaporteDTO dto = novoCiclistaDto.getPassaporte();
-            PassaporteEntity passaporte = new PassaporteEntity(
-                    dto.getNumeroPassaporte(),
-                    dto.getValidadePassaporte(),
-                    dto.getPais()
-            );
-            ciclista.setPassaporteEntity(passaporte);
-        }
-
         CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity(
                 novoCiclistaDto.getNome(),
                 novoCiclistaDto.getMeioDePagamento().getNumeroCartao(),
                 novoCiclistaDto.getMeioDePagamento().getCvv(),
                 novoCiclistaDto.getMeioDePagamento().getValidadeCartao(),
-                ciclista
+                ciclistaBrasileiro
         );
-        ciclista.setCartao(cartao);
-        ciclista.setStatus(Status.AGUARDANDO_CONFIRMACAO);
-        // po aqui poderia ja retornar o dto ao ivnes da entidade ne
-        return ciclistaRepository.save(ciclista);
+        ciclistaBrasileiro.setCartao(cartao);
+        ciclistaBrasileiro.setStatus(Status.AGUARDANDO_CONFIRMACAO);
+        return ciclistaRepository.save(ciclistaBrasileiro);
+    }
+
+    private CiclistaEntity cadastraCiclistaEstrangeiro(NovoCiclistaDTO novoCiclistaDto) {
+        CiclistaEntity ciclistaEstrangeiro = new CiclistaEntity(
+                novoCiclistaDto.getNome(),
+                novoCiclistaDto.getDataNascimento(),
+                novoCiclistaDto.getEmail(),
+                novoCiclistaDto.getNacionalidade(),
+                novoCiclistaDto.getUrlFotoDocumento(),
+                novoCiclistaDto.getSenha(),
+                novoCiclistaDto.getConfirmaSenha()
+        );
+        PassaporteDTO passaporteDto = novoCiclistaDto.getPassaporte();
+        PassaporteEntity passaporte = new PassaporteEntity(
+                passaporteDto.getNumeroPassaporte(),
+                passaporteDto.getValidadePassaporte(),
+                passaporteDto.getPais()
+        );
+        CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity(
+                novoCiclistaDto.getNome(),
+                novoCiclistaDto.getMeioDePagamento().getNumeroCartao(),
+                novoCiclistaDto.getMeioDePagamento().getCvv(),
+                novoCiclistaDto.getMeioDePagamento().getValidadeCartao(),
+                ciclistaEstrangeiro
+        );
+        ciclistaEstrangeiro.setPassaporteEntity(passaporte);
+        ciclistaEstrangeiro.setCartao(cartao);
+        ciclistaEstrangeiro.setStatus(Status.AGUARDANDO_CONFIRMACAO);
+        return ciclistaRepository.save(ciclistaEstrangeiro);
     }
 
     @Transactional
-    public CiclistaEntity atualizarCiclista(Integer id, AtualizaCiclistaDTO ciclistaDTO) {
+    public CiclistaResponseDTO atualizarCiclista(Integer id, AtualizaCiclistaDTO ciclistaDTO) {
+        CiclistaEntity ciclista = ciclistaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Ciclista não encontrado com id: " +  id));
 
-        // mas que isso é o maior return do mundo
-        // acho mais legal tirar desse map, atribuir a uma entidade e depois salvar ela de novo
-        return ciclistaRepository.findById(id).map(ciclista -> {
-            ciclista.setNome(ciclistaDTO.getNome() != null ? ciclistaDTO.getNome() : ciclista.getNome());
-            ciclista.setDataNascimento(ciclistaDTO.getDataNascimento() != null ? ciclistaDTO.getDataNascimento() : ciclista.getDataNascimento());
-            ciclista.setNacionalidade(ciclistaDTO.getNacionalidade() != null ? ciclistaDTO.getNacionalidade() : ciclista.getNacionalidade());
-            ciclista.setUrlFotoDocumento(ciclistaDTO.getUrlFotoDocumento() != null ? ciclistaDTO.getUrlFotoDocumento() : ciclista.getUrlFotoDocumento());
-            ciclista.setCpf(ciclistaDTO.getCpf() != null ? ciclistaDTO.getCpf() : ciclista.getCpf());
+        regrasDeNegocioAtualiza(ciclistaDTO, ciclista);
 
-            if (ciclistaDTO.getSenha() != null && !ciclistaDTO.getSenha().isBlank()) {
-                if (!ciclistaDTO.senhaValida()) {
-                    throw new TrataUnprocessableEntity("Senhas diferentes");
-                }
-                ciclista.setSenha(ciclistaDTO.getSenha());
-                ciclista.setConfirmaSenha(ciclistaDTO.getConfirmaSenha());
-            }
+        ciclista.setNome(!ciclistaDTO.getNome().isBlank() ? ciclistaDTO.getNome() : ciclista.getNome());
+        ciclista.setCpf(!ciclistaDTO.getCpf().isBlank() ? ciclistaDTO.getCpf() : ciclista.getCpf());
+        ciclista.setUrlFotoDocumento(!ciclistaDTO.getUrlFotoDocumento().isBlank() ? ciclistaDTO.getUrlFotoDocumento() : ciclista.getUrlFotoDocumento());
+        ciclista.setNacionalidade(ciclistaDTO.getNacionalidade() != null ? ciclistaDTO.getNacionalidade() : ciclista.getNacionalidade());
+        ciclista.setSenha(!ciclistaDTO.getSenha().isBlank() ? ciclistaDTO.getSenha() : ciclista.getSenha());
+        ciclista.setConfirmaSenha(!ciclistaDTO.getConfirmaSenha().isBlank() ? ciclistaDTO.getConfirmaSenha() : ciclista.getConfirmaSenha());
 
-            if (ciclistaDTO.getEmail() != null && !ciclistaDTO.getEmail().isBlank()) {
-                if (!ciclistaDTO.getEmail().equals(ciclista.getEmail()) && ciclistaRepository.existsByEmail(ciclistaDTO.getEmail())) {
-                    throw new TrataUnprocessableEntity("Email já existente");
-                }
-                ciclista.setEmail(ciclistaDTO.getEmail());
-            } else {
-                ciclista.setEmail(ciclista.getEmail());
-            }
-            //isso aq vai ser resolvido com a atualizacao do UC01
-            if (ciclistaDTO.getPassaporte() != null) {
-                PassaporteEntity passaporte = ciclista.getPassaporteEntity() != null ? ciclista.getPassaporteEntity() : new PassaporteEntity();
+        PassaporteDTO passaporteDTO = ciclistaDTO.getPassaporte();
+        if (ciclistaDTO.getPassaporte() != null){
+            PassaporteEntity passaporte = new PassaporteEntity(
+                    passaporteDTO.getNumeroPassaporte(),
+                    passaporteDTO.getValidadePassaporte(),
+                    passaporteDTO.getPais()
+            );
+            ciclista.setPassaporteEntity(passaporte);
+        } else {
+            ciclista.setPassaporteEntity(ciclista.getPassaporteEntity());
+        }
 
-                if (ciclistaDTO.getPassaporte().getNumeroPassaporte() != null && !ciclistaDTO.getPassaporte().getNumeroPassaporte().isBlank()) {
-                    passaporte.setNumeroPassaporte(ciclistaDTO.getPassaporte().getNumeroPassaporte());
-                }
-
-                if (ciclistaDTO.getPassaporte().getPais() != null && !ciclistaDTO.getPassaporte().getPais().isBlank()) {
-                    passaporte.setPais(ciclistaDTO.getPassaporte().getPais());
-                }
-
-                if (ciclistaDTO.getPassaporte().getValidadePassaporte() != null) {
-                    passaporte.setValidadePassaporte(ciclistaDTO.getPassaporte().getValidadePassaporte());
-                }
-
-                ciclista.setPassaporteEntity(passaporte);
-            }
-
-            regrasDeNegocioAtualiza(ciclista);
-
-            return ciclistaRepository.save(ciclista);
-        }).orElseThrow(() -> new EntityNotFoundException("Ciclista não encontrado com ID: " + id));
+        CiclistaEntity ciclistaAtualizado = ciclistaRepository.save(ciclista);
+        EnviaEmailDTO enviaEmailDTO = new EnviaEmailDTO();
+        enviaEmailDTO.envioDeMensagem(ciclistaAtualizado.getEmail());
+        return new CiclistaResponseDTO(ciclistaAtualizado);
     }
 
+    private void regrasDeNegocioAtualiza(AtualizaCiclistaDTO ciclistaDto, CiclistaEntity ciclistaExistente) {
+        String novoEmail = ciclistaDto.getEmail();
+        if (novoEmail != null && !novoEmail.equalsIgnoreCase(ciclistaExistente.getEmail())) {
+            if (existeEmail(novoEmail)) {
+                throw new TrataUnprocessableEntity("Email ja existente");
+            }
+        }
+
+        if (ciclistaDto.getSenha() != null) {
+            if (!ciclistaDto.senhaValida()) {
+                throw new TrataUnprocessableEntity("Senhas diferentes");
+            }
+        }
+
+        Nacionalidade nacionalidadeFinal = ciclistaDto.getNacionalidade() != null ? ciclistaDto.getNacionalidade() : ciclistaExistente.getNacionalidade();
+        if (nacionalidadeFinal == null) {
+            throw new IllegalArgumentException("Nacionalidade é um campo obrigatório e não pode ser removida.");
+        }
+
+        if (nacionalidadeFinal.equals(Nacionalidade.BRASILEIRO)) {
+            String cpfFinal = ciclistaDto.getCpf() != null ? ciclistaDto.getCpf() : ciclistaExistente.getCpf();
+            if (cpfFinal == null || cpfFinal.isBlank()) {
+                throw new IllegalArgumentException("CPF é obrigatório para brasileiros");
+            }
+        } else if (nacionalidadeFinal.equals(Nacionalidade.ESTRANGEIRO)) {
+            PassaporteDTO passaporteDto = ciclistaDto.getPassaporte();
+            PassaporteEntity passaporteExistente = ciclistaExistente.getPassaporteEntity();
+
+            if (passaporteDto != null) {
+                if (passaporteDto.getNumeroPassaporte() == null || passaporteDto.getNumeroPassaporte().isBlank() ||
+                        passaporteDto.getPais() == null || passaporteDto.getPais().isBlank() ||
+                        passaporteDto.getValidadePassaporte() == null) {
+                    throw new IllegalArgumentException("Ao atualizar, o passaporte completo é obrigatório para estrangeiros");
+                }
+            } else if (passaporteExistente == null) {
+                throw new IllegalArgumentException("Passaporte completo é obrigatório para estrangeiros");
+            }
+        }
+    }
+
+    @Transactional
     public CiclistaEntity ativarCiclista(Integer idCiclista) {
         if (idCiclista <= 0) {
             throw new TrataUnprocessableEntity("id invalido: " + idCiclista);
@@ -132,35 +180,23 @@ public class CiclistaService {
             if (!ciclistaAtual.getStatus().equals(Status.AGUARDANDO_CONFIRMACAO)) {
                 throw new TrataUnprocessableEntity("Dados não correspondem a registro pendente");
             }
-            if(ciclistaAtual.getConfirmaEmail() == null){
-                ConfirmaEmailDTO confirmaEmailDTO = new ConfirmaEmailDTO();
-                ciclistaAtual.setConfirmaEmail(confirmaEmailDTO);
-            }
-            ciclistaAtual.getConfirmaEmail().setHoraConfirmacao(LocalDateTime.now());
-            System.out.println(ciclistaAtual.getConfirmaEmail().getHoraConfirmacao());
+            ciclistaAtual.setHoraConfirmacaoEmail(LocalDateTime.now());
             ciclistaAtual.setStatus(Status.ATIVO);
-            ciclistaRepository.save(ciclistaAtual);
+            return ciclistaRepository.save(ciclistaAtual);
         }
-        return ciclistaEntity.get();
+            throw new TrataUnprocessableEntity("Email não foi confirmado");
     }
 
     public boolean confirmaEmail(){
         return true;
     }
 
-    //essa função era pra ser boolean
-    public void existeEmail(String email) {
-        if (!email.contains("@")) {
-            throw new IllegalArgumentException("Email enviado é inválido");
+    public Boolean existeEmail(String email) {
+        if (!email.contains("@")){
+            throw new IllegalArgumentException("Email não enviado como parametro");
         }
-        // quando nao tem o email, nao era pra dar erro era pra retornar false
-//        if (!ciclistaRepository.existsByEmail(email)) {
-//            throw new TrataUnprocessabeEntity("Dados inválidos");
-//        }
 
-
-
-        ciclistaRepository.existsByEmail(email);
+        return ciclistaRepository.existsByEmail(email);
     }
 
     public CiclistaEntity buscarCiclistaporId(Integer idCiclista) {
@@ -177,13 +213,10 @@ public class CiclistaService {
     }
 
     public boolean permiteAluguel(Integer idCiclista) {
-        //nao precisa disso
+        CiclistaEntity ciclista = ciclistaRepository.findById(idCiclista)
+                .orElseThrow(() -> new EntityNotFoundException("Ciclista não encontrado"));
 
-//        if (!ciclistaRepository.existsById(idCiclista)) {
-//            throw new EntityNotFoundException("Ciclista não encontrado com ID: " + idCiclista);
-//        }
-
-        return true;
+        return ciclista.getStatus().equals(Status.ATIVO) && ciclista.isAluguelAtivo();
     }
 
     public Optional<BicicletaDTO> bicicletaAlugada(Integer idCiclista) {
@@ -199,59 +232,39 @@ public class CiclistaService {
     }
 
     private void verificarRegrasDeNegocioDeCadastro(NovoCiclistaDTO novoCiclistaDto) {
-        //eu n acho q seja tudo unprocessabe entity nao
-
         if (!novoCiclistaDto.senhaValida()) {
             throw new TrataUnprocessableEntity("Senhas diferentes");
         }
 
-        if (ciclistaRepository.existsByEmail(novoCiclistaDto.getEmail())) {
+        if (existeEmail(novoCiclistaDto.getEmail())) {
             throw new TrataUnprocessableEntity("Email ja existente");
         }
 
         if (novoCiclistaDto.getNacionalidade() == null) {
-            throw new TrataUnprocessableEntity("Nacionalidade é obrigatória");
+            throw new IllegalArgumentException("Nacionalidade é obrigatória");
         }
 
         if (novoCiclistaDto.getNacionalidade().equals(Nacionalidade.BRASILEIRO)) {
             if (novoCiclistaDto.getCpf() == null || novoCiclistaDto.getCpf().isBlank()) {
-                throw new TrataUnprocessableEntity("CPF é obrigatório para brasileiros");
+                throw new IllegalArgumentException("CPF é obrigatório para brasileiros");
             }
         }else if (novoCiclistaDto.getNacionalidade().equals(Nacionalidade.ESTRANGEIRO)) {
             if (novoCiclistaDto.getPassaporte() == null) {
-                throw new TrataUnprocessableEntity("Passaporte é obrigatório para estrangeiros");
+                throw new IllegalArgumentException("Passaporte é obrigatório para estrangeiros");
             }
 
             if (novoCiclistaDto.getPassaporte().getPais() == null || novoCiclistaDto.getPassaporte().getPais().isBlank()) {
-                throw new TrataUnprocessableEntity("País do passaporte é obrigatório para estrangeiros");
+                throw new IllegalArgumentException("País do passaporte é obrigatório para estrangeiros");
             }
 
             if (novoCiclistaDto.getPassaporte().getValidadePassaporte() == null) {
-                throw new TrataUnprocessableEntity("Validade do passaporte é obrigatório para estrangeiros");
+                throw new IllegalArgumentException("Validade do passaporte é obrigatório para estrangeiros");
             }
 
             if (novoCiclistaDto.getPassaporte().getNumeroPassaporte() == null || novoCiclistaDto.getPassaporte().getNumeroPassaporte().isBlank()) {
-                throw new TrataUnprocessableEntity("Numero do passaporte é obrigatório para estrangeiros");
+                throw new IllegalArgumentException("Numero do passaporte é obrigatório para estrangeiros");
             }
         }
     }
 
-    private void regrasDeNegocioAtualiza(CiclistaEntity ciclista) {
-
-        if (ciclista.getNacionalidade().equals(Nacionalidade.BRASILEIRO)) {
-            if (ciclista.getCpf() == null || ciclista.getCpf().isBlank()) {
-                throw new TrataUnprocessableEntity("CPF é obrigatório para brasileiros");
-            }
-        }
-
-        if (ciclista.getNacionalidade().equals(Nacionalidade.ESTRANGEIRO)) {
-            PassaporteEntity passaporte = ciclista.getPassaporteEntity();
-            if (passaporte == null ||
-                    passaporte.getNumeroPassaporte() == null || passaporte.getNumeroPassaporte().isBlank() ||
-                    passaporte.getPais() == null || passaporte.getPais().isBlank() ||
-                    passaporte.getValidadePassaporte() == null) {
-                throw new TrataUnprocessableEntity("Passaporte completo é obrigatório para estrangeiros");
-            }
-        }
-    }
 }
