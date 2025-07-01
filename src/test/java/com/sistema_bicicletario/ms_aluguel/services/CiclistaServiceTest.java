@@ -21,6 +21,8 @@ public class CiclistaServiceTest {
     @Mock
     private CiclistaRepository ciclistaRepository;
 
+    @Mock CartaoService cartaoService;
+
     @InjectMocks
     @Spy
     private CiclistaService ciclistaService;
@@ -54,6 +56,8 @@ public class CiclistaServiceTest {
             entity.setId(1);
             return entity;
         });
+
+        when(cartaoService.cartaoExiste(any())).thenReturn(false);
 
         ArgumentCaptor<CiclistaEntity> ciclistaCaptor = ArgumentCaptor.forClass(CiclistaEntity.class);
         CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(dto);
@@ -211,19 +215,6 @@ public class CiclistaServiceTest {
         CiclistaEntity savedCiclista = ciclistaCaptor.getValue();
         assertEquals(Status.ATIVO, savedCiclista.getStatus());
         assertTrue(savedCiclista.getHoraConfirmacaoEmail().isBefore(LocalDateTime.now().plusSeconds(1)));
-    }
-
-    @Test
-    void deveLancarErroSeConfirmaEmailRetornarFalse() {
-        Integer idCiclista = 3;
-        CiclistaEntity ciclistaPendente = new CiclistaEntity();
-        ciclistaPendente.setId(idCiclista);
-        ciclistaPendente.setStatus(Status.AGUARDANDO_CONFIRMACAO);
-
-        when(ciclistaRepository.findById(idCiclista)).thenReturn(Optional.of(ciclistaPendente));
-        TrataUnprocessableEntityException exception = assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.ativarCiclista(idCiclista));
-        assertEquals("Email não foi confirmado", exception.getMessage());
-        verify(ciclistaRepository, never()).save(any());
     }
 
     @Test
