@@ -10,12 +10,14 @@ import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityEx
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class CiclistaService {
 
@@ -168,10 +170,10 @@ public class CiclistaService {
 
     private void regrasDeNegocioAtualiza(AtualizaCiclistaDTO ciclistaDto, CiclistaEntity ciclistaExistente) {
         String novoEmail = ciclistaDto.getEmail();
-        if (novoEmail != null && !novoEmail.equalsIgnoreCase(ciclistaExistente.getEmail())) {
-            if (existeEmail(novoEmail)) {
+        if (novoEmail != null && !novoEmail.equalsIgnoreCase(ciclistaExistente.getEmail()) && existeEmail(novoEmail)) {
+
                 throw new TrataUnprocessableEntityException("Email ja existente");
-            }
+
         }
 
         if (ciclistaDto.getSenha() != null) {
@@ -216,23 +218,20 @@ public class CiclistaService {
         if (!ciclistaEntity.isPresent()) {
             throw new EntityNotFoundException("Ciclista não encontrado com id: " + idCiclista);
         }
-        if (confirmaEmail()) {
-            CiclistaEntity ciclistaAtual = ciclistaEntity.get();
-            if (!ciclistaAtual.getStatus().equals(Status.AGUARDANDO_CONFIRMACAO)) {
-                throw new TrataUnprocessableEntityException("Dados não correspondem a registro pendente");
-            }
-            ciclistaAtual.setHoraConfirmacaoEmail(LocalDateTime.now());
-            ciclistaAtual.setStatus(Status.ATIVO);
-            return ciclistaRepository.save(ciclistaAtual);
+
+        CiclistaEntity ciclistaAtual = ciclistaEntity.get();
+        if (!ciclistaAtual.getStatus().equals(Status.AGUARDANDO_CONFIRMACAO)) {
+            throw new TrataUnprocessableEntityException("Dados não correspondem a registro pendente");
         }
-            throw new TrataUnprocessableEntityException("Email não foi confirmado");
+        ciclistaAtual.setHoraConfirmacaoEmail(LocalDateTime.now());
+        ciclistaAtual.setStatus(Status.ATIVO);
+        return ciclistaRepository.save(ciclistaAtual);
+
     }
 
-    public boolean confirmaEmail(){
-        return true;
-    }
 
-    public Boolean existeEmail(String email) {
+
+    public boolean existeEmail(String email) {
         if (!email.contains("@")){
             throw new IllegalArgumentException("Email inválido");
         }
@@ -308,6 +307,7 @@ public class CiclistaService {
         }
     }
     public boolean validarCartao(NovoCartaoDeCreditoDTO cartao) {
+        log.info(cartao.toString());
         return true;
     }
 }
