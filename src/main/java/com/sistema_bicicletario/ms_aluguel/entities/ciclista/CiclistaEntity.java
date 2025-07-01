@@ -2,14 +2,15 @@ package com.sistema_bicicletario.ms_aluguel.entities.ciclista;
 
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.sistema_bicicletario.ms_aluguel.dtos.ConfirmaEmailDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Data
@@ -17,9 +18,6 @@ import java.time.LocalDate;
 @Table(name = "ciclista")
 @Getter
 @Setter
-// nao acho uma boa ideia usar o allargsconstructor aqui, pq um ciclista nacional nunca vai ter passaporte e um ciclista estrangeiro nunca vai ter cpf
-// criar dois construtores, um pra cada
-@AllArgsConstructor
 @NoArgsConstructor
 public class CiclistaEntity {
 
@@ -28,8 +26,7 @@ public class CiclistaEntity {
 
     private String nome;
     @Column(unique = true)
-    // criar um regex pra validar numero do cpf e usar o @pattern
-    // validar que o ciclista estrangeiro NAO TEM CPF ( acho q oq eu falei do construtor garante isso)
+    @Pattern(regexp = "(^\\d{11}$)|(^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$)", message = "CPF deve estar no formato 12345678901 ou 123.456.789-01")
     private String cpf;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -59,14 +56,27 @@ public class CiclistaEntity {
     @JsonManagedReference
     private CartaoDeCreditoEntity cartao;
 
-    @Transient
-    public ConfirmaEmailDTO confirmaEmail;
+    private LocalDateTime horaConfirmacaoEmail;
+    private boolean aluguelAtivo  = false;
+
 
     public CiclistaEntity(String nome, LocalDate dataNascimento, String cpf, String email,
                           Nacionalidade nacionalidade, String urlFotoDocumento, String senha, String confirmaSenha) {
         this.nome = nome;
         this.dataNascimento = dataNascimento;
         this.cpf = cpf;
+        this.email = email;
+        this.nacionalidade = nacionalidade;
+        this.urlFotoDocumento = urlFotoDocumento;
+        this.senha = senha;
+        this.confirmaSenha = confirmaSenha;
+    }
+
+
+    public CiclistaEntity(String nome, LocalDate dataNascimento, String email,
+                          Nacionalidade nacionalidade, String urlFotoDocumento, String senha, String confirmaSenha) {
+        this.nome = nome;
+        this.dataNascimento = dataNascimento;
         this.email = email;
         this.nacionalidade = nacionalidade;
         this.urlFotoDocumento = urlFotoDocumento;
