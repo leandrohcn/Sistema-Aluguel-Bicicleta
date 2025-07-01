@@ -197,7 +197,6 @@ public class CiclistaServiceTest {
         ciclistaPendente.setNome("Ciclista Teste");
 
         when(ciclistaRepository.findById(idCiclista)).thenReturn(Optional.of(ciclistaPendente));
-        doReturn(true).when(ciclistaService).confirmaEmail();
         when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         CiclistaEntity ciclistaAtivado = ciclistaService.ativarCiclista(idCiclista);
@@ -222,7 +221,6 @@ public class CiclistaServiceTest {
         ciclistaPendente.setStatus(Status.AGUARDANDO_CONFIRMACAO);
 
         when(ciclistaRepository.findById(idCiclista)).thenReturn(Optional.of(ciclistaPendente));
-        doReturn(false).when(ciclistaService).confirmaEmail();
         TrataUnprocessableEntityException exception = assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.ativarCiclista(idCiclista));
         assertEquals("Email não foi confirmado", exception.getMessage());
         verify(ciclistaRepository, never()).save(any());
@@ -246,7 +244,6 @@ public class CiclistaServiceTest {
         ciclista.setStatus(Status.ATIVO);
 
         when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclista));
-        doReturn(true).when(ciclistaService).confirmaEmail();
 
         assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.ativarCiclista(id));
     }
