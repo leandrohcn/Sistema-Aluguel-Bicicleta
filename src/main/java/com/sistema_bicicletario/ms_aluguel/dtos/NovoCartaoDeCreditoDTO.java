@@ -22,7 +22,7 @@ public class NovoCartaoDeCreditoDTO {
     private String cvv;
 
     @NotBlank
-    @Pattern(regexp = "^(0[1-9]|1[0-2])/\\d{2}$", message = "Formato de validade deve ser MM/yy")
+    @Pattern(regexp = "^(0[1-9]|1[0-2])/(?:2[6-9]|[3-9]\\d)$", message = "Formato de validade deve ser MM/yy")
 
 
     //testar validade

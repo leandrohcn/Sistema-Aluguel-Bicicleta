@@ -60,10 +60,10 @@ public class CiclistaService {
         } else {
             throw new EntityNotFoundException("Requisição mal formada");
         }
+        CiclistaEntity ciclistaSalvo = ciclistaRepository.save(novoCiclista);
 
         processarMeioDePagamento(novoCiclistaDto, novoCiclista);
         novoCiclista.setStatus(Status.AGUARDANDO_CONFIRMACAO);
-        CiclistaEntity ciclistaSalvo = ciclistaRepository.save(novoCiclista);
         return new CiclistaResponseDTO(ciclistaSalvo);
     }
 
@@ -79,7 +79,8 @@ public class CiclistaService {
                     dto.getNome(),
                     numeroCartao,
                     dto.getMeioDePagamento().getCvv(),
-                    dto.getMeioDePagamento().getValidadeCartao()
+                    dto.getMeioDePagamento().getValidadeCartao(),
+                    ciclista
 
             );
             ciclista.setCartao(cartao);

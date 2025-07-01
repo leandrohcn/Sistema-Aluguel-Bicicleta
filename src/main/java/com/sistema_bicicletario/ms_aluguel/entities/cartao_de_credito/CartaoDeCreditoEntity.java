@@ -34,12 +34,15 @@ public class CartaoDeCreditoEntity {
     private @NotNull String cvv;
 
     public CartaoDeCreditoEntity(String nomeTitular, String numero, String cvv,
-                                 String validade) {
-        this.nomeTitular = nomeTitular;
-        this.numero = numero;
-        this.cvv = cvv;
-        this.validade = validade;
-    }
+                                 String validade, CiclistaEntity ciclista) {
+
+            this.nomeTitular = nomeTitular;
+            this.numero = numero;
+            this.cvv = cvv;
+            this.validade = validade;
+            this.ciclista = ciclista;
+        }
+
 
     public CartaoDeCreditoEntity() {
 

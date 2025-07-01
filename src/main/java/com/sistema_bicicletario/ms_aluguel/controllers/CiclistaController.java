@@ -29,14 +29,14 @@ public class CiclistaController {
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<CiclistaResponseDTO> buscarCiclista(@PathVariable Integer id) {
         CiclistaEntity c = ciclistaService.buscarCiclistaporId(id);
         CiclistaResponseDTO responseBody = new CiclistaResponseDTO(c);
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id:\\d+}")
     public ResponseEntity<CiclistaResponseDTO> atualizarCiclista(@PathVariable Integer id,
                                                                  @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
 
@@ -45,7 +45,7 @@ public class CiclistaController {
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}/ativar")
+    @PostMapping("/{id:\\d+}/ativar")
     public ResponseEntity<CiclistaResponseDTO> ativarCiclista(@PathVariable Integer id) {
         CiclistaEntity ciclista = ciclistaService.ativarCiclista(id);
         return ResponseEntity.ok().body(new CiclistaResponseDTO(ciclista));
@@ -57,7 +57,7 @@ public class CiclistaController {
         return new ResponseEntity<>(existe, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/permiteAluguel")
+    @GetMapping("/{id:\\d+}/permiteAluguel")
     public ResponseEntity<Boolean> permiteAluguel(@PathVariable Integer id) {
         if (ciclistaService.permiteAluguel(id)) {
             return ResponseEntity.ok(true);
@@ -65,7 +65,7 @@ public class CiclistaController {
             return ResponseEntity.ok(false);
     }
 
-    @GetMapping("{id}/bicicletaAlugada")
+    @GetMapping("{id:\\d+}/bicicletaAlugada")
     public ResponseEntity<BicicletaDTO> bicicletaAlugada(@PathVariable Integer id) {
             Optional<BicicletaDTO> bicicleta = ciclistaService.bicicletaAlugada(id);
             return bicicleta.map(ResponseEntity::ok)
