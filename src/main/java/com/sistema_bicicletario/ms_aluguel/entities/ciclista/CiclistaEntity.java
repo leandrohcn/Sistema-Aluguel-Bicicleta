@@ -60,19 +60,6 @@ public class CiclistaEntity {
     private boolean aluguelAtivo  = false;
 
 
-    public CiclistaEntity(String nome, LocalDate dataNascimento, String cpf, String email,
-                          Nacionalidade nacionalidade, String urlFotoDocumento, String senha, String confirmaSenha) {
-        this.nome = nome;
-        this.dataNascimento = dataNascimento;
-        this.cpf = cpf;
-        this.email = email;
-        this.nacionalidade = nacionalidade;
-        this.urlFotoDocumento = urlFotoDocumento;
-        this.senha = senha;
-        this.confirmaSenha = confirmaSenha;
-    }
-
-
     public CiclistaEntity(String nome, LocalDate dataNascimento, String email,
                           Nacionalidade nacionalidade, String urlFotoDocumento, String senha, String confirmaSenha) {
         this.nome = nome;
