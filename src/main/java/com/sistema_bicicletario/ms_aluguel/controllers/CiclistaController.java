@@ -41,6 +41,7 @@ public class CiclistaController {
                                                                  @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
 
         CiclistaResponseDTO responseBody = ciclistaService.atualizarCiclista(id, ciclista);
+        enviarEmail();
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
