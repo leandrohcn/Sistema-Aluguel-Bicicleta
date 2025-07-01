@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,16 +24,14 @@ public class CartaoDeCreditoEntity {
 
     private String nomeTitular;
     @Column(unique = true)
-    //validar formato de cartao de credito com @pattern
-    // numero do cartao e cvv sao string, se nao é usado pra fazer conta é string
+    @Pattern(regexp = "(^\\d{13,19}$)", message = "Quantidade de digitos entre 13 e 19")
     private @NotNull String numero;
 
     private String validade;
 
-    @Column(length = 4)
-    //pattern aqui tambem
+    @Pattern(regexp = "^[0-9]{3,4}$",
+             message = "Cvv maximo de 4 digitos")
     private @NotNull String cvv;
-
 
     public CartaoDeCreditoEntity(String nomeTitular, String numero, String cvv,
                                  String validade, CiclistaEntity ciclista) {
