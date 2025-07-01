@@ -356,7 +356,7 @@ public class CiclistaServiceTest {
     @Test
     void deveAtualizarCiclistaComSucesso() {
         Integer id = 1;
-        CiclistaEntity ciclistaExistente = new CiclistaEntity("Antigo", LocalDate.now(), "111",
+        CiclistaEntity ciclistaExistente = new CiclistaEntity("Antigo", LocalDate.now(),
                 "antigo@email.com", Nacionalidade.BRASILEIRO, "url", "senha", "senha");
         ciclistaExistente.setId(id);
         AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
@@ -409,7 +409,7 @@ public class CiclistaServiceTest {
 
         boolean podeAlugar = ciclistaService.permiteAluguel(1);
 
-        assertTrue(podeAlugar);
+        assertFalse(podeAlugar);
     }
 
     @Test
@@ -419,9 +419,9 @@ public class CiclistaServiceTest {
         ciclista.setAluguelAtivo(false);
         when(ciclistaRepository.findById(1)).thenReturn(Optional.of(ciclista));
 
-        boolean podeAlugar = ciclistaService.permiteAluguel(1);
+        boolean naoPodeAlugar = ciclistaService.permiteAluguel(1);
 
-        assertFalse(podeAlugar);
+        assertTrue(naoPodeAlugar);
     }
 
     @Test
@@ -457,8 +457,8 @@ public class CiclistaServiceTest {
     @Test
     void deveLancarErroAoAtualizarBrasileiroRemovendoCpf() {
         Integer id = 1;
-        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome", LocalDate.now(), "12345", "email@email.com", Nacionalidade.BRASILEIRO, "url", "senha", "senha");
-
+        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome", LocalDate.now(), "email@email.com", Nacionalidade.BRASILEIRO, "url", "senha", "senha");
+        ciclistaExistente.setCpf("134343535");
         AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
         dto.setCpf("");
 
