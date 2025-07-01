@@ -104,7 +104,7 @@ class FuncionarioControllerTest {
     void deveExcluirFuncionario() {
         doNothing().when(funcionarioService).excluiFuncionario(1);
 
-        ResponseEntity<Void> resposta = controller.excluiFuncionario(1);
+        ResponseEntity<String> resposta = controller.excluiFuncionario(1);
 
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
         verify(funcionarioService).excluiFuncionario(1);

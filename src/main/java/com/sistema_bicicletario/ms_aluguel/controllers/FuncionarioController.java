@@ -53,10 +53,10 @@ public class FuncionarioController {
         return ResponseEntity.ok().body(funcionarioAtualizado);
 
     }
-    // nao retorna void, retorna mensagem de sucesso
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluiFuncionario(@PathVariable Integer id) {
+    public ResponseEntity<String> excluiFuncionario(@PathVariable Integer id) {
         funcionarioService.excluiFuncionario(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Dados removidos");
     }
 }

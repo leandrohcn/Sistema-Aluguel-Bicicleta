@@ -82,13 +82,12 @@ public class FuncionarioServiceTest {
     public void deveBuscarFuncionarioPorId() {
         Integer id = 1;
         FuncionarioEntity funcionario = new FuncionarioEntity("Carlos", "123", "123", "carlos@email.com", 28, "000", Funcao.ADMINISTRATIVO);
-
         when(funcionarioRepository.findById(id)).thenReturn(Optional.of(funcionario));
-        when(funcionarioRepository.findAll()).thenReturn(List.of(funcionario));
 
         FuncionarioEntity result = funcionarioService.buscaFuncionarioPorId(id);
-
         assertEquals("Carlos", result.getNome());
+        verify(funcionarioRepository, times(1)).findById(id);
+        verify(funcionarioRepository, never()).findAll();
     }
 
     @Test

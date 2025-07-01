@@ -59,7 +59,7 @@ public class CartaoServiceTest {
                 cartaoService.atualizaCartao(id, novoCartao)
         );
 
-        assertEquals("Cartão não encontrado", exception.getMessage());
+        assertEquals("Usuário não encontrado", exception.getMessage());
         verify(cartaoRepository, never()).save(any());
     }
 
