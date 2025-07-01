@@ -102,4 +102,20 @@ public class CartaoServiceTest {
 
         assertEquals("Cartão não encontrado", exception.getMessage());
     }
+
+    @Test
+    void deveRetornarTrueQuandoCartaoExiste() {
+        String numeroCartaoExistente = "123456789";
+        when(cartaoRepository.findByNumero(numeroCartaoExistente)).thenReturn(Optional.of(new CartaoDeCreditoEntity()));
+        boolean resultado = cartaoService.cartaoExiste(numeroCartaoExistente);
+        assertTrue(resultado);
+    }
+
+    @Test
+    void deveRetornarFalseQuandoCartaoNaoExiste() {
+        String numeroCartaoInexistente = "987654321";
+        when(cartaoRepository.findByNumero(numeroCartaoInexistente)).thenReturn(Optional.empty());
+        boolean resultado = cartaoService.cartaoExiste(numeroCartaoInexistente);
+        assertFalse(resultado);
+    }
 }

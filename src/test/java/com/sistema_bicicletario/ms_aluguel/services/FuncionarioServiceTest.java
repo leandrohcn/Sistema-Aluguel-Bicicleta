@@ -5,6 +5,7 @@ import com.sistema_bicicletario.ms_aluguel.entities.funcionario.Funcao;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
 import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import com.sistema_bicicletario.ms_aluguel.repositories.FuncionarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -101,6 +102,64 @@ public class FuncionarioServiceTest {
 
         assertFalse(resultado.isEmpty());
         assertEquals(1, resultado.size());
+    }
+    @Test
+    void deveLancarExcecaoAoAtualizarFuncionarioInexistente() {
+        Integer idInexistente = 99;
+        NovoFuncionarioDTO dto = new NovoFuncionarioDTO("Maria", "senha", "senha", "maria@email.com", 30, "111", Funcao.ADMINISTRATIVO);
+        when(funcionarioRepository.findById(idInexistente)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> funcionarioService.atualizaFuncionario(dto, idInexistente));
+        verify(funcionarioRepository, never()).save(any());
+    }
+
+    @Test
+    void deveLancarExcecaoAoAtualizarComSenhaInvalida() {
+        Integer id = 1;
+        NovoFuncionarioDTO dto = new NovoFuncionarioDTO("Maria", "senha1", "senha2", "maria@email.com", 30, "111", Funcao.ADMINISTRATIVO);
+        FuncionarioEntity existente = new FuncionarioEntity();
+        when(funcionarioRepository.findById(id)).thenReturn(Optional.of(existente));
+
+        assertThrows(TrataUnprocessableEntityException.class, () -> funcionarioService.atualizaFuncionario(dto, id));
+    }
+
+    @Test
+    void deveLancarExcecaoAoExcluirFuncionarioComIdInvalido() {
+        Integer idInvalido = 0;
+
+        assertThrows(TrataUnprocessableEntityException.class, () -> funcionarioService.excluiFuncionario(idInvalido));
+        verify(funcionarioRepository, never()).deleteById(anyInt());
+    }
+
+    @Test
+    void deveLancarExcecaoAoExcluirFuncionarioInexistente() {
+        Integer idInexistente = 99;
+        when(funcionarioRepository.existsById(idInexistente)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> funcionarioService.excluiFuncionario(idInexistente));
+    }
+
+    @Test
+    void deveLancarExcecaoAoBuscarFuncionarioPorIdInexistente() {
+        Integer idInexistente = 99;
+        when(funcionarioRepository.findById(idInexistente)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> funcionarioService.buscaFuncionarioPorId(idInexistente));
+    }
+
+    @Test
+    void deveLancarExcecaoAoBuscarFuncionarioPorIdInvalido() {
+        Integer idInvalido = -1;
+
+        assertThrows(TrataUnprocessableEntityException.class, () -> funcionarioService.buscaFuncionarioPorId(idInvalido));
+    }
+    @Test
+    void deveLancarExcecaoAoCadastrarComSenhaNula() {
+        NovoFuncionarioDTO dtoComSenhaNula = new NovoFuncionarioDTO("dranka", "123",
+                null, "dranka@email.com", 30, "111", Funcao.REPARADOR);
+        var exception = assertThrows(TrataUnprocessableEntityException.class, () -> funcionarioService.criaFuncionario(dtoComSenhaNula));
+        assertEquals("Senha Invalida", exception.getMessage());
+        verify(funcionarioRepository, never()).save(any());
     }
 }
 

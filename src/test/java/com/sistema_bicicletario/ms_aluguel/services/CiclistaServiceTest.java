@@ -443,4 +443,149 @@ public class CiclistaServiceTest {
         assertThrows(EntityNotFoundException.class, () -> ciclistaService.permiteAluguel(99));
     }
 
+    @Test
+    void deveLancarErroAoCadastrarComCartaoRecusado() {
+        when(ciclistaRepository.existsByEmail(anyString())).thenReturn(false);
+        when(ciclistaRepository.findByCpf(anyString())).thenReturn(Optional.empty());
+        when(cartaoService.cartaoExiste(anyString())).thenReturn(false);
+        doReturn(false).when(ciclistaService).validarCartao(any(NovoCartaoDeCreditoDTO.class));
+        var exception = assertThrows(IllegalArgumentException.class, () -> ciclistaService.cadastrarCiclista(novoCiclistaDTO));
+
+        assertEquals("Cartão recusado", exception.getMessage());
+    }
+
+    @Test
+    void deveLancarErroAoAtualizarBrasileiroRemovendoCpf() {
+        Integer id = 1;
+        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome", LocalDate.now(), "12345", "email@email.com", Nacionalidade.BRASILEIRO, "url", "senha", "senha");
+
+        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+        dto.setCpf("");
+
+        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
+        var exception = assertThrows(IllegalArgumentException.class, () -> ciclistaService.atualizarCiclista(id, dto));
+
+        assertEquals("CPF é obrigatório para brasileiros", exception.getMessage());
+    }
+
+    @Test
+    void deveLancarErroAoAtualizarEstrangeiroComPassaporteIncompleto() {
+        Integer id = 1;
+        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome", LocalDate.now(), "email@email.com", Nacionalidade.ESTRANGEIRO, "url", "senha", "senha");
+
+        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+        PassaporteDTO passaporteIncompleto = new PassaporteDTO();
+        passaporteIncompleto.setNumeroPassaporte(null);
+        passaporteIncompleto.setValidadePassaporte("12/33");
+        passaporteIncompleto.setPais("BR");
+        dto.setPassaporte(passaporteIncompleto);
+        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
+
+        var exception = assertThrows(IllegalArgumentException.class, () -> ciclistaService.atualizarCiclista(id, dto));
+
+        assertEquals("Ao atualizar, o passaporte completo é obrigatório para estrangeiros", exception.getMessage());
+    }
+
+    @Test
+    void deveAtualizarCiclistaAdicionandoPassaporte() {
+        Integer id = 1;
+        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome Antigo", LocalDate.now(), "email@email.com", Nacionalidade.ESTRANGEIRO, "url antiga", "senha antiga", "senha antiga");
+        ciclistaExistente.setId(id);
+
+        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+        PassaporteDTO novoPassaporte = new PassaporteDTO();
+        novoPassaporte.setPais("US");
+        novoPassaporte.setValidadePassaporte("12/33");
+        novoPassaporte.setNumeroPassaporte("PASS123");
+        dto.setPassaporte(novoPassaporte);
+        dto.setNome("");
+        dto.setCpf("");
+        dto.setUrlFotoDocumento("");
+        dto.setSenha("");
+        dto.setConfirmaSenha("");
+
+        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
+        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+        ArgumentCaptor<CiclistaEntity> captor = ArgumentCaptor.forClass(CiclistaEntity.class);
+        ciclistaService.atualizarCiclista(id, dto);
+        verify(ciclistaRepository).save(captor.capture());
+
+        CiclistaEntity ciclistaSalvo = captor.getValue();
+        assertNotNull(ciclistaSalvo.getPassaporteEntity());
+        assertEquals("PASS123", ciclistaSalvo.getPassaporteEntity().getNumeroPassaporte());
+        assertEquals("Nome Antigo", ciclistaSalvo.getNome());
+    }
+    @Test
+    void deveLancarExcecaoAoAtualizarEstrangeiroQueNaoTemPassaporte() {
+        Integer id = 1;
+        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome", LocalDate.now(), "email@email.com", Nacionalidade.ESTRANGEIRO, "url", "senha", "senha");
+
+        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+        dto.setNome("Novo Nome");
+
+        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
+
+        var exception = assertThrows(IllegalArgumentException.class, () -> ciclistaService.atualizarCiclista(id, dto));
+
+        assertEquals("Passaporte completo é obrigatório para estrangeiros", exception.getMessage());
+    }
+
+    @Test
+    void deveManterPassaporteAntigoSeNenhumForEnviadoNaAtualizacao() {
+        Integer id = 1;
+        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome", LocalDate.now(), "email@email.com", Nacionalidade.ESTRANGEIRO, "url", "senha", "senha");
+        ciclistaExistente.setId(id);
+        PassaporteEntity passaporteAntigo = new PassaporteEntity("ANTIGO123", "01/01/2030", "PT");
+        ciclistaExistente.setPassaporteEntity(passaporteAntigo);
+
+        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+        dto.setNome("Novo Nome");
+        dto.setCpf("");
+        dto.setUrlFotoDocumento("");
+        dto.setSenha("");
+        dto.setConfirmaSenha("");
+
+        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
+        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+        ArgumentCaptor<CiclistaEntity> captor = ArgumentCaptor.forClass(CiclistaEntity.class);
+
+        ciclistaService.atualizarCiclista(id, dto);
+
+        verify(ciclistaRepository).save(captor.capture());
+        CiclistaEntity ciclistaSalvo = captor.getValue();
+
+        assertNotNull(ciclistaSalvo.getPassaporteEntity());
+        assertEquals("ANTIGO123", ciclistaSalvo.getPassaporteEntity().getNumeroPassaporte());
+        assertEquals("Novo Nome", ciclistaSalvo.getNome());
+    }
+
+    @Test
+    void deveRetornarOptionalEmptyParaBicicletaAlugada() {
+        Integer idCiclista = 10;
+        CiclistaEntity ciclista = new CiclistaEntity();
+        ciclista.setStatus(Status.ATIVO);
+        ciclista.setAluguelAtivo(false);
+
+        when(ciclistaRepository.existsById(idCiclista)).thenReturn(true);
+        when(ciclistaRepository.findById(idCiclista)).thenReturn(Optional.of(ciclista));
+
+        Optional<BicicletaDTO> resultado = ciclistaService.bicicletaAlugada(idCiclista);
+
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void deveLancarExcecaoAoCadastrarComSenhaNula() {
+
+        NovoCiclistaDTO dtoComSenhaNula = new NovoCiclistaDTO();
+        dtoComSenhaNula.setSenha("senha123");
+        dtoComSenhaNula.setConfirmaSenha(null);
+        dtoComSenhaNula.setEmail("teste.null@email.com");
+        dtoComSenhaNula.setNacionalidade(Nacionalidade.BRASILEIRO);
+        dtoComSenhaNula.setCpf("09876543210");
+
+        when(ciclistaService.existeEmail("teste.null@email.com")).thenReturn(false);
+        var exception = assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.cadastrarCiclista(dtoComSenhaNula));
+        assertEquals("Senhas diferentes", exception.getMessage());
+    }
 }

@@ -242,10 +242,6 @@ public class CiclistaService {
             throw new TrataUnprocessableEntityException("id invalido: " + idCiclista);
         }
 
-        if (idCiclista.toString().isBlank()){
-            throw new IllegalArgumentException("id invalido");
-        }
-
         return ciclistaRepository.findById(idCiclista)
                 .orElseThrow((()-> new EntityNotFoundException("Ciclista não encontrado com ID: " + idCiclista)));
     }
