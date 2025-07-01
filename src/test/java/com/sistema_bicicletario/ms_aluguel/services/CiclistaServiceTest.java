@@ -26,31 +26,46 @@ public class CiclistaServiceTest {
     @InjectMocks
     @Spy
     private CiclistaService ciclistaService;
-
+    private NovoCiclistaDTO novoCiclistaDTO;
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
+        novoCiclistaDTO = new NovoCiclistaDTO();
+        novoCiclistaDTO.setNome("João");
+        novoCiclistaDTO.setDataNascimento(LocalDate.of(2000, 1, 1));
+        novoCiclistaDTO.setEmail("joao@email.com");
+        novoCiclistaDTO.setNacionalidade(Nacionalidade.BRASILEIRO);
+        novoCiclistaDTO.setCpf("12345678900");
+        novoCiclistaDTO.setUrlFotoDocumento("url");
+        novoCiclistaDTO.setSenha("senha123");
+        novoCiclistaDTO.setConfirmaSenha("senha123");
+
+        NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
+        cartao.setNumeroCartao("1234123412341234");
+        cartao.setCvv("123");
+        cartao.setValidadeCartao("12/30");
+        novoCiclistaDTO.setMeioDePagamento(cartao);
     }
 
     @Test
     void deveCadastrarCiclistaBrasileiroComSucesso() {
-        NovoCiclistaDTO dto = new NovoCiclistaDTO();
-        dto.setNome("João");
-        dto.setDataNascimento(LocalDate.of(2000, 1, 1));
-        dto.setCpf("12345678900");
-        dto.setEmail("joao@email.com");
-        dto.setNacionalidade(Nacionalidade.BRASILEIRO);
-        dto.setUrlFotoDocumento("url");
-        dto.setSenha("123");
-        dto.setConfirmaSenha("123");
+        novoCiclistaDTO = new NovoCiclistaDTO();
+        novoCiclistaDTO.setNome("João");
+        novoCiclistaDTO.setDataNascimento(LocalDate.of(2000, 1, 1));
+        novoCiclistaDTO.setCpf("12345678900");
+        novoCiclistaDTO.setEmail("joao@email.com");
+        novoCiclistaDTO.setNacionalidade(Nacionalidade.BRASILEIRO);
+        novoCiclistaDTO.setUrlFotoDocumento("url");
+        novoCiclistaDTO.setSenha("123");
+        novoCiclistaDTO.setConfirmaSenha("123");
 
         NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
         cartao.setNumeroCartao("1234123412341234");
         cartao.setCvv("123");
         cartao.setValidadeCartao(String.valueOf(LocalDate.of(2030, 1, 1)));
-        dto.setMeioDePagamento(cartao);
+        novoCiclistaDTO.setMeioDePagamento(cartao);
 
-        when(ciclistaRepository.existsByEmail(dto.getEmail())).thenReturn(false);
+        when(ciclistaRepository.existsByEmail(novoCiclistaDTO.getEmail())).thenReturn(false);
         when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(invocation -> {
             CiclistaEntity entity = invocation.getArgument(0);
             entity.setId(1);
@@ -60,15 +75,15 @@ public class CiclistaServiceTest {
         when(cartaoService.cartaoExiste(any())).thenReturn(false);
 
         ArgumentCaptor<CiclistaEntity> ciclistaCaptor = ArgumentCaptor.forClass(CiclistaEntity.class);
-        CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(dto);
+        CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(novoCiclistaDTO);
 
         assertNotNull(response);
         assertEquals(1, response.getId());
-        assertEquals(dto.getNome(), response.getNome());
+        assertEquals(novoCiclistaDTO.getNome(), response.getNome());
 
         verify(ciclistaRepository).save(ciclistaCaptor.capture());
         CiclistaEntity ciclistaSalvo = ciclistaCaptor.getValue();
-        assertEquals(dto.getCpf(), ciclistaSalvo.getCpf());
+        assertEquals(novoCiclistaDTO.getCpf(), ciclistaSalvo.getCpf());
         assertNull(ciclistaSalvo.getPassaporteEntity());
     }
 
@@ -292,6 +307,140 @@ public class CiclistaServiceTest {
         Integer idInvalido = 999;
         when(ciclistaRepository.existsById(idInvalido)).thenReturn(false);
         assertThrows(EntityNotFoundException.class, () -> ciclistaService.bicicletaAlugada(idInvalido));
+    }
+
+    @Test
+    void deveLancarErroAoCadastrarComEmailExistente() {
+        when(ciclistaRepository.existsByEmail("joao@email.com")).thenReturn(true);
+
+        var exception = assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.cadastrarCiclista(novoCiclistaDTO));
+        assertEquals("Email ja existente", exception.getMessage());
+        verify(ciclistaRepository, never()).save(any());
+    }
+
+    @Test
+    void deveLancarErroAoCadastrarBrasileiroComCpfExistente() {
+        when(ciclistaRepository.existsByEmail(anyString())).thenReturn(false);
+        when(ciclistaRepository.findByCpf(novoCiclistaDTO.getCpf())).thenReturn(Optional.of(new CiclistaEntity()));
+
+        var exception = assertThrows(IllegalArgumentException.class, () -> ciclistaService.cadastrarCiclista(novoCiclistaDTO));
+        assertEquals("CPF já existente", exception.getMessage());
+    }
+
+    @Test
+    void deveLancarErroAoCadastrarComSenhasDiferentes() {
+        novoCiclistaDTO.setConfirmaSenha("senha_diferente");
+
+        var exception = assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.cadastrarCiclista(novoCiclistaDTO));
+        assertEquals("Senhas diferentes", exception.getMessage());
+    }
+
+    @Test
+    void deveLancarErroAoCadastrarComNacionalidadeNula() {
+        novoCiclistaDTO.setNacionalidade(null);
+
+        var exception = assertThrows(IllegalArgumentException.class, () -> ciclistaService.cadastrarCiclista(novoCiclistaDTO));
+        assertEquals("Nacionalidade é obrigatória", exception.getMessage());
+    }
+
+    @Test
+    void deveLancarErroAoCadastrarComCartaoJaExistente() {
+        when(ciclistaRepository.existsByEmail(anyString())).thenReturn(false);
+        when(ciclistaRepository.findByCpf(anyString())).thenReturn(Optional.empty());
+        when(cartaoService.cartaoExiste(anyString())).thenReturn(true);
+
+        var exception = assertThrows(IllegalArgumentException.class, () -> ciclistaService.cadastrarCiclista(novoCiclistaDTO));
+        assertEquals("Cartao já cadastrado em outro usuário", exception.getMessage());
+    }
+
+    @Test
+    void deveAtualizarCiclistaComSucesso() {
+        Integer id = 1;
+        CiclistaEntity ciclistaExistente = new CiclistaEntity("Antigo", LocalDate.now(), "111",
+                "antigo@email.com", Nacionalidade.BRASILEIRO, "url", "senha", "senha");
+        ciclistaExistente.setId(id);
+        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+        dto.setNome("Novo Nome");
+        dto.setCpf("12345678910");
+        dto.setSenha("senha");
+        dto.setConfirmaSenha("senha");
+        dto.setUrlFotoDocumento("sdflasdf");
+
+        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
+        when(ciclistaRepository.existsByEmail("novo@email.com")).thenReturn(false);
+        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        CiclistaResponseDTO response = ciclistaService.atualizarCiclista(id, dto);
+
+        assertNotNull(response);
+        assertEquals("Novo Nome", response.getNome());
+        assertEquals("12345678910", response.getCpf());
+        verify(ciclistaRepository).save(any(CiclistaEntity.class));
+    }
+
+    @Test
+    void deveLancarErroAoAtualizarCiclistaInexistente() {
+        Integer id = 99;
+        when(ciclistaRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> ciclistaService.atualizarCiclista(id, new AtualizaCiclistaDTO()));
+    }
+
+    @Test
+    void deveLancarErroAoAtualizarParaNacionalidadeNula() {
+        Integer id = 1;
+        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+        dto.setNacionalidade(null);
+
+        CiclistaEntity ciclistaExistente = new CiclistaEntity();
+        ciclistaExistente.setNacionalidade(null);
+
+        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
+        var exception = assertThrows(IllegalArgumentException.class, () -> ciclistaService.atualizarCiclista(id, dto));
+        assertEquals("Nacionalidade é um campo obrigatório e não pode ser removida.", exception.getMessage());
+    }
+
+    @Test
+    void devePermitirAluguelQuandoCiclistaAtivoComAluguelAtivo() {
+        CiclistaEntity ciclista = new CiclistaEntity();
+        ciclista.setStatus(Status.ATIVO);
+        ciclista.setAluguelAtivo(true);
+        when(ciclistaRepository.findById(1)).thenReturn(Optional.of(ciclista));
+
+        boolean podeAlugar = ciclistaService.permiteAluguel(1);
+
+        assertTrue(podeAlugar);
+    }
+
+    @Test
+    void naoDevePermitirAluguelQuandoCiclistaAtivoSemAluguelAtivo() {
+        CiclistaEntity ciclista = new CiclistaEntity();
+        ciclista.setStatus(Status.ATIVO);
+        ciclista.setAluguelAtivo(false);
+        when(ciclistaRepository.findById(1)).thenReturn(Optional.of(ciclista));
+
+        boolean podeAlugar = ciclistaService.permiteAluguel(1);
+
+        assertFalse(podeAlugar);
+    }
+
+    @Test
+    void naoDevePermitirAluguelQuandoCiclistaNaoEstaAtivo() {
+        CiclistaEntity ciclista = new CiclistaEntity();
+        ciclista.setStatus(Status.INATIVO);
+        ciclista.setAluguelAtivo(false);
+        when(ciclistaRepository.findById(1)).thenReturn(Optional.of(ciclista));
+
+        boolean podeAlugar = ciclistaService.permiteAluguel(1);
+
+        assertFalse(podeAlugar);
+    }
+
+    @Test
+    void deveLancarExcecaoEmPermiteAluguelQuandoCiclistaNaoEncontrado() {
+        when(ciclistaRepository.findById(99)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> ciclistaService.permiteAluguel(99));
     }
 
 }

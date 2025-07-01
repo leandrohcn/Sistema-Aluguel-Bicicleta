@@ -163,8 +163,6 @@ public class CiclistaService {
         }
 
         CiclistaEntity ciclistaAtualizado = ciclistaRepository.save(ciclista);
-        EnviaEmailDTO enviaEmailDTO = new EnviaEmailDTO();
-        enviaEmailDTO.envioDeMensagem(ciclistaAtualizado.getEmail());
         return new CiclistaResponseDTO(ciclistaAtualizado);
     }
 
