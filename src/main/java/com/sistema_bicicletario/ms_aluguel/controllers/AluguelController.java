@@ -1,9 +1,11 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.AluguelDTO;
+import com.sistema_bicicletario.ms_aluguel.dtos.DevolucaoDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoAluguelDTO;
+import com.sistema_bicicletario.ms_aluguel.dtos.NovoDevolucaoDTO;
 import com.sistema_bicicletario.ms_aluguel.services.AluguelService;
-import jakarta.persistence.EntityNotFoundException;
+import com.sistema_bicicletario.ms_aluguel.services.DevolucaoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,32 +19,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class AluguelController {
 
     private final AluguelService aluguelService;
+    private final DevolucaoService devolucaoService;
 
-    public AluguelController(AluguelService aluguelService) {
+    public AluguelController(AluguelService aluguelService, DevolucaoService devolucaoService) {
         this.aluguelService = aluguelService;
+        this.devolucaoService = devolucaoService;
     }
 
-    //cara ta faltando a entidade aluguel aqui
-    //Devem ser registrados: a data/hora da retirada, o número da tranca,  o número da bicicleta,
-    // o cartão usado para cobrança e o ciclista que a pegou
-    // + as informações que estao no swagger
-
-
-    // cade o caso de uso de devolver bicicleta?
-
-
     @PostMapping
-    public ResponseEntity<AluguelDTO> realizarAluguel(@RequestBody @Valid NovoAluguelDTO dto) {
+    public ResponseEntity<AluguelDTO> realizarAluguel(@RequestBody @Valid NovoAluguelDTO novoAluguel) {
+        AluguelDTO aluguelRealizado = aluguelService.realizarAluguel(novoAluguel);
+        return ResponseEntity.ok(aluguelRealizado);
+    }
 
-        // faltou a chamada fake pro serviço de tranca
-
-        try {
-            AluguelDTO aluguel = aluguelService.realizaAluguel(dto);
-            //chamada fake pra enviar email
-
-            return ResponseEntity.ok().body(aluguel);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @PostMapping("/devolucao")
+    public ResponseEntity<DevolucaoDTO> devolverBicicleta(@RequestBody @Valid NovoDevolucaoDTO devolucaoDTO) {
+        DevolucaoDTO devolucaoRealizada = devolucaoService.realizarDevolucao(devolucaoDTO);
+        return ResponseEntity.ok(devolucaoRealizada);
     }
 }
