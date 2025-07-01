@@ -2,7 +2,7 @@ package com.sistema_bicicletario.ms_aluguel.services;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.*;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.*;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -171,7 +171,7 @@ public class CiclistaServiceTest {
         when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclista));
         when(ciclistaRepository.existsByEmail("duplicado@email.com")).thenReturn(true);
 
-        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.atualizarCiclista(id, dto));
+        assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.atualizarCiclista(id, dto));
     }
 
     @Test
@@ -185,7 +185,7 @@ public class CiclistaServiceTest {
 
         when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclista));
 
-        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.atualizarCiclista(id, dto));
+        assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.atualizarCiclista(id, dto));
     }
 
     @Test
@@ -223,14 +223,14 @@ public class CiclistaServiceTest {
 
         when(ciclistaRepository.findById(idCiclista)).thenReturn(Optional.of(ciclistaPendente));
         doReturn(false).when(ciclistaService).confirmaEmail();
-        TrataUnprocessableEntity exception = assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.ativarCiclista(idCiclista));
+        TrataUnprocessableEntityException exception = assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.ativarCiclista(idCiclista));
         assertEquals("Email não foi confirmado", exception.getMessage());
         verify(ciclistaRepository, never()).save(any());
     }
 
     @Test
     void deveLancarErroAoAtivarCiclistaComIdInvalido() {
-        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.ativarCiclista(-1));
+        assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.ativarCiclista(-1));
     }
 
     @Test
@@ -248,7 +248,7 @@ public class CiclistaServiceTest {
         when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclista));
         doReturn(true).when(ciclistaService).confirmaEmail();
 
-        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.ativarCiclista(id));
+        assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.ativarCiclista(id));
     }
 
     @Test
@@ -264,7 +264,7 @@ public class CiclistaServiceTest {
 
     @Test
     void deveLancarErroSeBuscarCiclistaComIdInvalido() {
-        assertThrows(TrataUnprocessableEntity.class, () -> ciclistaService.buscarCiclistaporId(0));
+        assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.buscarCiclistaporId(0));
     }
 
     @Test

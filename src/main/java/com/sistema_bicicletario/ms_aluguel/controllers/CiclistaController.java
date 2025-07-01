@@ -22,8 +22,12 @@ public class CiclistaController {
     @PostMapping
     public ResponseEntity<CiclistaResponseDTO> cadastrarCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
         CiclistaResponseDTO responseBody = ciclistaService.cadastrarCiclista(ciclista);
+
+        enviarEmail();
+
         return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<CiclistaResponseDTO> buscarCiclista(@PathVariable Integer id) {
@@ -65,5 +69,9 @@ public class CiclistaController {
             Optional<BicicletaDTO> bicicleta = ciclistaService.bicicletaAlugada(id);
             return bicicleta.map(ResponseEntity::ok)
                     .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    public void enviarEmail(){
+
     }
 }

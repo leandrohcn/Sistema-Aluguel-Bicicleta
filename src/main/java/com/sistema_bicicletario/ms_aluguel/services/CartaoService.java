@@ -36,4 +36,8 @@ public class CartaoService {
         return cartaoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Cartão não encontrado"));
     }
+
+    public boolean cartaoExiste(String numero) {
+        return cartaoRepository.findByNumero(numero).isPresent();
+    }
 }

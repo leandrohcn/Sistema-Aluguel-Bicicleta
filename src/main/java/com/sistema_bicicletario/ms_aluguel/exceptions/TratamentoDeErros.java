@@ -11,6 +11,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,8 +34,8 @@ public class TratamentoDeErros {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(erros);
     }
 
-    @ExceptionHandler(TrataUnprocessableEntity.class)
-    public ResponseEntity<List<ErroDTO>> handleRegraNegocio(TrataUnprocessableEntity ex) {
+    @ExceptionHandler(TrataUnprocessableEntityException.class)
+    public ResponseEntity<List<ErroDTO>> handleRegraNegocio(TrataUnprocessableEntityException ex) {
         ErroDTO erro = new ErroDTO("REGRA_NEGOCIO", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Collections.singletonList(erro));
     }
@@ -69,10 +70,23 @@ public class TratamentoDeErros {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
     }
 
+    // tratar mensagem de erro, era pra ser 422
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErroDTO> handleIllegalArgument(IllegalArgumentException ex) {
         log.error("Argumento ilegal passado para um método: {}", ex.getMessage(), ex);
-        ErroDTO erro = new ErroDTO("ERRO_INTERNO", "Ocorreu um erro inesperado processando sua requisição.");
+        ErroDTO erro = new ErroDTO("Argumento inválido", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(erro);
+    }
+
+
+    //NoResourceFoundException
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErroDTO> handleResourceNotFound(NoResourceFoundException ex) {
+        log.error("ResourceNotFound", ex.getMessage(), ex);
+        ErroDTO erro = new ErroDTO("Argumento inexistente", "Não foram passados parâmetros");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erro);
     }
+    //ConstraintViolationException
+
+
 }

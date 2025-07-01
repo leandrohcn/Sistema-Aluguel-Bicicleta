@@ -2,7 +2,7 @@ package com.sistema_bicicletario.ms_aluguel.services;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import com.sistema_bicicletario.ms_aluguel.repositories.FuncionarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class FuncionarioService {
         if (funcionarioDTO.senhaValida()) {
             return funcionarioRepository.save(funcionario);
         }
-        throw new TrataUnprocessableEntity("Senha Invalida");
+        throw new TrataUnprocessableEntityException("Senha Invalida");
     }
 
     public FuncionarioEntity atualizaFuncionario(NovoFuncionarioDTO funcionarioDTO, Integer idFuncionario) {
@@ -49,13 +49,13 @@ public class FuncionarioService {
             if (funcionarioDTO.senhaValida()) {
                 return funcionarioRepository.save(funcionarioAtualizado);
             }
-                throw new TrataUnprocessableEntity("Senha Invalida");
+                throw new TrataUnprocessableEntityException("Senha Invalida");
         }).orElseThrow(() -> new EntityNotFoundException("Funcionario não encontrado com id: " + idFuncionario));
     }
 
     public void excluiFuncionario(Integer idFuncionario) {
        if (idFuncionario <= 0) {
-           throw new TrataUnprocessableEntity("O ID deve ser um número positivo.");
+           throw new TrataUnprocessableEntityException("O ID deve ser um número positivo.");
        }
        if (!funcionarioRepository.existsById(idFuncionario)) {
            throw new EntityNotFoundException("Funcionario não encontrado com id: " + idFuncionario);
@@ -65,7 +65,7 @@ public class FuncionarioService {
 
     public FuncionarioEntity buscaFuncionarioPorId(Integer idFuncionario) {
         if (idFuncionario <= 0) {
-            throw new TrataUnprocessableEntity("O ID deve ser um número positivo.");
+            throw new TrataUnprocessableEntityException("O ID deve ser um número positivo.");
         }
 
         return funcionarioRepository.findById(idFuncionario)

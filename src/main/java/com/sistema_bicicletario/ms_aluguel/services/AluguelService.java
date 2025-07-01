@@ -5,7 +5,7 @@ import com.sistema_bicicletario.ms_aluguel.entities.aluguel.AluguelEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Status;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import com.sistema_bicicletario.ms_aluguel.repositories.AluguelRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
@@ -42,11 +42,11 @@ public class AluguelService {
         validarCondicoesDaBicicleta(bicicleta);
 
         CartaoDeCreditoEntity cartaoDoCiclista = cartaoRepository.findById(novoAluguel.getCiclista())
-                .orElseThrow(() -> new TrataUnprocessableEntity("Ciclista não encontrado"));
+                .orElseThrow(() -> new TrataUnprocessableEntityException("Ciclista não encontrado"));
 
         CobrancaDTO cobranca = externo_equipamentoSimulacao.realizarCobranca(novoAluguel.getCiclista(), 10.00);
         if (!"PAGO".equals(cobranca.getStatus())) {
-            throw new TrataUnprocessableEntity( "Pagamento recusado.");
+            throw new TrataUnprocessableEntityException( "Pagamento recusado.");
         }
 
         AluguelEntity aluguelSalvo = registrarDadosDoAluguel(novoAluguel.getCiclista(), tranca, bicicleta, cobranca, cartaoDoCiclista);
@@ -77,16 +77,16 @@ public class AluguelService {
 
         if (ciclista.isAluguelAtivo()){
            externo_equipamentoSimulacao.enviarEmail("Aluguel Ativo", aluguelExiste.toString());
-           throw new TrataUnprocessableEntity("Ciclista já possui um aluguel ativo.");
+           throw new TrataUnprocessableEntityException("Ciclista já possui um aluguel ativo.");
         }
         if (!ciclista.getStatus().equals(Status.ATIVO)){
-            throw new TrataUnprocessableEntity("Ciclista não está ativo no sistema.");
+            throw new TrataUnprocessableEntityException("Ciclista não está ativo no sistema.");
         }
     }
 
     private void validarCondicoesDaBicicleta(BicicletaDTO bicicleta) {
         if ("EM_REPARO".equals(bicicleta.getStatus())) {
-            throw new TrataUnprocessableEntity("Esta bicicleta não pode ser alugada, pois está marcada para reparo.");
+            throw new TrataUnprocessableEntityException("Esta bicicleta não pode ser alugada, pois está marcada para reparo.");
         }
     }
 

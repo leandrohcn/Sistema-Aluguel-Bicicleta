@@ -6,10 +6,11 @@ import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Nacionalidade;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.PassaporteEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Status;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,8 +21,11 @@ public class CiclistaService {
 
     private final CiclistaRepository ciclistaRepository;
 
-    public CiclistaService(CiclistaRepository ciclistaRepository) {
+    private final CartaoService cartaoService;
+
+    public CiclistaService(CiclistaRepository ciclistaRepository, CartaoService cartaoService) {
         this.ciclistaRepository = ciclistaRepository;
+        this.cartaoService = cartaoService;
     }
 
     @Transactional
@@ -38,10 +42,26 @@ public class CiclistaService {
             throw new EntityNotFoundException("Requisição mal formada");
         }
 
+        // sennha
+
         return new CiclistaResponseDTO(ciclistaCriado);
     }
 
+    private String encripta(String senha) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.encode(senha);
+    }
+
+    //remover essas duplicatas aqui mas deixa pra depois quero domrir
+
     private CiclistaEntity cadastraCiclistaBrasileiro(NovoCiclistaDTO novoCiclistaDto) {
+
+        if(ciclistaRepository.findByCpf(novoCiclistaDto.getCpf()).isPresent()){
+            throw new IllegalArgumentException("CPF já existente");
+        }
+
+
+
         CiclistaEntity ciclistaBrasileiro = new CiclistaEntity(
                 novoCiclistaDto.getNome(),
                 novoCiclistaDto.getDataNascimento(),
@@ -49,17 +69,28 @@ public class CiclistaService {
                 novoCiclistaDto.getEmail(),
                 novoCiclistaDto.getNacionalidade(),
                 novoCiclistaDto.getUrlFotoDocumento(),
-                novoCiclistaDto.getSenha(),
+                encripta(novoCiclistaDto.getSenha()),
                 novoCiclistaDto.getConfirmaSenha()
         );
-        CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity(
-                novoCiclistaDto.getNome(),
-                novoCiclistaDto.getMeioDePagamento().getNumeroCartao(),
-                novoCiclistaDto.getMeioDePagamento().getCvv(),
-                novoCiclistaDto.getMeioDePagamento().getValidadeCartao(),
-                ciclistaBrasileiro
-        );
-        ciclistaBrasileiro.setCartao(cartao);
+
+        if(!cartaoService.cartaoExiste(novoCiclistaDto.getMeioDePagamento().getNumeroCartao())){
+            if (validarCartao(novoCiclistaDto.getMeioDePagamento())) {
+                CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity(
+                        novoCiclistaDto.getNome(),
+                        novoCiclistaDto.getMeioDePagamento().getNumeroCartao(),
+                        novoCiclistaDto.getMeioDePagamento().getCvv(),
+                        novoCiclistaDto.getMeioDePagamento().getValidadeCartao(),
+                        ciclistaBrasileiro
+                );
+                ciclistaBrasileiro.setCartao(cartao);
+            }
+            else{
+                throw new IllegalArgumentException("Cartão recusado");
+            }
+        }else{
+            throw new IllegalArgumentException("Cartao já cadastrado em outro usuário");
+        }
+
         ciclistaBrasileiro.setStatus(Status.AGUARDANDO_CONFIRMACAO);
         return ciclistaRepository.save(ciclistaBrasileiro);
     }
@@ -71,7 +102,7 @@ public class CiclistaService {
                 novoCiclistaDto.getEmail(),
                 novoCiclistaDto.getNacionalidade(),
                 novoCiclistaDto.getUrlFotoDocumento(),
-                novoCiclistaDto.getSenha(),
+                encripta(novoCiclistaDto.getSenha()),
                 novoCiclistaDto.getConfirmaSenha()
         );
         PassaporteDTO passaporteDto = novoCiclistaDto.getPassaporte();
@@ -80,15 +111,25 @@ public class CiclistaService {
                 passaporteDto.getValidadePassaporte(),
                 passaporteDto.getPais()
         );
-        CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity(
-                novoCiclistaDto.getNome(),
-                novoCiclistaDto.getMeioDePagamento().getNumeroCartao(),
-                novoCiclistaDto.getMeioDePagamento().getCvv(),
-                novoCiclistaDto.getMeioDePagamento().getValidadeCartao(),
-                ciclistaEstrangeiro
-        );
+
         ciclistaEstrangeiro.setPassaporteEntity(passaporte);
-        ciclistaEstrangeiro.setCartao(cartao);
+        if(!cartaoService.cartaoExiste(novoCiclistaDto.getMeioDePagamento().getNumeroCartao())){
+            if (validarCartao(novoCiclistaDto.getMeioDePagamento())) {
+                CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity(
+                        novoCiclistaDto.getNome(),
+                        novoCiclistaDto.getMeioDePagamento().getNumeroCartao(),
+                        novoCiclistaDto.getMeioDePagamento().getCvv(),
+                        novoCiclistaDto.getMeioDePagamento().getValidadeCartao(),
+                        ciclistaEstrangeiro
+                );
+                ciclistaEstrangeiro.setCartao(cartao);
+            }
+            else{
+                throw new IllegalArgumentException("Cartão recusado");
+            }
+        }else{
+            throw new IllegalArgumentException("Cartao já cadastrado em outro usuário");
+        }
         ciclistaEstrangeiro.setStatus(Status.AGUARDANDO_CONFIRMACAO);
         return ciclistaRepository.save(ciclistaEstrangeiro);
     }
@@ -129,13 +170,13 @@ public class CiclistaService {
         String novoEmail = ciclistaDto.getEmail();
         if (novoEmail != null && !novoEmail.equalsIgnoreCase(ciclistaExistente.getEmail())) {
             if (existeEmail(novoEmail)) {
-                throw new TrataUnprocessableEntity("Email ja existente");
+                throw new TrataUnprocessableEntityException("Email ja existente");
             }
         }
 
         if (ciclistaDto.getSenha() != null) {
             if (!ciclistaDto.senhaValida()) {
-                throw new TrataUnprocessableEntity("Senhas diferentes");
+                throw new TrataUnprocessableEntityException("Senhas diferentes");
             }
         }
 
@@ -168,7 +209,7 @@ public class CiclistaService {
     @Transactional
     public CiclistaEntity ativarCiclista(Integer idCiclista) {
         if (idCiclista <= 0) {
-            throw new TrataUnprocessableEntity("id invalido: " + idCiclista);
+            throw new TrataUnprocessableEntityException("id invalido: " + idCiclista);
         }
 
         Optional<CiclistaEntity> ciclistaEntity = ciclistaRepository.findById(idCiclista);
@@ -178,13 +219,13 @@ public class CiclistaService {
         if (confirmaEmail()) {
             CiclistaEntity ciclistaAtual = ciclistaEntity.get();
             if (!ciclistaAtual.getStatus().equals(Status.AGUARDANDO_CONFIRMACAO)) {
-                throw new TrataUnprocessableEntity("Dados não correspondem a registro pendente");
+                throw new TrataUnprocessableEntityException("Dados não correspondem a registro pendente");
             }
             ciclistaAtual.setHoraConfirmacaoEmail(LocalDateTime.now());
             ciclistaAtual.setStatus(Status.ATIVO);
             return ciclistaRepository.save(ciclistaAtual);
         }
-            throw new TrataUnprocessableEntity("Email não foi confirmado");
+            throw new TrataUnprocessableEntityException("Email não foi confirmado");
     }
 
     public boolean confirmaEmail(){
@@ -193,7 +234,7 @@ public class CiclistaService {
 
     public Boolean existeEmail(String email) {
         if (!email.contains("@")){
-            throw new IllegalArgumentException("Email não enviado como parametro");
+            throw new IllegalArgumentException("Email inválido");
         }
 
         return ciclistaRepository.existsByEmail(email);
@@ -201,7 +242,7 @@ public class CiclistaService {
 
     public CiclistaEntity buscarCiclistaporId(Integer idCiclista) {
         if (idCiclista <= 0) {
-            throw new TrataUnprocessableEntity("id invalido: " + idCiclista);
+            throw new TrataUnprocessableEntityException("id invalido: " + idCiclista);
         }
 
         if (idCiclista.toString().isBlank()){
@@ -233,11 +274,11 @@ public class CiclistaService {
 
     private void verificarRegrasDeNegocioDeCadastro(NovoCiclistaDTO novoCiclistaDto) {
         if (!novoCiclistaDto.senhaValida()) {
-            throw new TrataUnprocessableEntity("Senhas diferentes");
+            throw new TrataUnprocessableEntityException("Senhas diferentes");
         }
 
         if (existeEmail(novoCiclistaDto.getEmail())) {
-            throw new TrataUnprocessableEntity("Email ja existente");
+            throw new TrataUnprocessableEntityException("Email ja existente");
         }
 
         if (novoCiclistaDto.getNacionalidade() == null) {
@@ -266,5 +307,7 @@ public class CiclistaService {
             }
         }
     }
-
+    public boolean validarCartao(NovoCartaoDeCreditoDTO cartao) {
+        return true;
+    }
 }

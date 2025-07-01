@@ -5,7 +5,7 @@ import com.sistema_bicicletario.ms_aluguel.entities.aluguel.AluguelEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Status;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import com.sistema_bicicletario.ms_aluguel.repositories.AluguelRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
@@ -108,7 +108,7 @@ class AluguelServiceTest {
         when(externoSimulacao.getTranca(101)).thenReturn(Optional.of(trancaValida));
         when(externoSimulacao.getBicicleta(1)).thenReturn(Optional.of(bicicletaDisponivel));
         when(ciclistaRepository.findById(10)).thenReturn(Optional.of(ciclistaValido));
-        TrataUnprocessableEntity exception = assertThrows(TrataUnprocessableEntity.class, () -> aluguelService.realizarAluguel(novoAluguelDTO));
+        TrataUnprocessableEntityException exception = assertThrows(TrataUnprocessableEntityException.class, () -> aluguelService.realizarAluguel(novoAluguelDTO));
         assertEquals("Ciclista já possui um aluguel ativo.", exception.getMessage());
     }
 
@@ -118,7 +118,7 @@ class AluguelServiceTest {
         when(externoSimulacao.getTranca(101)).thenReturn(Optional.of(trancaValida));
         when(externoSimulacao.getBicicleta(1)).thenReturn(Optional.of(bicicletaDisponivel));
         when(ciclistaRepository.findById(10)).thenReturn(Optional.of(ciclistaValido));
-        TrataUnprocessableEntity exception = assertThrows(TrataUnprocessableEntity.class, () -> aluguelService.realizarAluguel(novoAluguelDTO));
+        TrataUnprocessableEntityException exception = assertThrows(TrataUnprocessableEntityException.class, () -> aluguelService.realizarAluguel(novoAluguelDTO));
         assertEquals("Esta bicicleta não pode ser alugada, pois está marcada para reparo.", exception.getMessage());
     }
 
@@ -131,7 +131,7 @@ class AluguelServiceTest {
         when(ciclistaRepository.findById(10)).thenReturn(Optional.of(ciclistaValido));
         when(cartaoRepository.findById(10)).thenReturn(Optional.of(cartaoValido));
         when(externoSimulacao.realizarCobranca(10, 10.00)).thenReturn(cobrancaFalhou);
-        assertThrows(TrataUnprocessableEntity.class, () -> aluguelService.realizarAluguel(novoAluguelDTO));
+        assertThrows(TrataUnprocessableEntityException.class, () -> aluguelService.realizarAluguel(novoAluguelDTO));
         verify(aluguelRepository, never()).save(any());
         verify(externoSimulacao, never()).destrancarBicicleta(anyInt());
     }
