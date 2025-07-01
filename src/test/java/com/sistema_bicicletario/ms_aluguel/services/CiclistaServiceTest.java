@@ -383,8 +383,8 @@ public class CiclistaServiceTest {
         Integer id = 99;
         when(ciclistaRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> ciclistaService.atualizarCiclista(id, new AtualizaCiclistaDTO()));
-    }
+        AtualizaCiclistaDTO atualizaCiclistaDTO = new AtualizaCiclistaDTO();
+        assertThrows(EntityNotFoundException.class, () -> ciclistaService.atualizarCiclista(id, atualizaCiclistaDTO));    }
 
     @Test
     void deveLancarErroAoAtualizarParaNacionalidadeNula() {
