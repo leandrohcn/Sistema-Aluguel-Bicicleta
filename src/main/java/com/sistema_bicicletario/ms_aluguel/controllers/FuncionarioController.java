@@ -25,12 +25,8 @@ public class FuncionarioController {
 
     @GetMapping
     public ResponseEntity<List<FuncionarioEntity>> buscaTodosFuncionarios() {
-        try {
             List<FuncionarioEntity> funcionarios = funcionarioService.buscaTodosFuncionario();
             return new ResponseEntity<>(funcionarios, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @PostMapping
