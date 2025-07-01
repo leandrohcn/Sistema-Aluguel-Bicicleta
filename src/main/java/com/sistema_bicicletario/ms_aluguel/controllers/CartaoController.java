@@ -5,11 +5,13 @@ import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCr
 import com.sistema_bicicletario.ms_aluguel.services.CartaoService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 
+@Slf4j
 @RestController
 @RequestMapping("cartaoDeCredito")
 public class CartaoController {
@@ -29,14 +31,20 @@ public class CartaoController {
     @PutMapping("/{id}")
     public ResponseEntity<String> atualizarCartao(@PathVariable Integer id,
                                                   @Valid @RequestBody NovoCartaoDeCreditoDTO cartao) {
+        validaCartao(cartao);
 
         try {
+
             cartaoService.atualizaCartao(id, cartao);
             return ResponseEntity.ok("Dados atualizados com sucesso!");
 
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private void validaCartao(NovoCartaoDeCreditoDTO cartao){
+        log.info(cartao.toString());
     }
 
 }

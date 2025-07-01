@@ -17,14 +17,20 @@ public class NovoCartaoDeCreditoDTO {
     private String nomeTitular;
 
     @NotNull
-    private int cvv;
+    @Pattern(regexp = "^[0-9]{3,4}$",
+            message = "Cvv entre 3 e 4 digitos")
+    private String cvv;
 
     @NotBlank
     @Pattern(regexp = "^(0[1-9]|1[0-2])/\\d{2}$", message = "Formato de validade deve ser MM/yy")
+
+
+    //testar validade
     private String validadeCartao;
 
     @NotNull
     @Positive(message = "Deve ser um número positivo")
-    private long numeroCartao;
+    @Pattern(regexp = "(^\\d{13,19}$)", message = "Quantidade de digitos entre 13 e 19")
+    private String numeroCartao;
 
 }

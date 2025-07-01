@@ -7,6 +7,7 @@
     import jakarta.validation.constraints.Email;
     import jakarta.validation.constraints.NotBlank;
     import jakarta.validation.constraints.NotNull;
+    import jakarta.validation.constraints.Pattern;
     import lombok.Getter;
     import lombok.Setter;
 
@@ -26,12 +27,16 @@
         @NotNull (message = "Data com formato inválido")
         private LocalDate dataNascimento;
 
+        @Pattern(regexp = "(^\\d{11}$)|(^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$)", message = "CPF deve estar no formato 12345678901 ou 123.456.789-01")
         private String cpf;
         private PassaporteDTO passaporte;
+
+        @JsonProperty(required = true)
         private Nacionalidade nacionalidade;
 
         @NotBlank
         @Email
+        @JsonProperty(required = true)
         private String email;
 
         @JsonProperty(required = true)

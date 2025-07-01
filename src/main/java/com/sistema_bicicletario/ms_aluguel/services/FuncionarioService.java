@@ -2,7 +2,7 @@ package com.sistema_bicicletario.ms_aluguel.services;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessabeEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import com.sistema_bicicletario.ms_aluguel.repositories.FuncionarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -29,10 +29,10 @@ public class FuncionarioService {
                 funcionarioDTO.getCpf(),
                 funcionarioDTO.getFuncao()
         );
-        if (funcionarioDTO.senhaValida() && funcionarioDTO.idadeValida()) {
+        if (funcionarioDTO.senhaValida()) {
             return funcionarioRepository.save(funcionario);
         }
-        throw new TrataUnprocessabeEntity("Dados inválidos");
+        throw new TrataUnprocessableEntityException("Senha Invalida");
     }
 
     public FuncionarioEntity atualizaFuncionario(NovoFuncionarioDTO funcionarioDTO, Integer idFuncionario) {
@@ -46,16 +46,16 @@ public class FuncionarioService {
             funcionarioAtualizado.setCpf(funcionarioAtualizado.getCpf());
             funcionarioAtualizado.setFuncao(funcionarioDTO.getFuncao());
 
-            if (funcionarioDTO.senhaValida() && funcionarioDTO.idadeValida()) {
+            if (funcionarioDTO.senhaValida()) {
                 return funcionarioRepository.save(funcionarioAtualizado);
             }
-                throw new TrataUnprocessabeEntity("Dados invalidos");
+                throw new TrataUnprocessableEntityException("Senha Invalida");
         }).orElseThrow(() -> new EntityNotFoundException("Funcionario não encontrado com id: " + idFuncionario));
     }
 
     public void excluiFuncionario(Integer idFuncionario) {
        if (idFuncionario <= 0) {
-           throw new TrataUnprocessabeEntity("O ID deve ser um número positivo.");
+           throw new TrataUnprocessableEntityException("O ID deve ser um número positivo.");
        }
        if (!funcionarioRepository.existsById(idFuncionario)) {
            throw new EntityNotFoundException("Funcionario não encontrado com id: " + idFuncionario);
@@ -65,11 +65,7 @@ public class FuncionarioService {
 
     public FuncionarioEntity buscaFuncionarioPorId(Integer idFuncionario) {
         if (idFuncionario <= 0) {
-            throw new TrataUnprocessabeEntity("O ID deve ser um número positivo.");
-        }
-
-        if (buscaTodosFuncionario() == null){
-            throw new TrataUnprocessabeEntity("Lista de Funcionários vazia");
+            throw new TrataUnprocessableEntityException("O ID deve ser um número positivo.");
         }
 
         return funcionarioRepository.findById(idFuncionario)
@@ -77,9 +73,6 @@ public class FuncionarioService {
     }
 
     public List<FuncionarioEntity> buscaTodosFuncionario() {
-        if (funcionarioRepository.findAll().isEmpty()) {
-            return null;
-        }
         return funcionarioRepository.findAll();
     }
 }

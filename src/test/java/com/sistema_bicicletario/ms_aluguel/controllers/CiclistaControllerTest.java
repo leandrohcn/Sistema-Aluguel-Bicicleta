@@ -67,12 +67,12 @@ public class CiclistaControllerTest {
 
         ciclistaResponseDTO = new CiclistaResponseDTO(ciclistaEntity);
 
-        bicicletaDTO = new BicicletaDTO(10, "Caloi", "Mountain", "2023", 25, "Em uso");
+        bicicletaDTO = new BicicletaDTO(10, "Caloi", "Mountain", "2023", "25", "Em uso");
     }
 
     @Test
     void deveCadastrarCiclistaComSucesso() {
-        when(ciclistaService.cadastrarCiclista(novoCiclistaDTO)).thenReturn(ciclistaEntity);
+        when(ciclistaService.cadastrarCiclista(novoCiclistaDTO)).thenReturn(ciclistaResponseDTO);
 
         ResponseEntity<CiclistaResponseDTO> resposta = ciclistaController.cadastrarCiclista(novoCiclistaDTO);
         assertNotNull(resposta.getBody());
@@ -106,26 +106,18 @@ public class CiclistaControllerTest {
 
     @Test
     void deveAtualizarCiclistaComSucesso() {
-        CiclistaEntity ciclistaQueSeraAtualizado = new CiclistaEntity();
-        ciclistaQueSeraAtualizado.setId(3);
-        ciclistaQueSeraAtualizado.setNome("Leandro");
-        ciclistaQueSeraAtualizado.setEmail("leandro.neves@example.com");
-        ciclistaQueSeraAtualizado.setCpf("123.456.789-00");
-        ciclistaQueSeraAtualizado.setSenha("1234");
-        ciclistaQueSeraAtualizado.setConfirmaSenha("1234");
-        ciclistaQueSeraAtualizado.setDataNascimento(LocalDate.of(2003, 11, 11));
-        ciclistaQueSeraAtualizado.setStatus(Status.ATIVO);
-        PassaporteEntity passaporte = new PassaporteEntity();
-        passaporte.setNumeroPassaporte("");
-        ciclistaQueSeraAtualizado.setPassaporteEntity(passaporte);
+        CiclistaResponseDTO respostaEsperada = new CiclistaResponseDTO(ciclistaEntity);
+        ciclistaEntity.setId(3);
+        ciclistaEntity.setNome("Leandro");
+        ciclistaEntity.setUrlFotoDocumento("example.com/foto_doc_atualizado.jpg");
 
-        when(ciclistaService.atualizarCiclista(3, atualizaCiclistaDTO)).thenReturn(ciclistaQueSeraAtualizado);
-
+        when(ciclistaService.atualizarCiclista(3, atualizaCiclistaDTO)).thenReturn(respostaEsperada);
         ResponseEntity<CiclistaResponseDTO> response = ciclistaController.atualizarCiclista(3, atualizaCiclistaDTO);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(ciclistaQueSeraAtualizado.getNome(), response.getBody().getNome());
-        assertEquals(ciclistaQueSeraAtualizado.getUrlFotoDocumento(), response.getBody().getUrlFotoDocumento());
+        assertEquals(respostaEsperada.getId(), response.getBody().getId());
+        assertEquals(respostaEsperada.getNome(), response.getBody().getNome());
+        assertEquals(respostaEsperada.getUrlFotoDocumento(), response.getBody().getUrlFotoDocumento());
 
         verify(ciclistaService, times(1)).atualizarCiclista(3, atualizaCiclistaDTO);
     }
@@ -160,7 +152,8 @@ public class CiclistaControllerTest {
 
     @Test
     void deveRetornarTrueSeEmailExiste() {
-        doNothing().when(ciclistaService).existeEmail("joao.silva@example.com");
+        when(ciclistaService.existeEmail("joao.silva@example.com")).thenReturn(true);
+
         ResponseEntity<Boolean> response = ciclistaController.existeEmail("joao.silva@example.com");
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(Boolean.TRUE, response.getBody());

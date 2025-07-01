@@ -1,9 +1,11 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.AluguelDTO;
-import com.sistema_bicicletario.ms_aluguel.dtos.BicicletaDTO;
+import com.sistema_bicicletario.ms_aluguel.dtos.DevolucaoDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoAluguelDTO;
+import com.sistema_bicicletario.ms_aluguel.dtos.NovoDevolucaoDTO;
 import com.sistema_bicicletario.ms_aluguel.services.AluguelService;
+import com.sistema_bicicletario.ms_aluguel.services.DevolucaoService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,8 @@ public class AluguelControllerTest {
 
     @Mock
     private AluguelService aluguelService;
-
+    @Mock
+    private DevolucaoService devolucaoService;
     @InjectMocks
     private AluguelController aluguelController;
 
@@ -39,37 +42,57 @@ public class AluguelControllerTest {
         novoAluguel.setTrancaInicio(100);
 
         aluguelRetornado = new AluguelDTO();
-        aluguelRetornado.setBicicleta(new BicicletaDTO(1, "caloi", "seila", "2024", 20, "Ativa"));
+        aluguelRetornado.setIdBicicleta(1);
         aluguelRetornado.setCobranca(10);
         aluguelRetornado.setTrancaFim(0);
         aluguelRetornado.setTrancaInicio(100);
-        aluguelRetornado.setHorarioInicio(LocalDateTime.now());
-        aluguelRetornado.setHorarioFim(LocalDateTime.now());
+        aluguelRetornado.setHoraInicio(LocalDateTime.now());
     }
 
     @Test
     void deveRealizarAluguelComSucesso() {
-        when(aluguelService.realizaAluguel(novoAluguel)).thenReturn(aluguelRetornado);
+        when(aluguelService.realizarAluguel(novoAluguel)).thenReturn(aluguelRetornado);
 
         ResponseEntity<AluguelDTO> resposta = aluguelController.realizarAluguel(novoAluguel);
 
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
         assertNotNull(resposta.getBody());
-        assertEquals(aluguelRetornado.getBicicleta(), resposta.getBody().getBicicleta());
+        assertEquals(aluguelRetornado.getIdBicicleta(), resposta.getBody().getIdBicicleta());
         assertEquals(aluguelRetornado.getTrancaInicio(), resposta.getBody().getTrancaInicio());
 
-        verify(aluguelService).realizaAluguel(novoAluguel);
+        verify(aluguelService).realizarAluguel(novoAluguel);
     }
 
     @Test
-    void deveRetornarNotFoundQuandoEntidadeNaoExiste() {
-        when(aluguelService.realizaAluguel(novoAluguel)).thenThrow(EntityNotFoundException.class);
+    void deveDevolverBicicletaComSucesso() {
+        NovoDevolucaoDTO requestDto = new NovoDevolucaoDTO();
+        requestDto.setIdBicicleta(1);
+        requestDto.setIdTranca(202);
 
-        ResponseEntity<AluguelDTO> resposta = aluguelController.realizarAluguel(novoAluguel);
+        DevolucaoDTO respostaDoServico = new DevolucaoDTO();
+        respostaDoServico.setBicicleta(1);
+        respostaDoServico.setTrancaFim(202);
+        when(devolucaoService.realizarDevolucao(requestDto)).thenReturn(respostaDoServico);
 
-        assertEquals(HttpStatus.NOT_FOUND, resposta.getStatusCode());
-        assertNull(resposta.getBody());
-
-        verify(aluguelService).realizaAluguel(novoAluguel);
+        ResponseEntity<DevolucaoDTO> responseEntity = aluguelController.devolverBicicleta(requestDto);
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
+        assertSame(respostaDoServico, responseEntity.getBody());
+        assertEquals(1, responseEntity.getBody().getBicicleta());
+        assertEquals(202, responseEntity.getBody().getTrancaFim());
     }
+
+    @Test
+    void devePropagarExcecaoQuandoServicoFalhar() {
+
+        NovoDevolucaoDTO requestDto = new NovoDevolucaoDTO();
+        requestDto.setIdBicicleta(999);
+
+        when(devolucaoService.realizarDevolucao(requestDto))
+                .thenThrow(new EntityNotFoundException("Aluguel não encontrado"));
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> aluguelController.devolverBicicleta(requestDto));
+        assertEquals("Aluguel não encontrado", exception.getMessage());
+    }
+
 }

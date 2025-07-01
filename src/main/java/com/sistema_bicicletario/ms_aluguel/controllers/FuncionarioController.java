@@ -14,7 +14,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/funcionarios")
+@RequestMapping("/funcionario")
 public class FuncionarioController {
 
     private final FuncionarioService funcionarioService;
@@ -55,8 +55,8 @@ public class FuncionarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluiFuncionario(@PathVariable Integer id) {
+    public ResponseEntity<String> excluiFuncionario(@PathVariable Integer id) {
         funcionarioService.excluiFuncionario(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Dados removidos");
     }
 }
