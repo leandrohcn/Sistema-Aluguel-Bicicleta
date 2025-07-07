@@ -21,21 +21,22 @@ public class AluguelService {
     private final AluguelRepository aluguelRepository;
     private final CiclistaRepository ciclistaRepository;
     private final CartaoRepository cartaoRepository;
-    private final ExternoSimulacao externo_equipamentoSimulacao;
+    private final ExternoSimulacao externoEquipamentoSimulacao;
 
     public AluguelService(AluguelRepository aluguelRepository, CiclistaRepository ciclistaRepository, CartaoRepository cartaoRepository, ExternoSimulacao externo) {
         this.aluguelRepository = aluguelRepository;
         this.ciclistaRepository = ciclistaRepository;
         this.cartaoRepository = cartaoRepository;
-        this.externo_equipamentoSimulacao = externo;
+        this.externoEquipamentoSimulacao = externo;
+
     }
 
     @Transactional
     public AluguelDTO realizarAluguel(NovoAluguelDTO novoAluguel) {
-        TrancaDTO tranca = externo_equipamentoSimulacao.getTranca(novoAluguel.getTrancaInicio())
+        TrancaDTO tranca = externoEquipamentoSimulacao.getTranca(novoAluguel.getTrancaInicio())
                 .orElseThrow(() -> new EntityNotFoundException("Tranca não encontrada."));
 
-        BicicletaDTO bicicleta = externo_equipamentoSimulacao.getBicicleta(tranca.getIdBicicleta())
+        BicicletaDTO bicicleta = externoEquipamentoSimulacao.getBicicleta(tranca.getIdBicicleta())
                 .orElseThrow(() -> new EntityNotFoundException("Bicicleta não encontrada."));
 
         validarCiclistaAptoParaAluguel(novoAluguel.getCiclista());
@@ -44,17 +45,17 @@ public class AluguelService {
         CartaoDeCreditoEntity cartaoDoCiclista = cartaoRepository.findById(novoAluguel.getCiclista())
                 .orElseThrow(() -> new TrataUnprocessableEntityException("Ciclista não encontrado"));
 
-        CobrancaDTO cobranca = externo_equipamentoSimulacao.realizarCobranca(novoAluguel.getCiclista(), 10.00);
+        CobrancaDTO cobranca = externoEquipamentoSimulacao.realizarCobranca(novoAluguel.getCiclista(), 10.00);
         if (!"PAGO".equals(cobranca.getStatus())) {
             throw new TrataUnprocessableEntityException("Pagamento recusado.");
         }
 
         AluguelEntity aluguelSalvo = registrarDadosDoAluguel(novoAluguel.getCiclista(), tranca, bicicleta, cobranca, cartaoDoCiclista);
         atualizarStatusDoCiclista(novoAluguel.getCiclista());
-        externo_equipamentoSimulacao.alterarStatusBicicleta(bicicleta.getIdBicicleta(), "EM_USO");
-        externo_equipamentoSimulacao.aberturaDeTranca(tranca.getIdTranca(), "LIVRE");
-        externo_equipamentoSimulacao.destrancarBicicleta(tranca.getIdTranca());
-        externo_equipamentoSimulacao.enviarEmail("Dados do aluguel: ", aluguelSalvo.toString());
+        externoEquipamentoSimulacao.alterarStatusBicicleta(bicicleta.getIdBicicleta(), "EM_USO");
+        externoEquipamentoSimulacao.aberturaDeTranca(tranca.getIdTranca(), "LIVRE");
+        externoEquipamentoSimulacao.destrancarBicicleta(tranca.getIdTranca());
+        externoEquipamentoSimulacao.enviarEmail("Dados do aluguel: ", aluguelSalvo.toString());
 
         return responseAluguel(aluguelSalvo);
     }
@@ -76,7 +77,7 @@ public class AluguelService {
         Optional<AluguelEntity> aluguelExiste = aluguelRepository.findByCiclista(idCiclista);
 
         if (ciclista.isAluguelAtivo()){
-           externo_equipamentoSimulacao.enviarEmail("Aluguel Ativo", aluguelExiste.toString());
+           externoEquipamentoSimulacao.enviarEmail("Aluguel Ativo", aluguelExiste.toString());
            throw new TrataUnprocessableEntityException("Ciclista já possui um aluguel ativo.");
         }
         if (!ciclista.getStatus().equals(Status.ATIVO)){
@@ -118,7 +119,7 @@ public class AluguelService {
 
         if (ciclista.isAluguelAtivo()){
             return aluguelRepository.findByCiclista(idCiclista)
-                    .flatMap(aluguel -> externo_equipamentoSimulacao.getBicicleta(aluguel.getIdBicicleta()));
+                    .flatMap(aluguel -> externoEquipamentoSimulacao.getBicicleta(aluguel.getIdBicicleta()));
         }
             return Optional.empty();
     }

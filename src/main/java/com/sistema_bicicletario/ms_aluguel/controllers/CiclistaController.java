@@ -64,10 +64,9 @@ public class CiclistaController {
 
     @GetMapping("/{id:\\d+}/permiteAluguel")
     public ResponseEntity<Boolean> permiteAluguel(@PathVariable Integer id) {
-        if (ciclistaService.permiteAluguel(id)) {
-            return ResponseEntity.ok(true);
-        }
-            return ResponseEntity.ok(false);
+
+        return ResponseEntity.ok(ciclistaService.permiteAluguel(id));
+
     }
 
     @GetMapping("/{id:\\d+}/bicicletaAlugada")

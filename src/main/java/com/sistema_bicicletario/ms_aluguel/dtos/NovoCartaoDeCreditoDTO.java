@@ -17,7 +17,7 @@ public class NovoCartaoDeCreditoDTO {
     private String nomeTitular;
 
     @NotNull
-    @Pattern(regexp = "^[0-9]{3,4}$",
+    @Pattern(regexp = "^\\d{3,4}$",
             message = "Cvv entre 3 e 4 digitos")
     private String cvv;
 
