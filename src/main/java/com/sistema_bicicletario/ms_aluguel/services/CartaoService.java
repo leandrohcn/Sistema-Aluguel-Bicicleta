@@ -1,12 +1,11 @@
 package com.sistema_bicicletario.ms_aluguel.services;
 
+import com.sistema_bicicletario.ms_aluguel.dtos.CartaoDeCreditoDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDeCreditoDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-
-
 
 @Service
 public class CartaoService {
@@ -17,24 +16,24 @@ public class CartaoService {
     }
 
     public void atualizaCartao(Integer id, NovoCartaoDeCreditoDTO novoCartao) {
-        CartaoDeCreditoEntity cartao = cartaoRepository.findById(id)
+        CartaoDeCreditoEntity cartao = cartaoRepository.findByCiclistaId(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
 
         cartao.setNomeTitular(novoCartao.getNomeTitular());
         cartao.setNumero(novoCartao.getNumeroCartao());
         cartao.setCvv(novoCartao.getCvv());
         cartao.setValidade(novoCartao.getValidadeCartao());
-
         cartaoRepository.save(cartao);
     }
 
-    public CartaoDeCreditoEntity buscaCartao(Integer id) {
+    public CartaoDeCreditoDTO buscaCartao(Integer id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("ID inválido");
         }
+        CartaoDeCreditoEntity cartao = cartaoRepository.findByCiclistaId(id)
+                                                       .orElseThrow(() -> new EntityNotFoundException("Cartão não encontrado"));
 
-        return cartaoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cartão não encontrado"));
+        return new CartaoDeCreditoDTO(cartao);
     }
 
     public boolean cartaoExiste(String numero) {

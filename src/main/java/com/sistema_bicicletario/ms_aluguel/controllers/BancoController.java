@@ -4,7 +4,6 @@ import com.sistema_bicicletario.ms_aluguel.repositories.AluguelRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.FuncionarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class BancoController {
-
-
     AluguelRepository aluguelRepository;
     CartaoRepository cartaoRepository;
     CiclistaRepository ciclistaRepository;

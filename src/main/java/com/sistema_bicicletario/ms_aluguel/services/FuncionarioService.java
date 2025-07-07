@@ -1,5 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.services;
 
+import com.sistema_bicicletario.ms_aluguel.dtos.FuncionarioResponseDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
 import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
@@ -19,7 +20,7 @@ public class FuncionarioService {
         this.funcionarioRepository = funcionarioRepository;
     }
 
-    public FuncionarioEntity criaFuncionario(NovoFuncionarioDTO funcionarioDTO) {
+    public FuncionarioResponseDTO criaFuncionario(NovoFuncionarioDTO funcionarioDTO) {
         FuncionarioEntity funcionario = new FuncionarioEntity(
                 funcionarioDTO.getNome(),
                 funcionarioDTO.getSenha(),
@@ -30,12 +31,13 @@ public class FuncionarioService {
                 funcionarioDTO.getFuncao()
         );
         if (funcionarioDTO.senhaValida()) {
-            return funcionarioRepository.save(funcionario);
+            funcionarioRepository.save(funcionario);
+            return new FuncionarioResponseDTO(funcionario);
         }
         throw new TrataUnprocessableEntityException("Senha Invalida");
     }
 
-    public FuncionarioEntity atualizaFuncionario(NovoFuncionarioDTO funcionarioDTO, Integer idFuncionario) {
+    public FuncionarioResponseDTO atualizaFuncionario(NovoFuncionarioDTO funcionarioDTO, Integer idFuncionario) {
 
         return funcionarioRepository.findById(idFuncionario).map(funcionarioAtualizado -> {
             funcionarioAtualizado.setNome(funcionarioDTO.getNome());
@@ -47,7 +49,8 @@ public class FuncionarioService {
             funcionarioAtualizado.setFuncao(funcionarioDTO.getFuncao());
 
             if (funcionarioDTO.senhaValida()) {
-                return funcionarioRepository.save(funcionarioAtualizado);
+                funcionarioRepository.save(funcionarioAtualizado);
+                return new FuncionarioResponseDTO(funcionarioAtualizado);
             }
                 throw new TrataUnprocessableEntityException("Senha Invalida");
         }).orElseThrow(() -> new EntityNotFoundException("Funcionario não encontrado com id: " + idFuncionario));
@@ -63,13 +66,14 @@ public class FuncionarioService {
        funcionarioRepository.deleteById(idFuncionario);
     }
 
-    public FuncionarioEntity buscaFuncionarioPorId(Integer idFuncionario) {
+    public FuncionarioResponseDTO buscaFuncionarioPorId(Integer idFuncionario) {
         if (idFuncionario <= 0) {
             throw new TrataUnprocessableEntityException("O ID deve ser um número positivo.");
         }
 
-        return funcionarioRepository.findById(idFuncionario)
-                .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado com ID: " + idFuncionario));
+        FuncionarioEntity funcionarioEntity = funcionarioRepository.findById(idFuncionario)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado"));
+        return new FuncionarioResponseDTO(funcionarioEntity);
     }
 
     public List<FuncionarioEntity> buscaTodosFuncionario() {

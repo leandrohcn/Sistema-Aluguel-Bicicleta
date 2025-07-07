@@ -1,5 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.services;
 
+import com.sistema_bicicletario.ms_aluguel.dtos.FuncionarioResponseDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.Funcao;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
@@ -38,10 +39,10 @@ class FuncionarioServiceTest {
 
         when(funcionarioRepository.save(any())).thenReturn(funcionario);
 
-        FuncionarioEntity result = funcionarioService.criaFuncionario(dto);
+        FuncionarioResponseDTO result = funcionarioService.criaFuncionario(dto);
 
         assertNotNull(result);
-        assertEquals(result, funcionario);
+        assertEquals("12345678900", result.getCpf());
         verify(funcionarioRepository).save(any(FuncionarioEntity.class));
     }
 
@@ -61,9 +62,8 @@ class FuncionarioServiceTest {
         FuncionarioEntity existente = new FuncionarioEntity("Antigo", "x", "x", "antigo@email.com", 50, "222", Funcao.REPARADOR);
 
         when(funcionarioRepository.findById(id)).thenReturn(Optional.of(existente));
-        when(funcionarioRepository.save(any())).thenReturn(existente);
 
-        FuncionarioEntity atualizado = funcionarioService.atualizaFuncionario(dto, id);
+        FuncionarioResponseDTO atualizado = funcionarioService.atualizaFuncionario(dto, id);
 
         assertEquals("Maria", atualizado.getNome());
         verify(funcionarioRepository).save(any());
@@ -85,7 +85,7 @@ class FuncionarioServiceTest {
         FuncionarioEntity funcionario = new FuncionarioEntity("Carlos", "123", "123", "carlos@email.com", 28, "000", Funcao.ADMINISTRATIVO);
         when(funcionarioRepository.findById(id)).thenReturn(Optional.of(funcionario));
 
-        FuncionarioEntity result = funcionarioService.buscaFuncionarioPorId(id);
+        FuncionarioResponseDTO result = funcionarioService.buscaFuncionarioPorId(id);
         assertEquals("Carlos", result.getNome());
         verify(funcionarioRepository, times(1)).findById(id);
         verify(funcionarioRepository, never()).findAll();
