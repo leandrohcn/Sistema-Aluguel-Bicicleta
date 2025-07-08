@@ -34,6 +34,7 @@ public class ExternoSimulacao {
         TrancaDTO tranca = new TrancaDTO();
         tranca.setIdTranca(idTranca);
         tranca.setIdBicicleta(bicicletaIdCounter.getAndIncrement());
+        tranca.setStatus(idTranca == 99 ? "OCUPADA" : "LIVRE");
         return Optional.of(tranca);
     }
 
