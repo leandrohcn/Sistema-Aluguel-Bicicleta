@@ -3,8 +3,10 @@ package com.sistema_bicicletario.ms_aluguel.services;
 import com.sistema_bicicletario.ms_aluguel.dtos.BicicletaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.CobrancaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.TrancaDTO;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import org.springframework.stereotype.Service;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
@@ -20,9 +22,10 @@ public class ExternoSimulacao {
     private static final List<String> MARCAS = Arrays.asList("Caloi", "Sense", "Oggi", "Specialized", "Trek", "Cannondale");
     private static final List<String> MODELOS = Arrays.asList("Explorer", "Impact", "Venture", "Rockhopper", "Marlin", "Trail");
     private static final SecureRandom random = new SecureRandom();
+    private static final Logger logger = LoggerFactory.getLogger(ExternoSimulacao.class);
 
     public Optional<TrancaDTO> getTranca(Integer idTranca) {
-        System.out.println("Buscando tranca com ID " + idTranca);
+        logger.debug("Buscando tranca com ID {}", idTranca);
 
         if (idTranca == 999) {
             return Optional.empty();
@@ -65,25 +68,26 @@ public class ExternoSimulacao {
 
     public void destrancarBicicleta(Integer idTranca) {
         if (idTranca == 500) {
-            throw new RuntimeException("Simulação de falha de comunicação com a tranca.");
+            logger.warn("Simulando falha de comunicação com a tranca ID {}", idTranca);
+            throw new TrataUnprocessableEntityException("Simulação de falha de comunicação com a tranca.");
         }
+        logger.info("Bicicleta na tranca {} destrancada com sucesso.", idTranca);
     }
 
     public void enviarEmail(String tipo, String dados) {
-        System.out.println("Tipo de E-mail: " + tipo);
-        System.out.println("Dados Enviados: " + dados);
+        logger.info("Enviando e-mail do tipo '{}'. Dados: {}", tipo, dados);
     }
 
     public void alterarStatusBicicleta(Integer idBicicleta, String novoStatus) {
-        System.out.println("Alterando status da bicicleta " + idBicicleta + " para " + novoStatus);
+        logger.info("Alterando status da bicicleta {} para '{}'", idBicicleta, novoStatus);
     }
 
     public void trancarBicicletaNaTranca(Integer idTranca, Integer idBicicleta) {
-        System.out.println("Trancando bicicleta " + idBicicleta + " na tranca " + idTranca + " e alterando status para OCUPADA.");
+        logger.info("Trancando bicicleta {} na tranca {} e alterando status para OCUPADA.", idBicicleta, idTranca);
     }
 
     public void alterarStatusTranca(Integer idTranca, String novoStatus) {
-        System.out.println("A tranca: " + idTranca + "está" + novoStatus);
+        logger.info("A tranca {} está '{}'", idTranca, novoStatus);
     }
 
     public void resetCounters() {
