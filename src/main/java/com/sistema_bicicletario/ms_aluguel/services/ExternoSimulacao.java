@@ -5,14 +5,21 @@ import com.sistema_bicicletario.ms_aluguel.dtos.CobrancaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.TrancaDTO;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class ExternoSimulacao {
 
     private static final AtomicInteger cobrancaIdCounter = new AtomicInteger(1);
+    private static final AtomicInteger bicicletaIdCounter = new AtomicInteger(1);
+    private static final List<String> MARCAS = Arrays.asList("Caloi", "Sense", "Oggi", "Specialized", "Trek", "Cannondale");
+    private static final List<String> MODELOS = Arrays.asList("Explorer", "Impact", "Venture", "Rockhopper", "Marlin", "Trail");
+    private static final Random random = new Random();
 
     public Optional<TrancaDTO> getTranca(Integer idTranca) {
         System.out.println("Buscando tranca com ID " + idTranca);
@@ -23,18 +30,27 @@ public class ExternoSimulacao {
 
         TrancaDTO tranca = new TrancaDTO();
         tranca.setIdTranca(idTranca);
-        tranca.setIdBicicleta(idTranca == 100 ? 2 : 1);
+        tranca.setIdBicicleta(bicicletaIdCounter.getAndIncrement());
         return Optional.of(tranca);
     }
 
     public Optional<BicicletaDTO> getBicicleta(Integer idBicicleta) {
         BicicletaDTO bicicleta = new BicicletaDTO();
         bicicleta.setIdBicicleta(idBicicleta);
-        bicicleta.setStatus(idBicicleta == 2 ? "EM_REPARO" : "DISPONIVEL");
-        bicicleta.setMarca("Caloi");
-        bicicleta.setModelo("Rapid");
-        bicicleta.setAno("2024");
-        bicicleta.setNumero("1234");
+        bicicleta.setStatus(idBicicleta == 3 ? "EM_REPARO" : "DISPONIVEL");
+        String marcaAleatoria = MARCAS.get(random.nextInt(MARCAS.size()));
+        String modeloAleatorio = MODELOS.get(random.nextInt(MODELOS.size()));
+
+        //Gera um ano aleatório (por exemplo, entre 2020 e 2025)
+        int anoAleatorio = 2020 + random.nextInt(6);
+
+        //Gera um número de série único e aleatório
+        String numeroSerieAleatorio = "BR-" + idBicicleta + "-" + random.nextInt(10000);
+
+        bicicleta.setMarca(marcaAleatoria);
+        bicicleta.setModelo(modeloAleatorio);
+        bicicleta.setAno(String.valueOf(anoAleatorio));
+        bicicleta.setNumero(numeroSerieAleatorio);
         return Optional.of(bicicleta);
     }
 
@@ -43,7 +59,7 @@ public class ExternoSimulacao {
         cobranca.setId((cobrancaIdCounter.getAndIncrement()));
         cobranca.setCiclistaId(idCiclista);
         cobranca.setValor(valor);
-        cobranca.setStatus(idCiclista == 1 ? "FALHOU" : "PAGO");
+        cobranca.setStatus(idCiclista == 3 ? "FALHOU" : "PAGO");
         return cobranca;
     }
 
@@ -66,8 +82,11 @@ public class ExternoSimulacao {
         System.out.println("Trancando bicicleta " + idBicicleta + " na tranca " + idTranca + " e alterando status para OCUPADA.");
     }
 
-    public void aberturaDeTranca(Integer idTranca, String novoStatus) {
+    public void alterarStatusTranca(Integer idTranca, String novoStatus) {
         System.out.println("A tranca: " + idTranca + "está" + novoStatus);
     }
 
+    public void resetCounters() {
+        bicicletaIdCounter.set(1);
+    }
 }

@@ -3,8 +3,10 @@ package com.sistema_bicicletario.ms_aluguel.services;
 import com.sistema_bicicletario.ms_aluguel.dtos.CobrancaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.DevolucaoDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoDevolucaoDTO;
+import com.sistema_bicicletario.ms_aluguel.dtos.TrancaDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.aluguel.AluguelEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
+import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import com.sistema_bicicletario.ms_aluguel.repositories.AluguelRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,17 +19,24 @@ import java.time.LocalDateTime;
 @Service
 public class DevolucaoService {
     private final AluguelRepository aluguelRepository;
-    private final ExternoSimulacao externoSimulacao;
+    private final ExternoSimulacao externoEquipamentoSimulacao;
     private final CiclistaRepository ciclistaRepository;
 
     public DevolucaoService(AluguelRepository aluguelRepository, ExternoSimulacao externoSimulacao, CiclistaRepository ciclistaRepository) {
         this.aluguelRepository = aluguelRepository;
-        this.externoSimulacao = externoSimulacao;
+        this.externoEquipamentoSimulacao = externoSimulacao;
         this.ciclistaRepository = ciclistaRepository;
     }
 
     @Transactional
     public DevolucaoDTO realizarDevolucao(NovoDevolucaoDTO novoDevolucaoDTO) {
+        TrancaDTO trancaFinal = externoEquipamentoSimulacao.getTranca(novoDevolucaoDTO.getIdTranca())
+                .orElseThrow(() -> new EntityNotFoundException("Tranca de destino não encontrada."));
+
+        if (!"LIVRE".equals(trancaFinal.getStatus())) {
+            throw new TrataUnprocessableEntityException("A tranca de destino está OCUPADA.");
+        }
+
         AluguelEntity aluguelAberto = aluguelRepository.findByIdBicicletaAndHoraFimIsNull(novoDevolucaoDTO.getIdBicicleta())
                 .orElseThrow(() -> new EntityNotFoundException("Nenhum aluguel ativo encontrado para esta bicicleta."));
 
@@ -42,7 +51,7 @@ public class DevolucaoService {
         }
 
         if (valorExtra > 0) {
-            CobrancaDTO cobrancaExtra = externoSimulacao.realizarCobranca(aluguelAberto.getCiclista(), valorExtra);
+            CobrancaDTO cobrancaExtra = externoEquipamentoSimulacao.realizarCobranca(aluguelAberto.getCiclista(), valorExtra);
             if (!"PAGO".equals(cobrancaExtra.getStatus())) {
                 System.out.println("AVISO: Falha na cobrança do valor extra de R$" + valorExtra);
             }
@@ -55,9 +64,10 @@ public class DevolucaoService {
         desativarAluguelParaCiclista(aluguelFechado.getCiclista());
 
         String novoStatusBicicleta = "REPARO_SOLICITADO".equals(novoDevolucaoDTO.getAcao()) ? "EM_REPARO" : "DISPONIVEL";
-        externoSimulacao.alterarStatusBicicleta(novoDevolucaoDTO.getIdBicicleta(), novoStatusBicicleta);
-        externoSimulacao.trancarBicicletaNaTranca(novoDevolucaoDTO.getIdTranca(), novoDevolucaoDTO.getIdBicicleta());
-        externoSimulacao.enviarEmail("Dados da devolucao: ", aluguelFechado.toString());
+        externoEquipamentoSimulacao.alterarStatusBicicleta(novoDevolucaoDTO.getIdBicicleta(), novoStatusBicicleta);
+        externoEquipamentoSimulacao.trancarBicicletaNaTranca(novoDevolucaoDTO.getIdTranca(), novoDevolucaoDTO.getIdBicicleta());
+        externoEquipamentoSimulacao.alterarStatusTranca(novoDevolucaoDTO.getIdTranca(), "OCUPADA");
+        externoEquipamentoSimulacao.enviarEmail("Dados da devolucao: ", aluguelFechado.toString());
 
         return responseDevolucao(aluguelFechado);
     }

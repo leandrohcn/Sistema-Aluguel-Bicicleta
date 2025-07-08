@@ -3,6 +3,7 @@ package com.sistema_bicicletario.ms_aluguel.services;
 import com.sistema_bicicletario.ms_aluguel.dtos.CobrancaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.DevolucaoDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoDevolucaoDTO;
+import com.sistema_bicicletario.ms_aluguel.dtos.TrancaDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.aluguel.AluguelEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
@@ -70,6 +71,11 @@ class DevolucaoServiceTest {
 
     @Test
     void deveRealizarDevolucaoComSucesso() {
+        TrancaDTO trancaLivre = new TrancaDTO();
+        trancaLivre.setIdTranca(202);
+        trancaLivre.setStatus("LIVRE");
+        when(externoSimulacao.getTranca(202)).thenReturn(Optional.of(trancaLivre));
+
         when(aluguelRepository.findByIdBicicletaAndHoraFimIsNull(1)).thenReturn(Optional.of(aluguelAtivo));
         when(aluguelRepository.save(any(AluguelEntity.class))).thenReturn(aluguelAtivo);
         when(ciclistaRepository.findById(5)).thenReturn(Optional.of(ciclista));
@@ -90,6 +96,10 @@ class DevolucaoServiceTest {
     @Test
     void deveRealizarDevolucaoComCobrancaExtra() {
         aluguelAtivo.setHoraInicio(LocalDateTime.now().minusHours(3).minusMinutes(15));
+        TrancaDTO trancaLivre = new TrancaDTO();
+        trancaLivre.setIdTranca(novoDevolucaoDTO.getIdTranca());
+        trancaLivre.setStatus("LIVRE");
+        when(externoSimulacao.getTranca(202)).thenReturn(Optional.of(trancaLivre));
 
         CobrancaDTO cobrancaExtraPaga = new CobrancaDTO();
         cobrancaExtraPaga.setStatus("PAGO");
@@ -108,6 +118,11 @@ class DevolucaoServiceTest {
     void deveAlterarStatusParaReparo() {
         novoDevolucaoDTO.setAcao("REPARO_SOLICITADO");
 
+        TrancaDTO trancaLivre = new TrancaDTO();
+        trancaLivre.setIdTranca(novoDevolucaoDTO.getIdTranca());
+        trancaLivre.setStatus("LIVRE");
+        when(externoSimulacao.getTranca(anyInt())).thenReturn(Optional.of(trancaLivre));
+
         when(aluguelRepository.findByIdBicicletaAndHoraFimIsNull(1)).thenReturn(Optional.of(aluguelAtivo));
         when(aluguelRepository.save(any(AluguelEntity.class))).thenReturn(aluguelAtivo);
         when(ciclistaRepository.findById(5)).thenReturn(Optional.of(ciclista));
@@ -118,7 +133,13 @@ class DevolucaoServiceTest {
 
     @Test
     void deveLancarExcecaoQuandoNaoHouverAluguelAtivo() {
+        TrancaDTO trancaLivre = new TrancaDTO();
+        trancaLivre.setIdTranca(novoDevolucaoDTO.getIdTranca());
+        trancaLivre.setStatus("LIVRE");
+        when(externoSimulacao.getTranca(novoDevolucaoDTO.getIdTranca()))
+                .thenReturn(Optional.of(trancaLivre));
         when(aluguelRepository.findByIdBicicletaAndHoraFimIsNull(1)).thenReturn(Optional.empty());
+
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> devolucaoService.realizarDevolucao(novoDevolucaoDTO));
         assertEquals("Nenhum aluguel ativo encontrado para esta bicicleta.", exception.getMessage());
     }
