@@ -38,22 +38,20 @@ public class FuncionarioService {
     }
 
     public FuncionarioResponseDTO atualizaFuncionario(NovoFuncionarioDTO funcionarioDTO, Integer idFuncionario) {
-
-        return funcionarioRepository.findById(idFuncionario).map(funcionarioAtualizado -> {
-            funcionarioAtualizado.setNome(funcionarioDTO.getNome());
-            funcionarioAtualizado.setSenha(funcionarioDTO.getSenha());
-            funcionarioAtualizado.setConfirmaSenha(funcionarioDTO.getConfirmaSenha());
-            funcionarioAtualizado.setEmail(funcionarioDTO.getEmail());
-            funcionarioAtualizado.setIdade(funcionarioDTO.getIdade());
-            funcionarioAtualizado.setCpf(funcionarioAtualizado.getCpf());
-            funcionarioAtualizado.setFuncao(funcionarioDTO.getFuncao());
+        FuncionarioEntity funcionarioAtualizado = funcionarioRepository.findById(idFuncionario).orElseThrow(EntityNotFoundException::new);
+                funcionarioAtualizado.setNome(funcionarioDTO.getNome());
+                funcionarioAtualizado.setSenha(funcionarioDTO.getSenha());
+                funcionarioAtualizado.setConfirmaSenha(funcionarioDTO.getConfirmaSenha());
+                funcionarioAtualizado.setEmail(funcionarioDTO.getEmail());
+                funcionarioAtualizado.setIdade(funcionarioDTO.getIdade());
+                funcionarioAtualizado.setCpf(funcionarioAtualizado.getCpf());
+                funcionarioAtualizado.setFuncao(funcionarioDTO.getFuncao());
 
             if (funcionarioDTO.senhaValida()) {
                 funcionarioRepository.save(funcionarioAtualizado);
                 return new FuncionarioResponseDTO(funcionarioAtualizado);
             }
                 throw new TrataUnprocessableEntityException("Senha Invalida");
-        }).orElseThrow(() -> new EntityNotFoundException("Funcionario não encontrado com id: " + idFuncionario));
     }
 
     public void excluiFuncionario(Integer idFuncionario) {
