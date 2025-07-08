@@ -5,11 +5,11 @@ import com.sistema_bicicletario.ms_aluguel.dtos.CobrancaDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.TrancaDTO;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -19,7 +19,7 @@ public class ExternoSimulacao {
     private static final AtomicInteger bicicletaIdCounter = new AtomicInteger(1);
     private static final List<String> MARCAS = Arrays.asList("Caloi", "Sense", "Oggi", "Specialized", "Trek", "Cannondale");
     private static final List<String> MODELOS = Arrays.asList("Explorer", "Impact", "Venture", "Rockhopper", "Marlin", "Trail");
-    private static final Random random = new Random();
+    private static final SecureRandom random = new SecureRandom();
 
     public Optional<TrancaDTO> getTranca(Integer idTranca) {
         System.out.println("Buscando tranca com ID " + idTranca);
