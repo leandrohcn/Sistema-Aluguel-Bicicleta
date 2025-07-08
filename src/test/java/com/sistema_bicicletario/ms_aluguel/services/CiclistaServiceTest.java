@@ -423,6 +423,36 @@ class CiclistaServiceTest {
     }
 
     @Test
+    void deveManterPassaporteAntigoSeNenhumForEnviadoNaAtualizacao() {
+        Integer id = 1;
+        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome", LocalDate.now(), "email@email.com", Nacionalidade.ESTRANGEIRO, "url", "senha", "senha");
+        ciclistaExistente.setId(id);
+        PassaporteEntity passaporteAntigo = new PassaporteEntity("ANTIGO123", "01/01/2030", "PT");
+        ciclistaExistente.setPassaporteEntity(passaporteAntigo);
+
+        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+        dto.setNome("Novo Nome");
+        dto.setNacionalidade(ciclistaExistente.getNacionalidade());
+        dto.setCpf("");
+        dto.setUrlFotoDocumento("");
+        dto.setSenha("");
+        dto.setConfirmaSenha("");
+
+        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
+        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+        ArgumentCaptor<CiclistaEntity> captor = ArgumentCaptor.forClass(CiclistaEntity.class);
+
+        ciclistaService.atualizarCiclista(id, dto);
+
+        verify(ciclistaRepository).save(captor.capture());
+        CiclistaEntity ciclistaSalvo = captor.getValue();
+
+        assertNotNull(ciclistaSalvo.getPassaporteEntity());
+        assertEquals("ANTIGO123", ciclistaSalvo.getPassaporteEntity().getNumeroPassaporte());
+        assertEquals("Novo Nome", ciclistaSalvo.getNome());
+    }
+
+    @Test
     void deveLancarExcecaoAoCadastrarComSenhaNula() {
 
         NovoCiclistaDTO dtoComSenhaNula = new NovoCiclistaDTO();

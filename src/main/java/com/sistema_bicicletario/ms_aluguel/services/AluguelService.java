@@ -53,7 +53,7 @@ public class AluguelService {
         AluguelEntity aluguelSalvo = registrarDadosDoAluguel(novoAluguel.getCiclista(), tranca, bicicleta, cobranca, cartaoDoCiclista);
         atualizarStatusDoCiclista(novoAluguel.getCiclista());
         externoEquipamentoSimulacao.alterarStatusBicicleta(bicicleta.getIdBicicleta(), "EM_USO");
-        externoEquipamentoSimulacao.aberturaDeTranca(tranca.getIdTranca(), "LIVRE");
+        externoEquipamentoSimulacao.alterarStatusTranca(tranca.getIdTranca(), "LIVRE");
         externoEquipamentoSimulacao.destrancarBicicleta(tranca.getIdTranca());
         externoEquipamentoSimulacao.enviarEmail("Dados do aluguel: ", aluguelSalvo.toString());
 
