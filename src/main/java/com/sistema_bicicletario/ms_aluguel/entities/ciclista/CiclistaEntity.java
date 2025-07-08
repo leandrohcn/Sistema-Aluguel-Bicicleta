@@ -1,8 +1,5 @@
 package com.sistema_bicicletario.ms_aluguel.entities.ciclista;
 
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -51,10 +48,6 @@ public class CiclistaEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    @OneToOne(mappedBy = "ciclista", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private CartaoDeCreditoEntity cartao;
 
     private LocalDateTime horaConfirmacaoEmail;
     private boolean aluguelAtivo  = false;

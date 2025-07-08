@@ -7,6 +7,7 @@ import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Nacionalidade;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.PassaporteEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Status;
 import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
+import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -24,10 +25,12 @@ public class CiclistaService {
     private final CiclistaRepository ciclistaRepository;
 
     private final CartaoService cartaoService;
+    private final CartaoRepository cartaoRepository;
 
-    public CiclistaService(CiclistaRepository ciclistaRepository, CartaoService cartaoService) {
+    public CiclistaService(CiclistaRepository ciclistaRepository, CartaoService cartaoService, CartaoRepository cartaoRepository) {
         this.ciclistaRepository = ciclistaRepository;
         this.cartaoService = cartaoService;
+        this.cartaoRepository = cartaoRepository;
     }
 
     @Transactional
@@ -81,9 +84,9 @@ public class CiclistaService {
                     dto.getMeioDePagamento().getCvv(),
                     dto.getMeioDePagamento().getValidadeCartao(),
                     ciclista
-
             );
-            ciclista.setCartao(cartao);
+            cartao.setCiclista(ciclista);
+            cartaoRepository.save(cartao);
         } else {
             throw new IllegalArgumentException("Cartão recusado");
         }
@@ -108,20 +111,21 @@ public class CiclistaService {
         ciclista.setSenha(!ciclistaDTO.getSenha().isBlank() ? encripta(ciclistaDTO.getSenha()) : ciclista.getSenha());
         ciclista.setConfirmaSenha(!ciclistaDTO.getConfirmaSenha().isBlank() ? ciclistaDTO.getConfirmaSenha() : ciclista.getConfirmaSenha());
 
-        PassaporteDTO passaporteDTO = ciclistaDTO.getPassaporte();
-        if (ciclistaDTO.getPassaporte() != null){
-            PassaporteEntity passaporte = new PassaporteEntity(
-                    passaporteDTO.getNumeroPassaporte(),
-                    passaporteDTO.getValidadePassaporte(),
-                    passaporteDTO.getPais()
-            );
-            ciclista.setPassaporteEntity(passaporte);
-        } else {
-            ciclista.setPassaporteEntity(ciclista.getPassaporteEntity());
+        if (ciclistaDTO.getNacionalidade().equals(Nacionalidade.ESTRANGEIRO)) {
+            PassaporteDTO passaporteDTO = ciclistaDTO.getPassaporte();
+            if (ciclistaDTO.getPassaporte() != null) {
+                PassaporteEntity passaporte = new PassaporteEntity(
+                        passaporteDTO.getNumeroPassaporte(),
+                        passaporteDTO.getValidadePassaporte(),
+                        passaporteDTO.getPais()
+                );
+                ciclista.setPassaporteEntity(passaporte);
+            } else {
+                ciclista.setPassaporteEntity(ciclista.getPassaporteEntity());
+            }
         }
-
         CiclistaEntity ciclistaAtualizado = ciclistaRepository.save(ciclista);
-        return new CiclistaResponseDTO(ciclistaAtualizado);
+        return new  CiclistaResponseDTO(ciclistaAtualizado);
     }
 
     private void regrasDeNegocioAtualiza(AtualizaCiclistaDTO ciclistaDto, CiclistaEntity ciclistaExistente) {
@@ -222,18 +226,6 @@ public class CiclistaService {
 
         return ciclista.getStatus().equals(Status.ATIVO) && !ciclista.isAluguelAtivo();
     }
-
-//    public Optional<BicicletaDTO> bicicletaAlugada(Integer idCiclista) {
-//        if (!ciclistaRepository.existsById(idCiclista)) {
-//            throw new EntityNotFoundException("Ciclista não encontrado com ID: " + idCiclista);
-//        }
-//
-//        if (permiteAluguel(idCiclista)) {
-//            return Optional.empty();
-//        }
-//
-//        return Optional.ofNullable(null);
-//    }
 
     private void verificarRegrasDeNegocioDeCadastro(NovoCiclistaDTO novoCiclistaDto) {
         validarSenhaCadastro(novoCiclistaDto);

@@ -1,8 +1,10 @@
 package com.sistema_bicicletario.ms_aluguel.services;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.*;
+import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.*;
 import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
+import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +23,11 @@ public class CiclistaServiceTest {
     @Mock
     private CiclistaRepository ciclistaRepository;
 
-    @Mock CartaoService cartaoService;
+    @Mock
+    private CartaoRepository cartaoRepository;
+
+    @Mock
+    private CartaoService cartaoService;
 
     @InjectMocks
     @Spy
@@ -91,8 +97,13 @@ public class CiclistaServiceTest {
     void deveCadastrarCiclistaEstrangeiroComSucesso() {
         PassaporteDTO passaporte = new PassaporteDTO();
         passaporte.setNumeroPassaporte("123456");
-        passaporte.setValidadePassaporte(String.valueOf(LocalDate.of(2030, 1, 1)));
+        passaporte.setValidadePassaporte("03/30");
         passaporte.setPais("US");
+
+        NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
+        cartao.setNumeroCartao("1111222233334444");
+        cartao.setCvv("321");
+        cartao.setValidadeCartao("03/30");
 
         NovoCiclistaDTO dto = new NovoCiclistaDTO();
         dto.setNome("Ana");
@@ -102,11 +113,6 @@ public class CiclistaServiceTest {
         dto.setUrlFotoDocumento("url");
         dto.setSenha("senha123");
         dto.setConfirmaSenha("senha123");
-
-        NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
-        cartao.setNumeroCartao("1111222233334444");
-        cartao.setCvv("321");
-        cartao.setValidadeCartao(String.valueOf(LocalDate.of(2031, 6, 1)));
         dto.setMeioDePagamento(cartao);
         dto.setPassaporte(passaporte);
 
@@ -117,14 +123,16 @@ public class CiclistaServiceTest {
             return entity;
         });
 
-        ArgumentCaptor<CiclistaEntity> ciclistaCaptor = ArgumentCaptor.forClass(CiclistaEntity.class);
+        when(cartaoRepository.save(any(CartaoDeCreditoEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(dto);
-        assertNotNull(response);
-        assertEquals(2, response.getId());
 
-        verify(ciclistaRepository).save(ciclistaCaptor.capture());
-        CiclistaEntity ciclistaSalvo = ciclistaCaptor.getValue();
+        ArgumentCaptor<CiclistaEntity> capturaCiclista = ArgumentCaptor.forClass(CiclistaEntity.class);
+        verify(ciclistaRepository).save(capturaCiclista.capture());
+        CiclistaEntity ciclistaSalvo = capturaCiclista.getValue();
+
+
+        assertEquals(2, response.getId());
         assertNull(ciclistaSalvo.getCpf());
         assertNotNull(ciclistaSalvo.getPassaporteEntity());
         assertEquals("123456", ciclistaSalvo.getPassaporteEntity().getNumeroPassaporte());
@@ -360,6 +368,7 @@ public class CiclistaServiceTest {
                 "antigo@email.com", Nacionalidade.BRASILEIRO, "url", "senha", "senha");
         ciclistaExistente.setId(id);
         AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+        dto.setNacionalidade(Nacionalidade.BRASILEIRO);
         dto.setNome("Novo Nome");
         dto.setCpf("12345678910");
         dto.setSenha("senha");
@@ -498,6 +507,7 @@ public class CiclistaServiceTest {
         novoPassaporte.setValidadePassaporte("12/33");
         novoPassaporte.setNumeroPassaporte("PASS123");
         dto.setPassaporte(novoPassaporte);
+        dto.setNacionalidade(ciclistaExistente.getNacionalidade());
         dto.setNome("");
         dto.setCpf("");
         dto.setUrlFotoDocumento("");
@@ -540,6 +550,7 @@ public class CiclistaServiceTest {
 
         AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
         dto.setNome("Novo Nome");
+        dto.setNacionalidade(ciclistaExistente.getNacionalidade());
         dto.setCpf("");
         dto.setUrlFotoDocumento("");
         dto.setSenha("");
@@ -589,3 +600,4 @@ public class CiclistaServiceTest {
         assertEquals("Senhas diferentes", exception.getMessage());
     }
 }
+

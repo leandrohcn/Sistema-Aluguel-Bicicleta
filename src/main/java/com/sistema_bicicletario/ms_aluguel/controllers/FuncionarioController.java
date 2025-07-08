@@ -1,9 +1,11 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
 
+import com.sistema_bicicletario.ms_aluguel.dtos.FuncionarioResponseDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
 import com.sistema_bicicletario.ms_aluguel.services.FuncionarioService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -30,23 +32,22 @@ public class FuncionarioController {
     }
 
     @PostMapping
-    public ResponseEntity<FuncionarioEntity> criaFuncionario(@RequestBody NovoFuncionarioDTO funcionario) {
-       FuncionarioEntity funcionarioEntity = funcionarioService.criaFuncionario(funcionario);
-       return new ResponseEntity<>(funcionarioEntity, HttpStatus.CREATED);
+    public ResponseEntity<FuncionarioResponseDTO> criaFuncionario(@Valid @RequestBody NovoFuncionarioDTO funcionario) {
+       FuncionarioResponseDTO response = funcionarioService.criaFuncionario(funcionario);
+       return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FuncionarioEntity> buscaFuncionarioPorId(@PathVariable Integer id) {
-        FuncionarioEntity funcionario = funcionarioService.buscaFuncionarioPorId(id);
-        return ResponseEntity.ok(funcionario);
+    public ResponseEntity<FuncionarioResponseDTO> buscaFuncionarioPorId(@PathVariable Integer id) {
+        FuncionarioResponseDTO response = funcionarioService.buscaFuncionarioPorId(id);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FuncionarioEntity> atualizaDadosFuncionario(@PathVariable Integer id, @RequestBody NovoFuncionarioDTO funcionario) {
+    public ResponseEntity<FuncionarioResponseDTO> atualizaDadosFuncionario(@PathVariable Integer id, @Valid @RequestBody NovoFuncionarioDTO funcionario) {
 
-        FuncionarioEntity funcionarioAtualizado = funcionarioService.atualizaFuncionario(funcionario, id);
-        funcionarioAtualizado = new FuncionarioEntity(funcionarioAtualizado);
-        return ResponseEntity.ok().body(funcionarioAtualizado);
+        FuncionarioResponseDTO response = funcionarioService.atualizaFuncionario(funcionario, id);
+        return ResponseEntity.ok().body(response);
 
     }
 

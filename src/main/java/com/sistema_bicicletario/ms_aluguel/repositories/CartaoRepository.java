@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface CartaoRepository extends JpaRepository<CartaoDeCreditoEntity, Integer> {
 
     Optional<CartaoDeCreditoEntity> findByNumero(String numero);
-
+    Optional<CartaoDeCreditoEntity> findByCiclistaId(Integer idCiclista);
 }

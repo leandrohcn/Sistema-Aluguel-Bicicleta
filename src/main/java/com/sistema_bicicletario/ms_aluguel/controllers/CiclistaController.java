@@ -2,6 +2,7 @@ package com.sistema_bicicletario.ms_aluguel.controllers;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.*;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
+import com.sistema_bicicletario.ms_aluguel.services.AluguelService;
 import com.sistema_bicicletario.ms_aluguel.services.CiclistaService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,9 +15,13 @@ import java.util.Optional;
 @RequestMapping("/ciclista")
 public class CiclistaController {
 
+
     private final CiclistaService ciclistaService;
-    public CiclistaController(CiclistaService ciclistaService) {
+    private final AluguelService aluguelService;
+
+    public CiclistaController(CiclistaService ciclistaService, AluguelService aluguelService) {
         this.ciclistaService = ciclistaService;
+        this.aluguelService = aluguelService;
     }
 
     EnviaEmailDTO enviaEmail = new EnviaEmailDTO();
@@ -59,17 +64,14 @@ public class CiclistaController {
 
     @GetMapping("/{id:\\d+}/permiteAluguel")
     public ResponseEntity<Boolean> permiteAluguel(@PathVariable Integer id) {
-        if (ciclistaService.permiteAluguel(id)) {
-            return ResponseEntity.ok(true);
-        }
-            return ResponseEntity.ok(false);
+
+        return ResponseEntity.ok(ciclistaService.permiteAluguel(id));
+
     }
 
-//    @GetMapping("{id:\\d+}/bicicletaAlugada")
-//    public ResponseEntity<BicicletaDTO> bicicletaAlugada(@PathVariable Integer id) {
-//            Optional<BicicletaDTO> bicicleta = ciclistaService.bicicletaAlugada(id);
-//            return bicicleta.map(ResponseEntity::ok)
-//                    .orElseGet(() -> ResponseEntity.noContent().build());
-//    }
-
+    @GetMapping("/{id:\\d+}/bicicletaAlugada")
+    public ResponseEntity <Optional<BicicletaDTO>> bicicletaAlugada(@PathVariable Integer id) {
+        Optional<BicicletaDTO> bicicleta = aluguelService.buscarBicicletaDoAluguelAtivo(id);
+        return ResponseEntity.ok(bicicleta);
+    }
 }

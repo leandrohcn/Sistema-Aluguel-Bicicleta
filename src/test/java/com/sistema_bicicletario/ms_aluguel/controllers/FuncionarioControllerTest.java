@@ -1,5 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
+import com.sistema_bicicletario.ms_aluguel.dtos.FuncionarioResponseDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.Funcao;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
@@ -28,10 +29,9 @@ class FuncionarioControllerTest {
 
     private FuncionarioEntity funcionario;
     private NovoFuncionarioDTO novoFuncionario;
-
+    private FuncionarioResponseDTO funcionarioResponseDTO;
     @BeforeEach
     void setUp() {
-
 
         funcionario = new FuncionarioEntity();
         funcionario.setMatricula(1);
@@ -43,8 +43,15 @@ class FuncionarioControllerTest {
         funcionario.setFuncao(Funcao.ADMINISTRATIVO);
         funcionario.setIdade(19);
 
+        novoFuncionario = new NovoFuncionarioDTO(
+                "Maria", "1234", "1234", "maria@dominio",
+                20, "123234245", Funcao.ADMINISTRATIVO
+        );
+
         List<FuncionarioEntity> lista = List.of(funcionario);
         lenient().when(funcionarioService.buscaTodosFuncionario()).thenReturn(lista);
+
+        funcionarioResponseDTO = new FuncionarioResponseDTO(funcionario);
 
     }
 
@@ -67,10 +74,10 @@ class FuncionarioControllerTest {
                 "Maria", "1234", "1234", "maria@dominio",
                 20, "123234245", Funcao.ADMINISTRATIVO
         );
+        FuncionarioResponseDTO funcionarioResponseDTOLocal = new FuncionarioResponseDTO(funcionario2);
+        when(funcionarioService.criaFuncionario(novoFuncionario)).thenReturn(funcionarioResponseDTOLocal);
 
-        when(funcionarioService.criaFuncionario(any())).thenReturn(funcionario2);
-
-        ResponseEntity<FuncionarioEntity> resposta = controller.criaFuncionario(novoFuncionario);
+        ResponseEntity<FuncionarioResponseDTO> resposta = controller.criaFuncionario(novoFuncionario);
 
         assertNotNull(resposta.getBody());
         assertEquals(HttpStatus.CREATED, resposta.getStatusCode());
@@ -80,9 +87,9 @@ class FuncionarioControllerTest {
 
     @Test
     void deveBuscarFuncionarioPorId() {
-        when(funcionarioService.buscaFuncionarioPorId(1)).thenReturn(funcionario);
+        when(funcionarioService.buscaFuncionarioPorId(1)).thenReturn(funcionarioResponseDTO);
 
-        ResponseEntity<FuncionarioEntity> resposta = controller.buscaFuncionarioPorId(1);
+        ResponseEntity<FuncionarioResponseDTO> resposta = controller.buscaFuncionarioPorId(1);
 
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
         assertNotNull(funcionario);
@@ -92,11 +99,16 @@ class FuncionarioControllerTest {
 
     @Test
     void deveAtualizarFuncionario() {
-        when(funcionarioService.atualizaFuncionario(novoFuncionario, 1)).thenReturn(funcionario);
+        FuncionarioEntity funcionario2 = new FuncionarioEntity();
+        FuncionarioResponseDTO funcionarioResponseDTO1 = new FuncionarioResponseDTO(funcionario2);
+        funcionarioResponseDTO1.setMatricula(1);
+        funcionarioResponseDTO1.setNome(novoFuncionario.getNome());
+        when(funcionarioService.atualizaFuncionario(novoFuncionario, 1)).thenReturn(funcionarioResponseDTO1);
 
-        ResponseEntity<FuncionarioEntity> resposta = controller.atualizaDadosFuncionario(1, novoFuncionario);
+        ResponseEntity<FuncionarioResponseDTO> resposta = controller.atualizaDadosFuncionario(1, novoFuncionario);
 
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
+        assertEquals("Maria", resposta.getBody().getNome());
         verify(funcionarioService).atualizaFuncionario(novoFuncionario, 1);
     }
 
