@@ -295,28 +295,6 @@ public class CiclistaServiceTest {
         assertThrows(IllegalArgumentException.class, () -> ciclistaService.existeEmail("testeemail.com"));
     }
 
-//    @Test
-//    void deveRetornarBicicletaQuandoCiclistaTemBicicletaAlugada() {
-//        Integer idCiclista = 10;
-//
-//        when(ciclistaRepository.existsById(idCiclista)).thenReturn(true);
-//        doReturn(false).when(ciclistaService).permiteAluguel(idCiclista);
-//
-//        BicicletaDTO bicicleta = new BicicletaDTO(1, "Caloi", "Elite", "2024", "123", "ALUGADA");
-//        doReturn(Optional.of(bicicleta)).when(ciclistaService).bicicletaAlugada(idCiclista);
-//        Optional<BicicletaDTO> resultado = ciclistaService.bicicletaAlugada(idCiclista);
-//
-//        assertTrue(resultado.isPresent());
-//        assertEquals("Caloi", resultado.get().getMarca());
-//    }
-
-//    @Test
-//    void deveLancarExcecaoQuandoCiclistaNaoExiste() {
-//        Integer idInvalido = 999;
-//        when(ciclistaRepository.existsById(idInvalido)).thenReturn(false);
-//        assertThrows(EntityNotFoundException.class, () -> ciclistaService.bicicletaAlugada(idInvalido));
-//    }
-
     @Test
     void deveLancarErroAoCadastrarComEmailExistente() {
         when(ciclistaRepository.existsByEmail("joao@email.com")).thenReturn(true);
@@ -569,21 +547,6 @@ public class CiclistaServiceTest {
         assertEquals("ANTIGO123", ciclistaSalvo.getPassaporteEntity().getNumeroPassaporte());
         assertEquals("Novo Nome", ciclistaSalvo.getNome());
     }
-
-//    @Test
-//    void deveRetornarOptionalEmptyParaBicicletaAlugada() {
-//        Integer idCiclista = 10;
-//        CiclistaEntity ciclista = new CiclistaEntity();
-//        ciclista.setStatus(Status.ATIVO);
-//        ciclista.setAluguelAtivo(false);
-//
-//        when(ciclistaRepository.existsById(idCiclista)).thenReturn(true);
-//        when(ciclistaRepository.findById(idCiclista)).thenReturn(Optional.of(ciclista));
-//
-//        Optional<BicicletaDTO> resultado = ciclistaService.bicicletaAlugada(idCiclista);
-//
-//        assertTrue(resultado.isEmpty());
-//    }
 
     @Test
     void deveLancarExcecaoAoCadastrarComSenhaNula() {
