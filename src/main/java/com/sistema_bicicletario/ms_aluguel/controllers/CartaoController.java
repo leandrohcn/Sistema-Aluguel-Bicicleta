@@ -1,7 +1,7 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
+import com.sistema_bicicletario.ms_aluguel.dtos.CartaoDeCreditoDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDeCreditoDTO;
-import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.services.CartaoService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -23,8 +23,8 @@ public class CartaoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CartaoDeCreditoEntity> buscarCartao(@PathVariable Integer id) {
-        CartaoDeCreditoEntity c = cartaoService.buscaCartao(id);
+    public ResponseEntity<CartaoDeCreditoDTO> buscarCartao(@PathVariable Integer id) {
+        CartaoDeCreditoDTO c = cartaoService.buscaCartao(id);
         return ResponseEntity.ok().body(c);
     }
 
@@ -34,10 +34,8 @@ public class CartaoController {
         validaCartao(cartao);
 
         try {
-
             cartaoService.atualizaCartao(id, cartao);
             return ResponseEntity.ok("Dados atualizados com sucesso!");
-
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }

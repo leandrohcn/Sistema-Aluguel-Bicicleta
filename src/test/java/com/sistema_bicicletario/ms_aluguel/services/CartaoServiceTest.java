@@ -1,5 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.services;
 
+import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -29,12 +30,14 @@ public class CartaoServiceTest {
     @Test
     void deveAtualizarCartaoComDadosValidos() {
         Integer id = 1;
+        CiclistaEntity ciclista = new CiclistaEntity();
+        ciclista.setId(id);
         CartaoDeCreditoEntity cartaoExistente = new CartaoDeCreditoEntity();
+        cartaoExistente.setNomeTitular("Leandro");
         NovoCartaoDeCreditoDTO novoCartao = new NovoCartaoDeCreditoDTO(
                 "João Silva", "2334", "12/30", "234523456"
         );
-
-        when(cartaoRepository.findById(id)).thenReturn(Optional.of(cartaoExistente));
+        when(cartaoRepository.findByCiclistaId(id)).thenReturn(Optional.of(cartaoExistente));
 
         cartaoService.atualizaCartao(id, novoCartao);
 
@@ -49,30 +52,40 @@ public class CartaoServiceTest {
     @Test
     void deveLancarExcecaoQuandoCartaoNaoExisteNaAtualizacao() {
         Integer id = 99;
+        CiclistaEntity ciclistaExistente = new CiclistaEntity();
+        ciclistaExistente.setId(id);
         NovoCartaoDeCreditoDTO novoCartao = new NovoCartaoDeCreditoDTO(
                 "João Silva", "1256", "12/30", "1245323245"
         );
-
-        when(cartaoRepository.findById(id)).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
-                cartaoService.atualizaCartao(id, novoCartao)
-        );
-
-        assertEquals("Usuário não encontrado", exception.getMessage());
+        when(cartaoRepository.findByCiclistaId(id)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> cartaoService.atualizaCartao(id, novoCartao));
         verify(cartaoRepository, never()).save(any());
     }
 
     @Test
     void deveRetornarCartaoQuandoIdEhValidoEExiste() {
-        Integer id = 1;
-        CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity();
-        when(cartaoRepository.findById(id)).thenReturn(Optional.of(cartao));
+        Integer ciclistaId = 1;
 
-        CartaoDeCreditoEntity resultado = cartaoService.buscaCartao(id);
+        CiclistaEntity ciclista = new CiclistaEntity();
+        ciclista.setId(ciclistaId);
 
-        assertNotNull(resultado);
-        assertEquals(cartao, resultado);
+        CartaoDeCreditoEntity cartaoEntity = new CartaoDeCreditoEntity();
+        cartaoEntity.setId(10);
+        cartaoEntity.setNomeTitular("Leandro");
+        cartaoEntity.setNumero("1234567890123456");
+        cartaoEntity.setCvv("1234");
+        cartaoEntity.setCiclista(ciclista);
+
+        when(cartaoRepository.findByCiclistaId(ciclistaId)).thenReturn(Optional.of((cartaoEntity)));
+
+        CartaoDeCreditoDTO resultadoDTO = cartaoService.buscaCartao(ciclistaId);
+
+        assertNotNull(resultadoDTO);
+        assertEquals(cartaoEntity.getNomeTitular(), resultadoDTO.getNomeTitular());
+        assertEquals("1234567890123456", resultadoDTO.getNumero());
+        assertEquals("1234", resultadoDTO.getCvv());
+
+        verify(cartaoRepository, times(1)).findByCiclistaId(ciclistaId);
     }
 
     @Test
@@ -93,14 +106,11 @@ public class CartaoServiceTest {
 
     @Test
     void deveLancarExcecaoQuandoCartaoNaoForEncontradoNaBusca() {
-        Integer id = 123;
-        when(cartaoRepository.findById(id)).thenReturn(Optional.empty());
-
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () ->
-                cartaoService.buscaCartao(id)
-        );
-
-        assertEquals("Cartão não encontrado", exception.getMessage());
+        CiclistaEntity ciclistaQueNaoExiste = new CiclistaEntity();
+        ciclistaQueNaoExiste.setId(1646);
+        when(cartaoRepository.findByCiclistaId(1646)).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> cartaoService.buscaCartao(1646));
+        verify(cartaoRepository, times(1)).findByCiclistaId(1646);
     }
 
     @Test

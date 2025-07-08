@@ -1,5 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.controllers;
 
+import com.sistema_bicicletario.ms_aluguel.dtos.CartaoDeCreditoDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDeCreditoDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.services.CartaoService;
@@ -40,9 +41,10 @@ public class CartaoControllerTest {
 
     @Test
     void deveBuscarCartaoPorId() {
-        when(cartaoService.buscaCartao(1)).thenReturn(cartao);
+        CartaoDeCreditoDTO cartaoDeCreditoDTO = new CartaoDeCreditoDTO(cartao);
+        when(cartaoService.buscaCartao(1)).thenReturn(cartaoDeCreditoDTO);
 
-        ResponseEntity<CartaoDeCreditoEntity> resposta = cartaoController.buscarCartao(1);
+        ResponseEntity<CartaoDeCreditoDTO> resposta = cartaoController.buscarCartao(1);
 
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
         assertNotNull(resposta.getBody());
