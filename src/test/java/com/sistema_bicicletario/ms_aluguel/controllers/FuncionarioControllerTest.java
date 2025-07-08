@@ -74,8 +74,8 @@ class FuncionarioControllerTest {
                 "Maria", "1234", "1234", "maria@dominio",
                 20, "123234245", Funcao.ADMINISTRATIVO
         );
-        FuncionarioResponseDTO funcionarioResponseDTO = new FuncionarioResponseDTO(funcionario2);
-        when(funcionarioService.criaFuncionario(novoFuncionario)).thenReturn(funcionarioResponseDTO);
+        FuncionarioResponseDTO funcionarioResponseDTOLocal = new FuncionarioResponseDTO(funcionario2);
+        when(funcionarioService.criaFuncionario(novoFuncionario)).thenReturn(funcionarioResponseDTOLocal);
 
         ResponseEntity<FuncionarioResponseDTO> resposta = controller.criaFuncionario(novoFuncionario);
 
