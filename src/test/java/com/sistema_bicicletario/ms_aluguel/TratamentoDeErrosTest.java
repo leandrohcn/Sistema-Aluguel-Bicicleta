@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 
-public class TratamentoDeErrosTest {
+class TratamentoDeErrosTest {
     // A classe que estamos testando
     private TratamentoDeErros tratamentoDeErros;
 

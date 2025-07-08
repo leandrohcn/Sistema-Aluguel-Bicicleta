@@ -23,7 +23,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 
 @ExtendWith(MockitoExtension.class)
-public class AluguelControllerTest {
+class AluguelControllerTest {
 
     @Mock
     private AluguelService aluguelService;

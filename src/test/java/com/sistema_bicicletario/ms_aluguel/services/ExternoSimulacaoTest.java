@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ExternoSimulacaoTest {
+class ExternoSimulacaoTest {
     private ExternoSimulacao externoSimulacao;
 
     @BeforeEach
