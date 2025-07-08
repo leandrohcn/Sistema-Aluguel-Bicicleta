@@ -11,6 +11,8 @@ import com.sistema_bicicletario.ms_aluguel.repositories.AluguelRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -21,6 +23,7 @@ public class DevolucaoService {
     private final AluguelRepository aluguelRepository;
     private final ExternoSimulacao externoEquipamentoSimulacao;
     private final CiclistaRepository ciclistaRepository;
+    private static final Logger logger = LoggerFactory.getLogger(DevolucaoService.class);
 
     public DevolucaoService(AluguelRepository aluguelRepository, ExternoSimulacao externoSimulacao, CiclistaRepository ciclistaRepository) {
         this.aluguelRepository = aluguelRepository;
@@ -53,7 +56,7 @@ public class DevolucaoService {
         if (valorExtra > 0) {
             CobrancaDTO cobrancaExtra = externoEquipamentoSimulacao.realizarCobranca(aluguelAberto.getCiclista(), valorExtra);
             if (!"PAGO".equals(cobrancaExtra.getStatus())) {
-                System.out.println("AVISO: Falha na cobrança do valor extra de R$" + valorExtra);
+                logger.warn("Falha na cobrança do valor extra de R$ {} para o ciclista {}", valorExtra, aluguelAberto.getCiclista());
             }
         }
 
