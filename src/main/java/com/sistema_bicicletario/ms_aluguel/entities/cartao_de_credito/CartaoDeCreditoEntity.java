@@ -29,7 +29,7 @@ public class CartaoDeCreditoEntity {
 
     private String validade;
 
-    @Pattern(regexp = "^[0-9]{3,4}$",
+    @Pattern(regexp = "^\\d{3,4}$",
              message = "Cvv maximo de 4 digitos")
     private @NotNull String cvv;
 
