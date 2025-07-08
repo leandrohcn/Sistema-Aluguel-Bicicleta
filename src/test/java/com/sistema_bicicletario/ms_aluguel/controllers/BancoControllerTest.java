@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
-public class BancoControllerTest {
+class BancoControllerTest {
     @InjectMocks
     private BancoController controller;
 
