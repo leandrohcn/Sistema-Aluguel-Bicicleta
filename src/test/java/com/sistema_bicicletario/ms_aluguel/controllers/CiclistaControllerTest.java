@@ -191,89 +191,67 @@ public class CiclistaControllerTest {
 
     @Test
     void deveRetornarBicicletaAlugadaComSucesso() {
-        // GIVEN (Dado que...)
         int ciclistaId = 1;
         int bicicletaId = 101;
 
-        // 1. Crie o objeto DTO que você espera como retorno.
         BicicletaDTO bicicletaEsperada = new BicicletaDTO();
-        bicicletaEsperada.setIdBicicleta(bicicletaId); // Usando o nome de campo correto do DTO
+        bicicletaEsperada.setIdBicicleta(bicicletaId);
         bicicletaEsperada.setStatus("EM_USO");
-        // Preencha os outros campos se necessário para a asserção
         bicicletaEsperada.setMarca("Caloi");
         bicicletaEsperada.setModelo("Urbana");
 
 
-        // 2. Configure o ÚNICO mock necessário.
-        // Quando o serviço for chamado, ele deve retornar o DTO esperado dentro de um Optional.
         when(aluguelService.buscarBicicletaDoAluguelAtivo(ciclistaId))
                 .thenReturn(Optional.of(bicicletaEsperada));
 
-        // WHEN (Quando...)
         ResponseEntity<Optional<BicicletaDTO>> resposta = ciclistaController.bicicletaAlugada(ciclistaId);
 
-        // THEN (Então...)
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
         assertNotNull(resposta.getBody(), "O corpo da resposta não deveria ser nulo.");
 
-        // Verificações no corpo da resposta
         Optional<BicicletaDTO> body = resposta.getBody();
         assertTrue(body.isPresent(), "O corpo da resposta deveria conter uma bicicleta.");
 
-        // Verificações nos dados da bicicleta retornada
         BicicletaDTO bicicletaRetornada = body.get();
         assertEquals(bicicletaId, bicicletaRetornada.getIdBicicleta());
         assertEquals("EM_USO", bicicletaRetornada.getStatus());
         assertEquals("Caloi", bicicletaRetornada.getMarca());
 
 
-        // 3. Verifique a ÚNICA interação que o controller deve ter.
         verify(aluguelService, times(1)).buscarBicicletaDoAluguelAtivo(ciclistaId);
 
-        // Garanta que nenhuma outra interação desnecessária ocorreu
         verifyNoMoreInteractions(aluguelService);
     }
 
     @Test
     void deveRetornarVazioQuandoNaoHouverAluguelAtivo() { // Nome do teste mais genérico e correto
-        // GIVEN
         int ciclistaId = 3;
 
-        // A única interação que o controller faz é com AluguelService.
-        // Simulamos que o serviço não encontrou aluguel ativo.
+
         when(aluguelService.buscarBicicletaDoAluguelAtivo(ciclistaId)).thenReturn(Optional.empty());
 
-        // WHEN
         ResponseEntity<Optional<BicicletaDTO>> resposta = ciclistaController.bicicletaAlugada(ciclistaId);
 
-        // THEN
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
         assertNotNull(resposta.getBody());
         assertTrue(resposta.getBody().isEmpty());
 
-        // Verificamos que a única interação foi a chamada ao AluguelService.
         verify(aluguelService, times(1)).buscarBicicletaDoAluguelAtivo(ciclistaId);
     }
 
     @Test
     void deveRetornarVazioSeAluguelNaoEncontrado() {
-        // GIVEN (Dado)
         int ciclistaId = 3;
 
-        // Configure o mock para o comportamento esperado:
-        // Quando buscarBicicletaDoAluguelAtivo for chamado com o ID do ciclista,
-        // retorne um Optional vazio.
+
         when(aluguelService.buscarBicicletaDoAluguelAtivo(ciclistaId)).thenReturn(Optional.empty());
 
-        // WHEN (Quando)
         ResponseEntity<Optional<BicicletaDTO>> resposta = ciclistaController.bicicletaAlugada(ciclistaId);
 
-        // THEN (Então)
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
         assertNotNull(resposta.getBody(), "O corpo da resposta não deveria ser nulo.");
         assertTrue(resposta.getBody().isEmpty(), "O corpo da resposta deveria ser um Optional vazio.");
 
-        // Verifique se o método do serviço foi chamado exatamente uma vez.
         verify(aluguelService, times(1)).buscarBicicletaDoAluguelAtivo(ciclistaId);
     }
 }

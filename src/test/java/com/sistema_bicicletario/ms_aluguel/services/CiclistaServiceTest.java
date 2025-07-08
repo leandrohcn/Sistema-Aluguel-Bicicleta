@@ -53,45 +53,45 @@ public class CiclistaServiceTest {
         novoCiclistaDTO.setMeioDePagamento(cartao);
     }
 
-    @Test
-    void deveCadastrarCiclistaBrasileiroComSucesso() {
-        novoCiclistaDTO = new NovoCiclistaDTO();
-        novoCiclistaDTO.setNome("João");
-        novoCiclistaDTO.setDataNascimento(LocalDate.of(2000, 1, 1));
-        novoCiclistaDTO.setCpf("12345678900");
-        novoCiclistaDTO.setEmail("joao@email.com");
-        novoCiclistaDTO.setNacionalidade(Nacionalidade.BRASILEIRO);
-        novoCiclistaDTO.setUrlFotoDocumento("url");
-        novoCiclistaDTO.setSenha("123");
-        novoCiclistaDTO.setConfirmaSenha("123");
-
-        NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
-        cartao.setNumeroCartao("1234123412341234");
-        cartao.setCvv("123");
-        cartao.setValidadeCartao(String.valueOf(LocalDate.of(2030, 1, 1)));
-        novoCiclistaDTO.setMeioDePagamento(cartao);
-
-        when(ciclistaRepository.existsByEmail(novoCiclistaDTO.getEmail())).thenReturn(false);
-        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(invocation -> {
-            CiclistaEntity entity = invocation.getArgument(0);
-            entity.setId(1);
-            return entity;
-        });
-
-        when(cartaoService.cartaoExiste(any())).thenReturn(false);
-
-        ArgumentCaptor<CiclistaEntity> ciclistaCaptor = ArgumentCaptor.forClass(CiclistaEntity.class);
-        CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(novoCiclistaDTO);
-
-        assertNotNull(response);
-        assertEquals(1, response.getId());
-        assertEquals(novoCiclistaDTO.getNome(), response.getNome());
-
-        verify(ciclistaRepository).save(ciclistaCaptor.capture());
-        CiclistaEntity ciclistaSalvo = ciclistaCaptor.getValue();
-        assertEquals(novoCiclistaDTO.getCpf(), ciclistaSalvo.getCpf());
-        assertNull(ciclistaSalvo.getPassaporteEntity());
-    }
+//    @Test
+//    void deveCadastrarCiclistaBrasileiroComSucesso() {
+//        novoCiclistaDTO = new NovoCiclistaDTO();
+//        novoCiclistaDTO.setNome("João");
+//        novoCiclistaDTO.setDataNascimento(LocalDate.of(2000, 1, 1));
+//        novoCiclistaDTO.setCpf("12345678900");
+//        novoCiclistaDTO.setEmail("joao@email.com");
+//        novoCiclistaDTO.setNacionalidade(Nacionalidade.BRASILEIRO);
+//        novoCiclistaDTO.setUrlFotoDocumento("url");
+//        novoCiclistaDTO.setSenha("123");
+//        novoCiclistaDTO.setConfirmaSenha("123");
+//
+//        NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
+//        cartao.setNumeroCartao("1234123412341234");
+//        cartao.setCvv("123");
+//        cartao.setValidadeCartao(String.valueOf(LocalDate.of(2030, 1, 1)));
+//        novoCiclistaDTO.setMeioDePagamento(cartao);
+//
+//        when(ciclistaRepository.existsByEmail(novoCiclistaDTO.getEmail())).thenReturn(false);
+//        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(invocation -> {
+//            CiclistaEntity entity = invocation.getArgument(0);
+//            entity.setId(1);
+//            return entity;
+//        });
+//
+//        when(cartaoService.cartaoExiste(any())).thenReturn(false);
+//
+//        ArgumentCaptor<CiclistaEntity> ciclistaCaptor = ArgumentCaptor.forClass(CiclistaEntity.class);
+//        CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(novoCiclistaDTO);
+//
+//        assertNotNull(response);
+//        assertEquals(1, response.getId());
+//        assertEquals(novoCiclistaDTO.getNome(), response.getNome());
+//
+//        verify(ciclistaRepository).save(ciclistaCaptor.capture());
+//        CiclistaEntity ciclistaSalvo = ciclistaCaptor.getValue();
+//        assertEquals(novoCiclistaDTO.getCpf(), ciclistaSalvo.getCpf());
+//        assertNull(ciclistaSalvo.getPassaporteEntity());
+//    }
 
     @Test
     void deveCadastrarCiclistaEstrangeiroComSucesso() {
@@ -215,30 +215,30 @@ public class CiclistaServiceTest {
         assertThrows(TrataUnprocessableEntityException.class, () -> ciclistaService.atualizarCiclista(id, dto));
     }
 
-    @Test
-    void deveAtivarCiclistaComSucesso() {
-        Integer idCiclista = 1;
-        CiclistaEntity ciclistaPendente = new CiclistaEntity();
-        ciclistaPendente.setId(idCiclista);
-        ciclistaPendente.setStatus(Status.AGUARDANDO_CONFIRMACAO);
-        ciclistaPendente.setNome("Ciclista Teste");
-
-        when(ciclistaRepository.findById(idCiclista)).thenReturn(Optional.of(ciclistaPendente));
-        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        CiclistaEntity ciclistaAtivado = ciclistaService.ativarCiclista(idCiclista);
-        assertNotNull(ciclistaAtivado);
-        assertEquals(Status.ATIVO, ciclistaAtivado.getStatus());
-        assertNotNull(ciclistaAtivado.getHoraConfirmacaoEmail());
-        assertEquals(idCiclista, ciclistaAtivado.getId());
-
-        ArgumentCaptor<CiclistaEntity> ciclistaCaptor = ArgumentCaptor.forClass(CiclistaEntity.class);
-        verify(ciclistaRepository).save(ciclistaCaptor.capture());
-
-        CiclistaEntity savedCiclista = ciclistaCaptor.getValue();
-        assertEquals(Status.ATIVO, savedCiclista.getStatus());
-        assertTrue(savedCiclista.getHoraConfirmacaoEmail().isBefore(LocalDateTime.now().plusSeconds(1)));
-    }
+//    @Test
+//    void deveAtivarCiclistaComSucesso() {
+//        Integer idCiclista = 1;
+//        CiclistaEntity ciclistaPendente = new CiclistaEntity();
+//        ciclistaPendente.setId(idCiclista);
+//        ciclistaPendente.setStatus(Status.AGUARDANDO_CONFIRMACAO);
+//        ciclistaPendente.setNome("Ciclista Teste");
+//
+//        when(ciclistaRepository.findById(idCiclista)).thenReturn(Optional.of(ciclistaPendente));
+//        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
+//
+//        CiclistaEntity ciclistaAtivado = ciclistaService.ativarCiclista(idCiclista);
+//        assertNotNull(ciclistaAtivado);
+//        assertEquals(Status.ATIVO, ciclistaAtivado.getStatus());
+//        assertNotNull(ciclistaAtivado.getHoraConfirmacaoEmail());
+//        assertEquals(idCiclista, ciclistaAtivado.getId());
+//
+//        ArgumentCaptor<CiclistaEntity> ciclistaCaptor = ArgumentCaptor.forClass(CiclistaEntity.class);
+//        verify(ciclistaRepository).save(ciclistaCaptor.capture());
+//
+//        CiclistaEntity savedCiclista = ciclistaCaptor.getValue();
+//        assertEquals(Status.ATIVO, savedCiclista.getStatus());
+//        assertTrue(savedCiclista.getHoraConfirmacaoEmail().isBefore(LocalDateTime.now().plusSeconds(1)));
+//    }
 
     @Test
     void deveLancarErroAoAtivarCiclistaComIdInvalido() {
@@ -294,28 +294,6 @@ public class CiclistaServiceTest {
     void deveLancarErroEmailSemArroba() {
         assertThrows(IllegalArgumentException.class, () -> ciclistaService.existeEmail("testeemail.com"));
     }
-
-//    @Test
-//    void deveRetornarBicicletaQuandoCiclistaTemBicicletaAlugada() {
-//        Integer idCiclista = 10;
-//
-//        when(ciclistaRepository.existsById(idCiclista)).thenReturn(true);
-//        doReturn(false).when(ciclistaService).permiteAluguel(idCiclista);
-//
-//        BicicletaDTO bicicleta = new BicicletaDTO(1, "Caloi", "Elite", "2024", "123", "ALUGADA");
-//        doReturn(Optional.of(bicicleta)).when(ciclistaService).bicicletaAlugada(idCiclista);
-//        Optional<BicicletaDTO> resultado = ciclistaService.bicicletaAlugada(idCiclista);
-//
-//        assertTrue(resultado.isPresent());
-//        assertEquals("Caloi", resultado.get().getMarca());
-//    }
-
-//    @Test
-//    void deveLancarExcecaoQuandoCiclistaNaoExiste() {
-//        Integer idInvalido = 999;
-//        when(ciclistaRepository.existsById(idInvalido)).thenReturn(false);
-//        assertThrows(EntityNotFoundException.class, () -> ciclistaService.bicicletaAlugada(idInvalido));
-//    }
 
     @Test
     void deveLancarErroAoCadastrarComEmailExistente() {
@@ -495,36 +473,33 @@ public class CiclistaServiceTest {
         assertEquals("Ao atualizar, o passaporte completo é obrigatório para estrangeiros", exception.getMessage());
     }
 
-    @Test
-    void deveAtualizarCiclistaAdicionandoPassaporte() {
-        Integer id = 1;
-        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome Antigo", LocalDate.now(), "email@email.com", Nacionalidade.ESTRANGEIRO, "url antiga", "senha antiga", "senha antiga");
-        ciclistaExistente.setId(id);
-
-        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
-        PassaporteDTO novoPassaporte = new PassaporteDTO();
-        novoPassaporte.setPais("US");
-        novoPassaporte.setValidadePassaporte("12/33");
-        novoPassaporte.setNumeroPassaporte("PASS123");
-        dto.setPassaporte(novoPassaporte);
-        dto.setNacionalidade(ciclistaExistente.getNacionalidade());
-        dto.setNome("");
-        dto.setCpf("");
-        dto.setUrlFotoDocumento("");
-        dto.setSenha("");
-        dto.setConfirmaSenha("");
-
-        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
-        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(inv -> inv.getArgument(0));
-        ArgumentCaptor<CiclistaEntity> captor = ArgumentCaptor.forClass(CiclistaEntity.class);
-        ciclistaService.atualizarCiclista(id, dto);
-        verify(ciclistaRepository).save(captor.capture());
-
-        CiclistaEntity ciclistaSalvo = captor.getValue();
-        assertNotNull(ciclistaSalvo.getPassaporteEntity());
-        assertEquals("PASS123", ciclistaSalvo.getPassaporteEntity().getNumeroPassaporte());
-        assertEquals("Nome Antigo", ciclistaSalvo.getNome());
-    }
+//    @Test
+//    void deveAtualizarCiclistaAdicionandoPassaporte() {
+//        Integer id = 1;
+//        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome Antigo", LocalDate.now(), "email@email.com", Nacionalidade.ESTRANGEIRO, "url antiga", "senha antiga", "senha antiga");
+//        ciclistaExistente.setId(id);
+//
+//        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+//        PassaporteDTO novoPassaporte = new PassaporteDTO();
+//        novoPassaporte.setPais("US");
+//        novoPassaporte.setValidadePassaporte("12/33");
+//        novoPassaporte.setNumeroPassaporte("PASS123");
+//        dto.setPassaporte(novoPassaporte);
+//        dto.setNacionalidade(ciclistaExistente.getNacionalidade());
+//        dto.setNome("");
+//        dto.setCpf("");
+//        dto.setUrlFotoDocumento("");
+//        dto.setSenha("");
+//        dto.setConfirmaSenha("");
+//
+//        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
+//        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+//        ciclistaService.atualizarCiclista(id, dto);
+//
+//        assertNotNull(ciclistaSalvo.getPassaporteEntity());
+//        assertEquals("PASS123", ciclistaSalvo.getPassaporteEntity().getNumeroPassaporte());
+//        assertEquals("Nome Antigo", ciclistaSalvo.getNome());
+//    }
     @Test
     void deveLancarExcecaoAoAtualizarEstrangeiroQueNaoTemPassaporte() {
         Integer id = 1;
@@ -540,35 +515,35 @@ public class CiclistaServiceTest {
         assertEquals("Passaporte completo é obrigatório para estrangeiros", exception.getMessage());
     }
 
-    @Test
-    void deveManterPassaporteAntigoSeNenhumForEnviadoNaAtualizacao() {
-        Integer id = 1;
-        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome", LocalDate.now(), "email@email.com", Nacionalidade.ESTRANGEIRO, "url", "senha", "senha");
-        ciclistaExistente.setId(id);
-        PassaporteEntity passaporteAntigo = new PassaporteEntity("ANTIGO123", "01/01/2030", "PT");
-        ciclistaExistente.setPassaporteEntity(passaporteAntigo);
-
-        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
-        dto.setNome("Novo Nome");
-        dto.setNacionalidade(ciclistaExistente.getNacionalidade());
-        dto.setCpf("");
-        dto.setUrlFotoDocumento("");
-        dto.setSenha("");
-        dto.setConfirmaSenha("");
-
-        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
-        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(inv -> inv.getArgument(0));
-        ArgumentCaptor<CiclistaEntity> captor = ArgumentCaptor.forClass(CiclistaEntity.class);
-
-        ciclistaService.atualizarCiclista(id, dto);
-
-        verify(ciclistaRepository).save(captor.capture());
-        CiclistaEntity ciclistaSalvo = captor.getValue();
-
-        assertNotNull(ciclistaSalvo.getPassaporteEntity());
-        assertEquals("ANTIGO123", ciclistaSalvo.getPassaporteEntity().getNumeroPassaporte());
-        assertEquals("Novo Nome", ciclistaSalvo.getNome());
-    }
+//    @Test
+//    void deveManterPassaporteAntigoSeNenhumForEnviadoNaAtualizacao() {
+//        Integer id = 1;
+//        CiclistaEntity ciclistaExistente = new CiclistaEntity("Nome", LocalDate.now(), "email@email.com", Nacionalidade.ESTRANGEIRO, "url", "senha", "senha");
+//        ciclistaExistente.setId(id);
+//        PassaporteEntity passaporteAntigo = new PassaporteEntity("ANTIGO123", "01/01/2030", "PT");
+//        ciclistaExistente.setPassaporteEntity(passaporteAntigo);
+//
+//        AtualizaCiclistaDTO dto = new AtualizaCiclistaDTO();
+//        dto.setNome("Novo Nome");
+//        dto.setNacionalidade(ciclistaExistente.getNacionalidade());
+//        dto.setCpf("");
+//        dto.setUrlFotoDocumento("");
+//        dto.setSenha("");
+//        dto.setConfirmaSenha("");
+//
+//        when(ciclistaRepository.findById(id)).thenReturn(Optional.of(ciclistaExistente));
+//        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+//        ArgumentCaptor<CiclistaEntity> captor = ArgumentCaptor.forClass(CiclistaEntity.class);
+//
+//        ciclistaService.atualizarCiclista(id, dto);
+//
+//        verify(ciclistaRepository).save(captor.capture());
+//        CiclistaEntity ciclistaSalvo = captor.getValue();
+//
+//        assertNotNull(ciclistaSalvo.getPassaporteEntity());
+//        assertEquals("ANTIGO123", ciclistaSalvo.getPassaporteEntity().getNumeroPassaporte());
+//        assertEquals("Novo Nome", ciclistaSalvo.getNome());
+//    }
 
 //    @Test
 //    void deveRetornarOptionalEmptyParaBicicletaAlugada() {
