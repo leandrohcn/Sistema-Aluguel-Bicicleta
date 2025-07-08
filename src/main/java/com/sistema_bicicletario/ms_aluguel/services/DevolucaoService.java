@@ -5,7 +5,6 @@ import com.sistema_bicicletario.ms_aluguel.dtos.DevolucaoDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoDevolucaoDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.aluguel.AluguelEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
-import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import com.sistema_bicicletario.ms_aluguel.repositories.AluguelRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
