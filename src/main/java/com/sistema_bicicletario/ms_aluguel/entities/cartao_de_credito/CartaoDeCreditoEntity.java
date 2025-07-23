@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 
 @Entity
 @Getter @Setter
@@ -27,14 +29,14 @@ public class CartaoDeCreditoEntity {
     @Pattern(regexp = "(^\\d{13,19}$)", message = "Quantidade de digitos entre 13 e 19")
     private @NotNull String numero;
 
-    private String validade;
+    private LocalDate validade;
 
     @Pattern(regexp = "^[0-9]{3,4}$",
              message = "Cvv maximo de 4 digitos")
     private @NotNull String cvv;
 
     public CartaoDeCreditoEntity(String nomeTitular, String numero, String cvv,
-                                 String validade, CiclistaEntity ciclista) {
+                                 LocalDate validade, CiclistaEntity ciclista) {
 
             this.nomeTitular = nomeTitular;
             this.numero = numero;
