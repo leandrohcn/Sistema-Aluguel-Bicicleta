@@ -46,10 +46,50 @@ class CiclistaServiceTest {
         novoCiclistaDTO.setConfirmaSenha("senha123");
 
         NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
-        cartao.setNumeroCartao("1234123412341234");
+        cartao.setNumero("1234123412341234");
         cartao.setCvv("123");
-        cartao.setValidadeCartao("12/30");
+        cartao.setValidade(LocalDate.of(2000, 1, 1));
         novoCiclistaDTO.setMeioDePagamento(cartao);
+    }
+
+    @Test
+    void deveCadastrarCiclistaBrasileiroComSucesso() {
+        novoCiclistaDTO = new NovoCiclistaDTO();
+        novoCiclistaDTO.setNome("João");
+        novoCiclistaDTO.setDataNascimento(LocalDate.of(2000, 1, 1));
+        novoCiclistaDTO.setCpf("12345678900");
+        novoCiclistaDTO.setEmail("joao@email.com");
+        novoCiclistaDTO.setNacionalidade(Nacionalidade.BRASILEIRO);
+        novoCiclistaDTO.setUrlFotoDocumento("url");
+        novoCiclistaDTO.setSenha("123");
+        novoCiclistaDTO.setConfirmaSenha("123");
+
+        NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
+        cartao.setNumero("1234123412341234");
+        cartao.setCvv("123");
+        cartao.setValidade((LocalDate.of(2030, 1, 1)));
+        novoCiclistaDTO.setMeioDePagamento(cartao);
+
+        when(ciclistaRepository.existsByEmail(novoCiclistaDTO.getEmail())).thenReturn(false);
+        when(ciclistaRepository.save(any(CiclistaEntity.class))).thenAnswer(invocation -> {
+            CiclistaEntity entity = invocation.getArgument(0);
+            entity.setId(1);
+            return entity;
+        });
+
+        when(cartaoService.cartaoExiste(any())).thenReturn(false);
+
+        ArgumentCaptor<CiclistaEntity> ciclistaCaptor = ArgumentCaptor.forClass(CiclistaEntity.class);
+        CiclistaResponseDTO response = ciclistaService.cadastrarCiclista(novoCiclistaDTO);
+
+        assertNotNull(response);
+        assertEquals(1, response.getId());
+        assertEquals(novoCiclistaDTO.getNome(), response.getNome());
+
+        verify(ciclistaRepository).save(ciclistaCaptor.capture());
+        CiclistaEntity ciclistaSalvo = ciclistaCaptor.getValue();
+        assertEquals(novoCiclistaDTO.getCpf(), ciclistaSalvo.getCpf());
+        assertNull(ciclistaSalvo.getPassaporteEntity());
     }
 
     @Test
@@ -60,9 +100,9 @@ class CiclistaServiceTest {
         passaporte.setPais("US");
 
         NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
-        cartao.setNumeroCartao("1111222233334444");
+        cartao.setNumero("1111222233334444");
         cartao.setCvv("321");
-        cartao.setValidadeCartao("03/30");
+        cartao.setValidade(LocalDate.of(2000, 1, 1));
 
         NovoCiclistaDTO dto = new NovoCiclistaDTO();
         dto.setNome("Ana");
@@ -110,9 +150,9 @@ class CiclistaServiceTest {
         dto.setConfirmaSenha("abc");
 
         NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
-        cartao.setNumeroCartao("1234567890123456");
+        cartao.setNumero("1234567890123456");
         cartao.setCvv("999");
-        cartao.setValidadeCartao(String.valueOf(LocalDate.of(2028, 12, 1)));
+        cartao.setValidade((LocalDate.of(2028, 12, 1)));
         dto.setMeioDePagamento(cartao);
 
         when(ciclistaRepository.existsByEmail(dto.getEmail())).thenReturn(false);
@@ -136,9 +176,9 @@ class CiclistaServiceTest {
         dto.setConfirmaSenha("senha");
 
         NovoCartaoDeCreditoDTO cartao = new NovoCartaoDeCreditoDTO();
-        cartao.setNumeroCartao("0000111122223333");
+        cartao.setNumero("0000111122223333");
         cartao.setCvv("111");
-        cartao.setValidadeCartao(String.valueOf(LocalDate.of(2027, 7, 1)));
+        cartao.setValidade((LocalDate.of(2027, 7, 1)));
         dto.setMeioDePagamento(cartao);
         dto.setPassaporte(passaporte);
 
@@ -369,7 +409,7 @@ class CiclistaServiceTest {
         when(ciclistaRepository.existsByEmail(anyString())).thenReturn(false);
         when(ciclistaRepository.findByCpf(anyString())).thenReturn(Optional.empty());
         when(cartaoService.cartaoExiste(anyString())).thenReturn(false);
-        doReturn(false).when(ciclistaService).validarCartao(any(NovoCartaoDeCreditoDTO.class));
+        doReturn(false).when(cartaoService).validarCartao(any(NovoCartaoDeCreditoDTO.class));
         var exception = assertThrows(IllegalArgumentException.class, () -> ciclistaService.cadastrarCiclista(novoCiclistaDTO));
 
         assertEquals("Cartão recusado", exception.getMessage());

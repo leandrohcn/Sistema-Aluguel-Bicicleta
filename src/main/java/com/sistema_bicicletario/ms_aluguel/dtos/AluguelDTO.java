@@ -11,7 +11,7 @@ public class AluguelDTO {
     private LocalDateTime horaInicio;
     private LocalDateTime horaFim;
     private Integer trancaFim;
-    private Integer cobranca;
+    private Long cobranca;
     private Integer ciclista;
     private Integer trancaInicio;
 }
