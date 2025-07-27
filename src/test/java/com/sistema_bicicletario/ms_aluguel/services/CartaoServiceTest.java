@@ -13,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.*;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.*;
+
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +37,7 @@ public class CartaoServiceTest {
         CartaoDeCreditoEntity cartaoExistente = new CartaoDeCreditoEntity();
         cartaoExistente.setNomeTitular("Leandro");
         NovoCartaoDeCreditoDTO novoCartao = new NovoCartaoDeCreditoDTO(
-                "João Silva", "2334", "12/30", "234523456"
+                "João Silva", "2334", LocalDate.of(2090, 10, 20), "234523456"
         );
         when(cartaoRepository.findByCiclistaId(id)).thenReturn(Optional.of(cartaoExistente));
 
@@ -44,7 +46,7 @@ public class CartaoServiceTest {
         assertEquals("João Silva", cartaoExistente.getNomeTitular());
         assertEquals("234523456", cartaoExistente.getNumero());
         assertEquals("2334", cartaoExistente.getCvv());
-        assertEquals("12/30", cartaoExistente.getValidade());
+        assertEquals( LocalDate.of(2090, 10, 20), cartaoExistente.getValidade());
 
         verify(cartaoRepository).save(cartaoExistente);
     }
@@ -55,7 +57,7 @@ public class CartaoServiceTest {
         CiclistaEntity ciclistaExistente = new CiclistaEntity();
         ciclistaExistente.setId(id);
         NovoCartaoDeCreditoDTO novoCartao = new NovoCartaoDeCreditoDTO(
-                "João Silva", "1256", "12/30", "1245323245"
+                "João Silva", "1256", LocalDate.of(2090, 10, 20), "1245323245"
         );
         when(cartaoRepository.findByCiclistaId(id)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> cartaoService.atualizaCartao(id, novoCartao));

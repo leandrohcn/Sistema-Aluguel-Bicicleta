@@ -43,7 +43,7 @@ class AluguelControllerTest {
 
         aluguelRetornado = new AluguelDTO();
         aluguelRetornado.setIdBicicleta(1);
-        aluguelRetornado.setCobranca(10);
+        aluguelRetornado.setCobranca(10L);
         aluguelRetornado.setTrancaFim(0);
         aluguelRetornado.setTrancaInicio(100);
         aluguelRetornado.setHoraInicio(LocalDateTime.now());
@@ -66,8 +66,8 @@ class AluguelControllerTest {
     @Test
     void deveDevolverBicicletaComSucesso() {
         NovoDevolucaoDTO requestDto = new NovoDevolucaoDTO();
-        requestDto.setIdBicicleta(1);
-        requestDto.setIdTranca(202);
+        requestDto.setBicicleta(1);
+        requestDto.setNumero(202);
 
         DevolucaoDTO respostaDoServico = new DevolucaoDTO();
         respostaDoServico.setBicicleta(1);
@@ -87,7 +87,7 @@ class AluguelControllerTest {
     void devePropagarExcecaoQuandoServicoFalhar() {
 
         NovoDevolucaoDTO requestDto = new NovoDevolucaoDTO();
-        requestDto.setIdBicicleta(999);
+        requestDto.setBicicleta(999);
 
         when(devolucaoService.realizarDevolucao(requestDto))
                 .thenThrow(new EntityNotFoundException("Aluguel não encontrado"));

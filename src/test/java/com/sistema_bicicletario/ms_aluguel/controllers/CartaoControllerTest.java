@@ -18,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
+
 @ExtendWith(MockitoExtension.class)
 public class CartaoControllerTest {
 
@@ -36,7 +38,7 @@ public class CartaoControllerTest {
         cartao.setCvv("1234");
         cartao.setNomeTitular("João da Silva");
         cartao.setNumero("1232341234");
-        cartao.setValidade("12/30");
+        cartao.setValidade(LocalDate.of(2050, 11, 16));
     }
 
     @Test
@@ -57,7 +59,7 @@ public class CartaoControllerTest {
     @Test
     void deveAtualizarCartaoComSucesso() {
         NovoCartaoDeCreditoDTO novoCartao = new NovoCartaoDeCreditoDTO(
-                "João da Silva", "1264", "12/29", "1457445522"
+                "João da Silva", "1264", LocalDate.of(2050, 11, 16), "1457445522"
         );
 
         doNothing().when(cartaoService).atualizaCartao(eq(1), any());
@@ -73,7 +75,7 @@ public class CartaoControllerTest {
     @Test
     void deveRetornarNotFoundAoAtualizarCartaoInexistente() {
         NovoCartaoDeCreditoDTO novoCartao = new NovoCartaoDeCreditoDTO(
-                "Maria", "434", "11/28", "223435363"
+                "Maria", "434", LocalDate.of(2050, 11, 16), "223435363"
         );
 
         doThrow(EntityNotFoundException.class)

@@ -1,9 +1,6 @@
 package com.sistema_bicicletario.ms_aluguel.dtos;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,13 +20,13 @@ public class NovoCartaoDeCreditoDTO {
             message = "Cvv entre 3 e 4 digitos")
     private String cvv;
 
-    @NotBlank
-    @Pattern(regexp = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$", message = "Formato de validade deve ser yyyy-mm-dd")
-    private LocalDate validadeCartao;
+    @NotNull
+    @Future(message = "A validade do cartão deve ser uma data futura.")
+    private LocalDate validade;
 
     @NotNull
     @Positive(message = "Deve ser um número positivo")
     @Pattern(regexp = "(^\\d{13,19}$)", message = "Quantidade de digitos entre 13 e 19")
-    private String numeroCartao;
+    private String numero;
 
 }

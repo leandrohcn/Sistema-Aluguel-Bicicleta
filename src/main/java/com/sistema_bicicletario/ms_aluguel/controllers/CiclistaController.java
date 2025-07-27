@@ -24,12 +24,9 @@ public class CiclistaController {
         this.aluguelService = aluguelService;
     }
 
-    EnviaEmailDTO enviaEmail = new EnviaEmailDTO();
-
     @PostMapping
     public ResponseEntity<CiclistaResponseDTO> cadastrarCiclista(@Valid @RequestBody NovoCiclistaDTO ciclista) {
         CiclistaResponseDTO responseBody = ciclistaService.cadastrarCiclista(ciclista);
-        enviaEmail.envioDeEmail();
         return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
 
@@ -46,7 +43,6 @@ public class CiclistaController {
                                                                  @Valid @RequestBody AtualizaCiclistaDTO ciclista) {
 
         CiclistaResponseDTO responseBody = ciclistaService.atualizarCiclista(id, ciclista);
-        enviaEmail.envioDeEmail();
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 

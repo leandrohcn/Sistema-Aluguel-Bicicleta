@@ -10,6 +10,6 @@ public class BicicletaDTO {
     private String marca;
     private String modelo;
     private String ano;
-    private String numero;
+    private Integer numero;
     private String status;
 }

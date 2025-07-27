@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class TrancaDTO {
     private Integer idTranca;
-    private String numero;
-    private String status;
-    private Integer idBicicleta;
+    private Integer numero;
+    private String statusTranca;
+    private Integer bicicleta;
 }

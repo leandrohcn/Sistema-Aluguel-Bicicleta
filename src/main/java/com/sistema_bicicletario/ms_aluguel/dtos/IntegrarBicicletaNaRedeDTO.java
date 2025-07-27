@@ -4,11 +4,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class NovoDevolucaoDTO {
+public class IntegrarBicicletaNaRedeDTO {
     @NotNull
-    private Integer bicicleta;
-    private Integer idCiclista;
+    private int idTranca;
     @NotNull
-    private Integer numero;
-    private String acao;
+    private int idBicicleta;
+    @NotNull
+    private int idFuncionario;
+
 }
