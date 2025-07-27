@@ -1,5 +1,7 @@
 package com.sistema_bicicletario.ms_aluguel.services;
 
+
+import com.sistema_bicicletario.ms_aluguel.listeners.EmailRealizadoEvent;
 import com.sistema_bicicletario.ms_aluguel.dtos.*;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
@@ -12,25 +14,28 @@ import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+
 @Slf4j
 @Service
 public class CiclistaService {
 
     private final CiclistaRepository ciclistaRepository;
-
     private final CartaoService cartaoService;
     private final CartaoRepository cartaoRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public CiclistaService(CiclistaRepository ciclistaRepository, CartaoService cartaoService, CartaoRepository cartaoRepository) {
+    public CiclistaService(CiclistaRepository ciclistaRepository, CartaoService cartaoService, CartaoRepository cartaoRepository, ApplicationEventPublisher eventPublisher) {
         this.ciclistaRepository = ciclistaRepository;
         this.cartaoService = cartaoService;
         this.cartaoRepository = cartaoRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -67,22 +72,32 @@ public class CiclistaService {
 
         processarMeioDePagamento(novoCiclistaDto, novoCiclista);
         novoCiclista.setStatus(Status.AGUARDANDO_CONFIRMACAO);
+
+        String assunto = "Ative sua conta no nosso sistema!";
+        String mensagem = "<h1>Olá, " + ciclistaSalvo.getNome() + "</h1>\n" + "<p>Ative sua conta no nosso sistema, apenas clicando no link abaixo:</p>\n\n" +
+                "<form action='http://localhost:8083/ciclista/" + ciclistaSalvo.getId() + "/ativar' " +
+                "method='POST'><input type='hidden' name='valor' value='100'>" +
+                "<input type='hidden' name='ciclista' value='1'><input type='submit' value='ATIVAÇÃO'></form>";
+
+        EmailRealizadoEvent eventoEmail = EmailRealizadoEvent.of(this, ciclistaSalvo.getEmail(), assunto, mensagem);
+        eventPublisher.publishEvent(eventoEmail);
+
         return new CiclistaResponseDTO(ciclistaSalvo);
     }
 
     private void processarMeioDePagamento(NovoCiclistaDTO dto, CiclistaEntity ciclista) {
-        String numeroCartao = dto.getMeioDePagamento().getNumeroCartao();
+        String numeroCartao = dto.getMeioDePagamento().getNumero();
 
         if (cartaoService.cartaoExiste(numeroCartao)) {
             throw new IllegalArgumentException("Cartao já cadastrado em outro usuário");
         }
 
-        if (validarCartao(dto.getMeioDePagamento())) {
+        if (cartaoService.validarCartao(dto.getMeioDePagamento())) {
             CartaoDeCreditoEntity cartao = new CartaoDeCreditoEntity(
                     dto.getNome(),
                     numeroCartao,
                     dto.getMeioDePagamento().getCvv(),
-                    dto.getMeioDePagamento().getValidadeCartao(),
+                    dto.getMeioDePagamento().getValidade(),
                     ciclista
             );
             cartao.setCiclista(ciclista);
@@ -124,8 +139,26 @@ public class CiclistaService {
                 ciclista.setPassaporteEntity(ciclista.getPassaporteEntity());
             }
         }
-        CiclistaEntity ciclistaAtualizado = ciclistaRepository.save(ciclista);
-        return new  CiclistaResponseDTO(ciclistaAtualizado);
+        CiclistaEntity atualizado = ciclistaRepository.save(ciclista);
+        String assunto = "Atualização de Ciclista";
+        StringBuilder mensagem = new StringBuilder();
+        mensagem.append("Olá, ").append(atualizado.getNome()).append("!\n\n");
+        mensagem.append("Você atualizou seus dados com sucesso. Confira os detalhes abaixo:\n");
+        mensagem.append("========================================\n\n");
+        mensagem.append("Nome: ").append(atualizado.getNome()).append("\n");
+        mensagem.append("CPF: ").append(atualizado.getCpf()).append("\n");
+        mensagem.append("Nacionalidade: ").append(atualizado.getNacionalidade()).append("\n");
+        mensagem.append("Foto documento: ").append(atualizado.getUrlFotoDocumento()).append("\n");
+
+        if (atualizado.getNacionalidade() == Nacionalidade.ESTRANGEIRO && atualizado.getPassaporteEntity() != null) {
+            mensagem.append("Passaporte: ").append(atualizado.getPassaporteEntity().getNumeroPassaporte()).append("\n");
+            mensagem.append("Validade: ").append(atualizado.getPassaporteEntity().getValidadePassaporte()).append("\n");
+            mensagem.append("País: ").append(atualizado.getPassaporteEntity().getPais()).append("\n");
+        }
+
+        EmailRealizadoEvent eventoEmail = EmailRealizadoEvent.of(this, atualizado.getEmail(), assunto, mensagem.toString());
+        eventPublisher.publishEvent(eventoEmail);
+        return new  CiclistaResponseDTO(atualizado);
     }
 
     private void regrasDeNegocioAtualiza(AtualizaCiclistaDTO ciclistaDto, CiclistaEntity ciclistaExistente) {
@@ -133,6 +166,14 @@ public class CiclistaService {
         validarSenha(ciclistaDto);
         validarNacionalidade(ciclistaDto, ciclistaExistente);
         validarDocumentoPorNacionalidade(ciclistaDto, ciclistaExistente);
+        validarFotoDocumento(ciclistaDto, ciclistaExistente);
+    }
+
+    private void validarFotoDocumento(AtualizaCiclistaDTO ciclistaDTO, CiclistaEntity ciclistaExistente){
+        String urlFotoDocumento = ciclistaDTO.getUrlFotoDocumento() != null ? ciclistaDTO.getUrlFotoDocumento() : ciclistaExistente.getUrlFotoDocumento();
+        if (urlFotoDocumento == null){
+            throw new IllegalArgumentException("Url não pode ser removida");
+        }
     }
 
     private void validarEmail(AtualizaCiclistaDTO ciclistaDto, CiclistaEntity ciclistaExistente) {
@@ -276,8 +317,5 @@ public class CiclistaService {
             throw new IllegalArgumentException("Número do passaporte é obrigatório para estrangeiros");
         }
     }
-    public boolean validarCartao(NovoCartaoDeCreditoDTO cartao) {
-        log.info(cartao.toString());
-        return true;
-    }
+
 }

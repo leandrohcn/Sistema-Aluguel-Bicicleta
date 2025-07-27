@@ -14,15 +14,14 @@ public class AluguelEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer idBicicleta;
-    private String numeroBicicleta;
+    private Integer numeroBicicleta;
     private Integer ciclista;
     private Integer trancaInicio;
-    private Integer cobranca;
+    private Long cobranca;
     private LocalDateTime horaInicio;
     private LocalDateTime horaFim;
     private Integer trancaFim;
     private String nomeTitular;
     private String finalCartao;
-    private Double valorExtra;
+    private Long valorExtra;
 }

@@ -1,13 +1,16 @@
 package com.sistema_bicicletario.ms_aluguel.dtos;
 
-import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class CobrancaDTO {
-    private Integer id;
-    private Double valor;
+    private Long id;
+    private Long valor;
     private String status;
     private Integer ciclistaId;
-    private CartaoDeCreditoEntity cartao;
+    private LocalDateTime horaSolicitacao;
+    private LocalDateTime horaFinalizacao;
+
 }

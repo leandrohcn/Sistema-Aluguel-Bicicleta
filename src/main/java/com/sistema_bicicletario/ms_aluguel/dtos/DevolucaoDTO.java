@@ -12,6 +12,6 @@ public class DevolucaoDTO {
     private LocalDateTime horaInicio;
     private Integer trancaFim;
     private LocalDateTime horaFim;
-    private Integer cobranca;
+    private Long cobranca;
     private Integer ciclista;
 }
