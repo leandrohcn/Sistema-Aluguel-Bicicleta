@@ -107,13 +107,10 @@ class TratamentoDeErrosTest {
     @Test
     @DisplayName("Deve tratar HttpMessageNotReadableException para JSON genérico e retornar 400")
     void handleJsonMalFormado_Generico() {
-        // Cenário
         HttpMessageNotReadableException ex = new HttpMessageNotReadableException("JSON com sintaxe errada");
 
-        // Ação
         ResponseEntity<ErroDTO> response = tratamentoDeErros.handleJsonMalFormado(ex);
 
-        // Verificação
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("JSON_INVALIDO", response.getBody().getCodigo());
@@ -123,16 +120,13 @@ class TratamentoDeErrosTest {
     @Test
     @DisplayName("Deve tratar HttpMessageNotReadableException para Enum inválido e retornar 400")
     void handleJsonMalFormado_EnumInvalido() {
-        // Cenário
-        // A lógica interna verifica a causa da exceção
+
         when(invalidFormatException.getTargetType()).thenAnswer(invocation -> StatusTeste.class);
         when(invalidFormatException.getValue()).thenReturn("VALOR_ERRADO");
         HttpMessageNotReadableException ex = new HttpMessageNotReadableException("Erro de Enum", invalidFormatException);
 
-        // Ação
         ResponseEntity<ErroDTO> response = tratamentoDeErros.handleJsonMalFormado(ex);
 
-        // Verificação
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("ENUM_INVALIDO", response.getBody().getCodigo());

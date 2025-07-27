@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 
 @ExtendWith(MockitoExtension.class)
-public class CartaoControllerTest {
+class CartaoControllerTest {
 
     @Mock
     private CartaoService cartaoService;
