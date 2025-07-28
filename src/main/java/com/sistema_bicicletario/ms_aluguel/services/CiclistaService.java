@@ -30,12 +30,15 @@ public class CiclistaService {
     private final CartaoService cartaoService;
     private final CartaoRepository cartaoRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public CiclistaService(CiclistaRepository ciclistaRepository, CartaoService cartaoService, CartaoRepository cartaoRepository, ApplicationEventPublisher eventPublisher) {
+    public CiclistaService(CiclistaRepository ciclistaRepository, CartaoService cartaoService, CartaoRepository cartaoRepository,
+                           BCryptPasswordEncoder bCryptPasswordEncoder, ApplicationEventPublisher eventPublisher) {
         this.ciclistaRepository = ciclistaRepository;
         this.cartaoService = cartaoService;
         this.cartaoRepository = cartaoRepository;
         this.eventPublisher = eventPublisher;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Transactional
@@ -48,7 +51,7 @@ public class CiclistaService {
                 novoCiclistaDto.getEmail(),
                 novoCiclistaDto.getNacionalidade(),
                 novoCiclistaDto.getUrlFotoDocumento(),
-                encripta(novoCiclistaDto.getSenha()),
+                bCryptPasswordEncoder.encode(novoCiclistaDto.getSenha()),
                 novoCiclistaDto.getConfirmaSenha()
         );
 
@@ -107,11 +110,6 @@ public class CiclistaService {
         }
     }
 
-    private String encripta(String senha) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.encode(senha);
-    }
-
     @Transactional
     public CiclistaResponseDTO atualizarCiclista(Integer id, AtualizaCiclistaDTO ciclistaDTO) {
         CiclistaEntity ciclista = ciclistaRepository.findById(id)
@@ -123,7 +121,7 @@ public class CiclistaService {
         ciclista.setCpf(!ciclistaDTO.getCpf().isBlank() ? ciclistaDTO.getCpf() : ciclista.getCpf());
         ciclista.setUrlFotoDocumento(!ciclistaDTO.getUrlFotoDocumento().isBlank() ? ciclistaDTO.getUrlFotoDocumento() : ciclista.getUrlFotoDocumento());
         ciclista.setNacionalidade(ciclistaDTO.getNacionalidade() != null ? ciclistaDTO.getNacionalidade() : ciclista.getNacionalidade());
-        ciclista.setSenha(!ciclistaDTO.getSenha().isBlank() ? encripta(ciclistaDTO.getSenha()) : ciclista.getSenha());
+        ciclista.setSenha(!ciclistaDTO.getSenha().isBlank() ? bCryptPasswordEncoder.encode(ciclistaDTO.getSenha()) : ciclista.getSenha());
         ciclista.setConfirmaSenha(!ciclistaDTO.getConfirmaSenha().isBlank() ? ciclistaDTO.getConfirmaSenha() : ciclista.getConfirmaSenha());
 
         if (ciclistaDTO.getNacionalidade().equals(Nacionalidade.ESTRANGEIRO)) {
@@ -230,7 +228,7 @@ public class CiclistaService {
         }
 
         Optional<CiclistaEntity> ciclistaEntity = ciclistaRepository.findById(idCiclista);
-        if (!ciclistaEntity.isPresent()) {
+        if (ciclistaEntity.isEmpty()) {
             throw new EntityNotFoundException("Ciclista não encontrado com id: " + idCiclista);
         }
 

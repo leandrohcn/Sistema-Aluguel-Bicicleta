@@ -1,5 +1,6 @@
-package com.sistema_bicicletario.ms_aluguel.controllers;
+package com.sistema_bicicletario.ms_aluguel.TestesUnitarios.controllers;
 
+import com.sistema_bicicletario.ms_aluguel.controllers.CiclistaController;
 import com.sistema_bicicletario.ms_aluguel.dtos.*;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.CiclistaEntity;
 import com.sistema_bicicletario.ms_aluguel.entities.ciclista.Nacionalidade;

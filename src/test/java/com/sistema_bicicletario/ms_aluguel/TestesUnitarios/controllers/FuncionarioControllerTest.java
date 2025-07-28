@@ -1,5 +1,6 @@
-package com.sistema_bicicletario.ms_aluguel.controllers;
+package com.sistema_bicicletario.ms_aluguel.TestesUnitarios.controllers;
 
+import com.sistema_bicicletario.ms_aluguel.controllers.FuncionarioController;
 import com.sistema_bicicletario.ms_aluguel.dtos.FuncionarioResponseDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.Funcao;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -108,7 +110,7 @@ class FuncionarioControllerTest {
         ResponseEntity<FuncionarioResponseDTO> resposta = controller.atualizaDadosFuncionario(1, novoFuncionario);
 
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
-        assertEquals("Maria", resposta.getBody().getNome());
+        assertEquals("Maria", Objects.requireNonNull(resposta.getBody()).getNome());
         verify(funcionarioService).atualizaFuncionario(novoFuncionario, 1);
     }
 

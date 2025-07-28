@@ -1,8 +1,9 @@
-package com.sistema_bicicletario.ms_aluguel.controllers;
+package com.sistema_bicicletario.ms_aluguel.TestesUnitarios.controllers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+import com.sistema_bicicletario.ms_aluguel.controllers.BancoController;
 import com.sistema_bicicletario.ms_aluguel.repositories.AluguelRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CartaoRepository;
 import com.sistema_bicicletario.ms_aluguel.repositories.CiclistaRepository;

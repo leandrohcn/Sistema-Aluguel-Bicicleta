@@ -35,17 +35,6 @@ public class FuncionarioEntity {
     @Enumerated(EnumType.STRING)
     private Funcao funcao;
 
-    public FuncionarioEntity(FuncionarioEntity funcionario){
-        this.matricula = funcionario.getMatricula();
-        this.nome = funcionario.getNome();
-        this.senha = funcionario.getSenha();
-        this.confirmaSenha = funcionario.getConfirmaSenha();
-        this.email = funcionario.getEmail();
-        this.idade = funcionario.getIdade();
-        this.cpf = funcionario.getCpf();
-        this.funcao = funcionario.getFuncao();
-    }
-
     public FuncionarioEntity(String nome, String senha,
                              String confirmaSenha, String email,
                              Integer idade, String cpf, Funcao funcao) {

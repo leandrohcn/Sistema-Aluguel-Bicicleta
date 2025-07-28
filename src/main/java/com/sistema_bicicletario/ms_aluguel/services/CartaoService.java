@@ -27,21 +27,22 @@ public class CartaoService {
 
     @Transactional
     public void atualizaCartao(Integer id, NovoCartaoDeCreditoDTO novoCartao) {
-        String numeroCartao = novoCartao.getNumero();
-        String finalCartao = numeroCartao.substring(numeroCartao.length() - 4);
+        if (!validarCartao(novoCartao)) {
+            throw new TrataUnprocessableEntityException("Cartao Invalido");
+        }
 
         CartaoDeCreditoEntity cartao = cartaoRepository.findByCiclistaId(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        String numeroCartao = novoCartao.getNumero();
+        String finalCartao = numeroCartao.substring(numeroCartao.length() - 4);
 
         cartao.setNomeTitular(novoCartao.getNomeTitular());
         cartao.setNumero(novoCartao.getNumero());
         cartao.setCvv(novoCartao.getCvv());
         cartao.setValidade(novoCartao.getValidade());
-        if (validarCartao(novoCartao)) {
-            cartaoRepository.save(cartao);
-        } else {
-            throw new TrataUnprocessableEntityException("Cartao Invalido");
-        }
+
+        cartaoRepository.save(cartao);
 
         String assunto = "Atualização do cartão";
         String email = cartao.getCiclista().getEmail();

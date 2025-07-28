@@ -1,5 +1,6 @@
-package com.sistema_bicicletario.ms_aluguel.controllers;
+package com.sistema_bicicletario.ms_aluguel.TestesUnitarios.controllers;
 
+import com.sistema_bicicletario.ms_aluguel.controllers.CartaoController;
 import com.sistema_bicicletario.ms_aluguel.dtos.CartaoDeCreditoDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoCartaoDeCreditoDTO;
 import com.sistema_bicicletario.ms_aluguel.entities.cartao_de_credito.CartaoDeCreditoEntity;

@@ -1,4 +1,4 @@
-package com.sistema_bicicletario.ms_aluguel.services;
+package com.sistema_bicicletario.ms_aluguel.TestesUnitarios.services;
 
 import com.sistema_bicicletario.ms_aluguel.dtos.FuncionarioResponseDTO;
 import com.sistema_bicicletario.ms_aluguel.dtos.NovoFuncionarioDTO;
@@ -6,6 +6,7 @@ import com.sistema_bicicletario.ms_aluguel.entities.funcionario.Funcao;
 import com.sistema_bicicletario.ms_aluguel.entities.funcionario.FuncionarioEntity;
 import com.sistema_bicicletario.ms_aluguel.exceptions.TrataUnprocessableEntityException;
 import com.sistema_bicicletario.ms_aluguel.repositories.FuncionarioRepository;
+import com.sistema_bicicletario.ms_aluguel.services.FuncionarioService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
