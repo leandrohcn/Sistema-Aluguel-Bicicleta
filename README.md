@@ -24,8 +24,8 @@ A arquitetura do sistema foi baseada em microsserviços desacoplados, com respon
 - **📜 Definição de Contratos:**  
   A comunicação entre serviços foi padronizada com **Swagger (OpenAPI)**, garantindo interoperabilidade e clareza nas interfaces.
 
-- **🔁 Integração e Testes:**  
-  A integração entre microsserviços foi validada com **testes de integração abrangentes**, simulando fluxos reais do sistema.
+- **🔁 Integração Real entre Serviços:**  
+  Após a implementação individual, os microsserviços foram integrados de fato em um ambiente comum, com **comunicação real via HTTP** e consumo efetivo de endpoints externos, validando o fluxo de dados entre eles. Foram utilizados **testes de integração completos**, mas também foram realizadas execuções reais com troca de mensagens entre os serviços, simulando o funcionamento do sistema em produção.
 
 - **✅ Qualidade e Deploy:**  
   A qualidade do código foi monitorada com **SonarQube**, e o deploy automatizado via **CI/CD** na **AWS**.
@@ -34,11 +34,11 @@ A arquitetura do sistema foi baseada em microsserviços desacoplados, com respon
 
 ## 👥 Equipe e Contribuições
 
-| Contribuição                        | Membro                   | GitHub                    |
-|------------------------------------|--------------------------|----------------------------|
-| Microsserviço de Equipamentos      | Maria Clara Barboza      | *https://gitlab.com/mariaclara26-group/equipamento.git*         |
-| Microsserviço de Serviços Externos | Bernardo Mansano         | *https://gitlab.com/unirio4/sistema-de-controle-de-bicicletario/api-externo* |
-| Code Review, Pipeline & Deploy     | João Victor Campbell     | *https://github.com/joaocampbell2* |
+| Contribuição                        | Membro                   | GitHub / GitLab                                               |
+|------------------------------------|--------------------------|----------------------------------------------------------------|
+| Microsserviço de Equipamentos      | Maria Clara Barboza      | [GitLab - Equipamento](https://gitlab.com/mariaclara26-group/equipamento.git) |
+| Microsserviço de Serviços Externos | Bernardo Mansano         | [GitLab - API Externo](https://gitlab.com/unirio4/sistema-de-controle-de-bicicletario/api-externo) |
+| Code Review, Pipeline & Deploy     | João Victor Campbell     | [GitHub - João Campbell](https://github.com/joaocampbell2)     |
 
 ---
 
@@ -58,5 +58,3 @@ A arquitetura do sistema foi baseada em microsserviços desacoplados, com respon
 ### 🧪 Testes
 - **JUnit 5:** Framework para testes unitários.
 - **Mockito:** Ferramenta de mocking para testes automatizados.
-
----
