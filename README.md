@@ -21,9 +21,6 @@ A arquitetura do sistema foi baseada em microsserviços desacoplados, com respon
 - **🔧 Desenvolvimento Individual:**  
   Cada microsserviço foi implementado de forma isolada, garantindo coesão e autonomia.
 
-- **📜 Definição de Contratos:**  
-  A comunicação entre serviços foi padronizada com **Swagger (OpenAPI)**, garantindo interoperabilidade e clareza nas interfaces.
-
 - **🔁 Integração Real em Ambiente na AWS:**  
   Os microsserviços foram **implantados na AWS**, e a **comunicação real entre os serviços foi feita por meio das URLs públicas** hospedadas na nuvem. A troca de mensagens foi validada em produção, com os serviços se integrando de fato por meio de chamadas HTTP reais para endpoints distribuídos. Além dos testes automatizados, a integração foi testada funcionalmente via execução real em ambiente remoto.
 
