@@ -25,7 +25,6 @@ public class CartaoDeCreditoEntity {
     private CiclistaEntity ciclista;
 
     private String nomeTitular;
-    @Column(unique = true)
     @Pattern(regexp = "(^\\d{13,19}$)", message = "Quantidade de digitos entre 13 e 19")
     private @NotNull String numero;
 
