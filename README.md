@@ -1,55 +1,62 @@
-Projeto Backend com Arquitetura de Microsserviços
+# 🧩 Projeto Backend com Arquitetura de Microsserviços
 
-https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java">
-https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Boot">
-https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white" alt="AWS">
-https://img.shields.io/badge/SonarQube-4E9BCD?style=for-the-badge&logo=sonarqube&logoColor=white" alt="SonarQube">
-https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger">
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![AWS](https://img.shields.io/badge/Amazon_AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![SonarQube](https://img.shields.io/badge/SonarQube-4E9BCD?style=for-the-badge&logo=sonarqube&logoColor=white)
+![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
 
-📖 Sobre o Projeto
-Este é um projeto backend desenvolvido para aplicar e demonstrar conceitos avançados de engenharia de software, com foco principal em arquitetura de microsserviços, modularização e uma robusta estratégia de testes unitários e de integração.
+## 📖 Sobre o Projeto
 
-A aplicação foi construída de forma colaborativa, seguindo um fluxo de trabalho onde cada componente foi desenvolvido de maneira independente e, posteriormente, conectado aos demais. Todo o processo de integração foi guiado pelos requisitos de negócio, casos de uso detalhados e os contratos de API definidos com o Swagger.
+Este é um projeto backend desenvolvido para aplicar e demonstrar conceitos avançados de engenharia de software, com foco principal em **arquitetura de microsserviços**, **modularização** e uma robusta estratégia de **testes unitários e de integração**.
 
-Architecture & Development Process
-O projeto foi dividido em módulos independentes, cada um representando um microsserviço com uma responsabilidade única. A abordagem foi a seguinte:
+A aplicação foi construída de forma colaborativa, com cada componente desenvolvido de maneira independente e posteriormente integrado aos demais. O processo foi guiado por **requisitos de negócio**, **casos de uso detalhados** e **contratos de API definidos com Swagger**.
 
-Desenvolvimento Individual: Cada membro da equipe implementou seu microsserviço de forma isolada, garantindo a coesão e a autonomia do componente.
+---
 
-Definição de Contratos: A comunicação entre os serviços foi padronizada utilizando o Swagger (OpenAPI), que serviu como uma fonte única de verdade para as interfaces de API.
+## 🏛️ Arquitetura e Processo de Desenvolvimento
 
-Integração e Testes: Com os microsserviços desenvolvidos, realizamos a integração, validando a comunicação e o fluxo de dados entre eles através de testes de integração completos.
+A arquitetura do sistema foi baseada em microsserviços desacoplados, com responsabilidades bem definidas. Os principais pilares do desenvolvimento foram:
 
-Qualidade e Deploy: A qualidade do código foi continuamente monitorada com o SonarQube, e a manutenção do pipeline de CI/CD garantiu a automação do deploy da aplicação na AWS.
+- **🔧 Desenvolvimento Individual:**  
+  Cada microsserviço foi implementado de forma isolada, garantindo coesão e autonomia.
 
-👥 Equipe e Contribuições
-Este projeto é o resultado da colaboração de uma equipe dedicada, onde cada membro teve um papel fundamental para o sucesso da aplicação.
+- **📜 Definição de Contratos:**  
+  A comunicação entre serviços foi padronizada com **Swagger (OpenAPI)**, garantindo interoperabilidade e clareza nas interfaces.
 
-Contribuição	Membro	GitHub
-Microsserviço de Equipamentos	Maria Clara Barboza	
-Microsserviço de Serviços Externos	Matheus Mansano	
-Code Review, Pipeline & Deploy	João Victor Campbell	
+- **🔁 Integração e Testes:**  
+  A integração entre microsserviços foi validada com **testes de integração abrangentes**, simulando fluxos reais do sistema.
 
-Exportar para as Planilhas
-🛠️ Tecnologias Utilizadas
-Linguagem e Framework:
+- **✅ Qualidade e Deploy:**  
+  A qualidade do código foi monitorada com **SonarQube**, e o deploy automatizado via **CI/CD** na **AWS**.
 
-Java: Linguagem principal para o desenvolvimento.
+---
 
-Spring Boot: Framework para a criação dos microsserviços, facilitando a configuração e o desenvolvimento.
+## 👥 Equipe e Contribuições
 
-Infraestrutura e Deploy:
+| Contribuição                        | Membro                   | GitHub                    |
+|------------------------------------|--------------------------|----------------------------|
+| Microsserviço de Equipamentos      | Maria Clara Barboza      | *https://gitlab.com/mariaclara26-group/equipamento.git*         |
+| Microsserviço de Serviços Externos | Bernardo Mansano         | *https://gitlab.com/unirio4/sistema-de-controle-de-bicicletario/api-externo* |
+| Code Review, Pipeline & Deploy     | João Victor Campbell     | *https://github.com/joaocampbell2* |
 
-Amazon Web Services (AWS): Plataforma de nuvem utilizada para hospedar e executar a aplicação.
+---
 
-Qualidade e Documentação:
+## 🛠️ Tecnologias Utilizadas
 
-SonarQube: Ferramenta para inspeção contínua da qualidade do código.
+### 💻 Linguagem e Framework
+- **Java:** Linguagem principal do projeto.
+- **Spring Boot:** Framework para criação de APIs e microsserviços.
 
-Swagger (OpenAPI): Utilizado para projetar, construir, documentar e consumir as APIs RESTful.
+### ☁️ Infraestrutura e Deploy
+- **Amazon Web Services (AWS):** Plataforma de nuvem utilizada para hospedagem da aplicação.
 
-Testes:
+### ✅ Qualidade e Documentação
+- **SonarQube:** Análise contínua de qualidade de código.
+- **Swagger (OpenAPI):** Definição e documentação das APIs REST.
 
-JUnit 5: Framework para a implementação de testes unitários.
+### 🧪 Testes
+- **JUnit 5:** Framework para testes unitários.
+- **Mockito:** Ferramenta de mocking para testes automatizados.
 
-Mockito: Utilizado para criar objetos mock em testes unitários.
+---
