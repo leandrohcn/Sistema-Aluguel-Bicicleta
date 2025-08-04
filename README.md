@@ -34,8 +34,8 @@ A arquitetura do sistema foi baseada em microsserviços desacoplados, com respon
 | Contribuição                        | Membro                   | GitHub / GitLab                                               |
 |------------------------------------|--------------------------|----------------------------------------------------------------|
 | Microsserviço de Equipamentos      | Maria Clara Barboza      | [GitLab - Equipamento](https://gitlab.com/mariaclara26-group/equipamento.git) |
-| Microsserviço de Serviços Externos | Bernardo Mansano         | [GitLab - API Externo](https://gitlab.com/unirio4/sistema-de-controle-de-bicicletario/api-externo) |
-| Code Review, Pipeline & Deploy     | João Victor Campbell     | [GitHub - João Campbell](https://github.com/joaocampbell2)     |
+| Microsserviço de Serviços Externos | Bernardo Medeiros         | [GitLab - API Externo](https://gitlab.com/unirio4/sistema-de-controle-de-bicicletario/api-externo) |
+| Code Review, Pipeline & Deploy     | João Campbell     | [GitHub - João Campbell](https://github.com/joaocampbell2)     |
 
 ---
 
